@@ -288,13 +288,13 @@ class Net(torch.nn.Module):
 
         if self.antithetic:
             # antithetic variates
-            dw = torch.sqrt(2 * self.nu * dt) * torch.randn(
+            dw = torch.sqrt(self.nu * dt) * torch.randn(
                 self.dim, nb_states, self.nb_path_per_state // 2, device=self.device
             ).repeat(1, 1, 2)
             dw[:, :, : (self.nb_path_per_state // 2)] *= -1
         else:
             # usual generation
-            dw = torch.sqrt(2 * self.nu * dt) * torch.randn(
+            dw = torch.sqrt(self.nu * dt) * torch.randn(
                 self.dim, nb_states, self.nb_path_per_state, device=self.device
             )
         return dw
@@ -445,7 +445,7 @@ class Net(torch.nn.Module):
                             T,
                             x + dw,
                             mask_tmp,
-                            -self.nu
+                            -self.nu/2
                             * self.mechanism_tot_len
                             * A
                             * B
@@ -662,6 +662,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     upper_bound = 2
+    nu = 1
     y, eps = 0, 1
     a, b = y - eps, y + eps
 
@@ -680,12 +681,17 @@ if __name__ == "__main__":
         if t == T:
             return np.logical_and(x[0] <= b, x[0] >= a)
         else:
-            prob_without_bound = norm.cdf(b - x[0]) - norm.cdf(a - x[0])
+            normal_std = math.sqrt(nu * (T - t))
+            prob_without_bound = norm.cdf((b - x[0]) / normal_std) - norm.cdf((a - x[0]) / normal_std)
             if not with_bound:
                 # without bound
                 return prob_without_bound
             # with bound
-            return prob_without_bound - (norm.cdf(2 * upper_bound - a - x[0]) - norm.cdf(2 * upper_bound - b - x[0]))
+            return (
+                prob_without_bound
+                - norm.cdf((2 * upper_bound - a - x[0]) / normal_std)
+                + norm.cdf((2 * upper_bound - b - x[0]) / normal_std)
+            )
 
     t_lo, x_lo, x_hi, n = 0., 0., upper_bound, 0
     grid = np.linspace(x_lo, x_hi, 100)
@@ -704,6 +710,7 @@ if __name__ == "__main__":
         x_lo=x_lo,
         x_hi=x_hi,
         verbose=True,
+        nu=nu,
     )
     model.train_and_eval(debug_mode=True)
 
