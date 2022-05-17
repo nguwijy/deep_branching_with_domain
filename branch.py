@@ -240,9 +240,13 @@ class Net(torch.nn.Module):
         if patch == 0:
             return self.phi_fun(x)
         else:
+            is_training = self.training
             self.eval()
             xx = torch.stack((T.reshape(-1), x.reshape(-1)), dim=-1)
-            return self(xx, patch=patch - 1).reshape(-1, self.nb_path_per_state)
+            ans = self(xx, patch=patch - 1)
+            if is_training:
+                self.train()
+            return ans
 
     def code_to_function(self, code, x, T, patch=0):
         """
@@ -676,7 +680,7 @@ if __name__ == "__main__":
     # configurations
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    upper_bound, lower_bound = 2, -10000
+    lower_bound, upper_bound = -15, 2
     nu = 1
     y, eps = 0, 1
     a, b = y - eps, y + eps
@@ -693,6 +697,8 @@ if __name__ == "__main__":
         return torch.logical_and(x[0] <= b, x[0] >= a).float()
 
     def exact_example(t, x, T, with_bound=False):
+        # TODO: update the exact formula for two boundary problem (using Borodin)
+        # TODO: then, increase lower_bound (to -2) and patches (to 10 or even 100) to test if the branching with boundary really works
         if t == T:
             return np.logical_and(x[0] <= b, x[0] >= a)
         else:
@@ -720,12 +726,13 @@ if __name__ == "__main__":
     def is_x_inside(x):
         return torch.logical_and(lower_bound <= x, x <= upper_bound).all(dim=0)
 
-    t_lo, x_lo, x_hi, n = 0., 0., upper_bound, 0
+    t_lo, x_lo, x_hi, n = 0., lower_bound, upper_bound, 0
     grid = np.linspace(x_lo, x_hi, 100)
     grid_d_dim = np.expand_dims(grid, axis=0)
     grid_d_dim_with_t = np.concatenate((t_lo * np.ones((1, 100)), grid_d_dim), axis=0)
 
-    T = 1
+    patches = 5
+    T = patches * 1.0
     true = exact_example(t_lo, grid_d_dim, T)
     true_with_bound = exact_example(t_lo, grid_d_dim, T, with_bound=True)
     terminal = exact_example(T, grid_d_dim, T)
@@ -738,13 +745,15 @@ if __name__ == "__main__":
         device=device,
         x_lo=x_lo,
         x_hi=x_hi,
+        T=T,
         verbose=True,
         nu=nu,
+        branch_patches=patches,
     )
     model.train_and_eval(debug_mode=True)
 
     nn = (
-        model(torch.tensor(grid_d_dim_with_t.astype(np.float32).T, device=model.device), patch=0)
+        model(torch.tensor(grid_d_dim_with_t.astype(np.float32).T, device=model.device), patch=patches-1)
             .detach()
             .cpu()
             .numpy()
