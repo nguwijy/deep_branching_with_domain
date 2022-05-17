@@ -680,7 +680,7 @@ if __name__ == "__main__":
     # configurations
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    lower_bound, upper_bound = -15, 2
+    lower_bound, upper_bound = -2, 2
     nu = 1
     y, eps = 0, 1
     a, b = y - eps, y + eps
@@ -696,23 +696,25 @@ if __name__ == "__main__":
     def phi_example(x):
         return torch.logical_and(x[0] <= b, x[0] >= a).float()
 
-    def exact_example(t, x, T, with_bound=False):
+    def exact_example(t, x, T, with_bound=False, k_arr=range(-5, 5)):
         # TODO: update the exact formula for two boundary problem (using Borodin)
         # TODO: then, increase lower_bound (to -2) and patches (to 10 or even 100) to test if the branching with boundary really works
         if t == T:
             return np.logical_and(x[0] <= b, x[0] >= a)
         else:
             normal_std = math.sqrt(nu * (T - t))
-            prob_without_bound = norm.cdf((b - x[0]) / normal_std) - norm.cdf((a - x[0]) / normal_std)
             if not with_bound:
                 # without bound
-                return prob_without_bound
-            # with bound
-            return (
-                prob_without_bound
-                - norm.cdf((2 * upper_bound - a - x[0]) / normal_std)
-                + norm.cdf((2 * upper_bound - b - x[0]) / normal_std)
-            )
+                return norm.cdf((b - x[0]) / normal_std) - norm.cdf((a - x[0]) / normal_std)
+            else:
+                # with bound
+                ans = 0
+                for k in k_arr:
+                    mu = x[0] - 2 * k * (upper_bound - lower_bound)
+                    ans += (norm.cdf((b - mu) / normal_std) - norm.cdf((a - mu) / normal_std))
+                    mu = 2 * lower_bound - 2 * k * (upper_bound - lower_bound) - x[0]
+                    ans -= (norm.cdf((b - mu) / normal_std) - norm.cdf((a - mu) / normal_std))
+                return ans
 
     def conditional_probability_to_survive(t, x, y, k_arr=range(-5, 5)):
         ans = 0
@@ -731,7 +733,7 @@ if __name__ == "__main__":
     grid_d_dim = np.expand_dims(grid, axis=0)
     grid_d_dim_with_t = np.concatenate((t_lo * np.ones((1, 100)), grid_d_dim), axis=0)
 
-    patches = 5
+    patches = 10
     T = patches * 1.0
     true = exact_example(t_lo, grid_d_dim, T)
     true_with_bound = exact_example(t_lo, grid_d_dim, T, with_bound=True)
