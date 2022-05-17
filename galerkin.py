@@ -151,6 +151,16 @@ class DGMNet(torch.nn.Module):
         x = self.x_lo + (self.x_hi - self.x_lo) * unif
         tx = torch.cat([tx, torch.cat((t.unsqueeze(0), x), dim=0)], dim=-1)
 
+        # TODO: make this more general than just upper boundary!!
+        # sample for boundary value
+        unif = torch.rand(self.nb_states, device=self.device)
+        t = self.t_lo + (self.t_hi - self.t_lo) * unif
+        unif = torch.rand(self.nb_states * self.dim, device=self.device).reshape(
+            self.dim, -1
+        )
+        x = self.x_hi + (self.x_hi - self.x_hi) * unif
+        tx_bound = torch.cat((t.unsqueeze(0), x), dim=0)
+
         # sample for terminal time
         t = self.t_hi * torch.ones(self.nb_states, device=self.device)
         unif = torch.rand(self.nb_states * self.dim, device=self.device).reshape(
@@ -165,7 +175,7 @@ class DGMNet(torch.nn.Module):
             tx[2:, :] = x_mid
             tx_term[2:, :] = x_mid
 
-        return tx, tx_term
+        return tx, tx_term, tx_bound
 
     def train_and_eval(self, debug_mode=False):
         """
@@ -181,14 +191,16 @@ class DGMNet(torch.nn.Module):
 
         # loop through epochs
         for epoch in range(self.epochs):
-            tx, tx_term = self.gen_sample()
+            tx, tx_term, tx_bound = self.gen_sample()
 
             # clear gradients and evaluate training loss
             optimizer.zero_grad()
 
             # terminal loss + pde loss
             loss = self.loss(self(tx_term.T), self.phi_fun(tx_term[1:, :]))
-            loss = loss + self.pde_loss(tx)
+            loss += self.pde_loss(tx)
+            # TODO: make this more general than just zero!!
+            loss += self.loss(self(tx_bound.T), torch.zeros_like(tx_bound[1]))
 
             # update model weights
             loss.backward()
