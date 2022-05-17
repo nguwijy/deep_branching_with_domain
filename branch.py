@@ -19,6 +19,9 @@ class Net(torch.nn.Module):
         f_fun,
         deriv_map,
         phi_fun=(lambda x: x),
+        phi0=0,
+        conditional_probability_to_survive=(lambda t, x, y: torch.ones_like(x[0])),
+        is_x_inside=(lambda x: torch.ones_like(x[0]).bool()),
         x_lo=-10.0,
         x_hi=10.0,
         t_lo=0.0,
@@ -50,6 +53,9 @@ class Net(torch.nn.Module):
         super(Net, self).__init__()
         self.f_fun = f_fun
         self.phi_fun = phi_fun
+        self.phi0 = phi0
+        self.conditional_probability_to_survive = conditional_probability_to_survive
+        self.is_x_inside = is_x_inside
         self.deriv_map = deriv_map
         self.n, self.dim = deriv_map.shape
         # patching is used for calculating the target expected value of the tree in branch_patches steps
@@ -328,20 +334,29 @@ class Net(torch.nn.Module):
             * torch.ones(nb_states, self.nb_path_per_state, device=self.device)
         ).sample()
         dw = self.gen_bm(T - t, nb_states)
+        x_is_inside = self.is_x_inside(x + dw)
+        survive_prob = self.conditional_probability_to_survive(self.nu * (T - t), x, x + dw)
 
         ############################### for t + tau >= T
         mask_now = mask.bool() * (t + tau >= T)
         if mask_now.any():
             tmp = (
-                H[mask_now]
-                * self.code_to_function(code, (x + dw)[:, mask_now], T[mask_now], patch)
-                / torch.exp(-self.exponential_lambda * (T - t)[mask_now])
+                    H[mask_now]
+                    / torch.exp(-self.exponential_lambda * (T - t)[mask_now])
+                    * (
+                        x_is_inside[mask_now] * survive_prob[mask_now]
+                            * self.code_to_function(code, (x + dw)[:, mask_now], T[mask_now], patch)
+                        + (1 - x_is_inside[mask_now] * survive_prob[mask_now]) * self.phi0
+                    )
             )
             ans[mask_now] = tmp
 
         ############################### for t + tau < T
         dw = self.gen_bm(tau, nb_states)
-        mask_now = mask.bool() * (t + tau < T)
+        x_is_inside = self.is_x_inside(x + dw)
+        survive_prob = self.conditional_probability_to_survive(self.nu * (tau - t), x, x + dw)
+        mask_now = mask.bool() * (t + tau < T) * x_is_inside
+        H = H * survive_prob
 
         # return when all processes die
         if ~mask_now.any():
@@ -661,7 +676,7 @@ if __name__ == "__main__":
     # configurations
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    upper_bound = 2
+    upper_bound, lower_bound = 2, -10000
     nu = 1
     y, eps = 0, 1
     a, b = y - eps, y + eps
@@ -693,6 +708,18 @@ if __name__ == "__main__":
                 + norm.cdf((2 * upper_bound - b - x[0]) / normal_std)
             )
 
+    def conditional_probability_to_survive(t, x, y, k_arr=range(-5, 5)):
+        ans = 0
+        for k in k_arr:
+            ans += (
+                    torch.exp(((y - x) ** 2 - (y - x + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t))
+                    - torch.exp(((y - x) ** 2 - (y + x - 2 * lower_bound + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t))
+            )
+        return ans.prod(dim=0)
+
+    def is_x_inside(x):
+        return torch.logical_and(lower_bound <= x, x <= upper_bound).all(dim=0)
+
     t_lo, x_lo, x_hi, n = 0., 0., upper_bound, 0
     grid = np.linspace(x_lo, x_hi, 100)
     grid_d_dim = np.expand_dims(grid, axis=0)
@@ -706,6 +733,8 @@ if __name__ == "__main__":
         f_fun=f_example,
         deriv_map=deriv_map,
         phi_fun=phi_example,
+        conditional_probability_to_survive=conditional_probability_to_survive,
+        is_x_inside=is_x_inside,
         device=device,
         x_lo=x_lo,
         x_hi=x_hi,
