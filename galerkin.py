@@ -54,7 +54,8 @@ class DGMNet(torch.nn.Module):
             + [torch.nn.Linear(neurons, 1, device=device)]
         )
         self.bn_layer = torch.nn.ModuleList(
-            [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers)]
+            [torch.nn.BatchNorm1d(self.dim + 1, device=device)]
+            + [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers + 1)]
         )
         self.lr = dgm_lr
         self.weight_decay = weight_decay
@@ -86,7 +87,9 @@ class DGMNet(torch.nn.Module):
         """
         self(x) evaluates the neural network approximation NN(x)
         """
-        for idx, (f, bn) in enumerate(zip(self.layer[:-1], self.bn_layer)):
+        if self.batch_normalization:
+            x = self.bn_layer[0](x)
+        for idx, (f, bn) in enumerate(zip(self.layer[:-1], self.bn_layer[1:])):
             tmp = f(x)
             tmp = self.activation(tmp)
             if self.batch_normalization:
@@ -192,11 +195,17 @@ class DGMNet(torch.nn.Module):
         )
 
         start = time.time()
-        self.train()  # training mode
+        self.eval()
 
         # loop through epochs
         for epoch in range(self.epochs):
             tx, tx_term, tx_bound = self.gen_sample()
+
+            if self.batch_normalization:
+                # for the correct calculation of batch statistics
+                self.train()
+                _ = self(tx.T)
+                self.eval()
 
             # clear gradients and evaluate training loss
             optimizer.zero_grad()
@@ -224,7 +233,6 @@ class DGMNet(torch.nn.Module):
                         ),
                         axis=0,
                     ).astype(np.float32)
-                    self.eval()
                     nn = (
                         self(torch.tensor(grid_nd.T, device=self.device))
                         .detach()
@@ -233,14 +241,12 @@ class DGMNet(torch.nn.Module):
                     )
                     plt.plot(grid, nn)
                     plt.show()
-                    self.train()
                 if self.verbose:
                     print(f"Epoch {epoch} with loss {loss.detach()}")
         if self.verbose:
             print(
                 f"Training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
             )
-        self.eval()
 
 
 if __name__ == "__main__":
