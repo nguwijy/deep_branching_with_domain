@@ -32,6 +32,8 @@ class DGMNet(torch.nn.Module):
         dgm_activation="tanh",
         verbose=False,
         fix_all_dim_except_first=False,
+        lambda_terminal=1.,
+        lambda_boundary=1.,
         **kwargs,
     ):
         super(DGMNet, self).__init__()
@@ -77,6 +79,8 @@ class DGMNet(torch.nn.Module):
         self.device = device
         self.verbose = verbose
         self.fix_all_dim_except_first = fix_all_dim_except_first
+        self.lambda_terminal = lambda_terminal
+        self.lambda_boundary = lambda_boundary
 
     def forward(self, x):
         """
@@ -95,6 +99,7 @@ class DGMNet(torch.nn.Module):
 
         x = self.layer[-1](x).reshape(-1)
         return x
+        # return torch.nn.Sigmoid()(x)
 
     @staticmethod
     def nth_derivatives(order, y, x):
@@ -197,10 +202,10 @@ class DGMNet(torch.nn.Module):
             optimizer.zero_grad()
 
             # terminal loss + pde loss
-            loss = self.loss(self(tx_term.T), self.phi_fun(tx_term[1:, :]))
-            loss += self.pde_loss(tx)
+            loss = self.pde_loss(tx)
+            loss += self.lambda_terminal * self.loss(self(tx_term.T), self.phi_fun(tx_term[1:, :]))
             # TODO: make this more general than just zero!!
-            loss += self.loss(self(tx_bound.T), torch.zeros_like(tx_bound[1]))
+            loss += self.lambda_boundary * self.loss(self(tx_bound.T), torch.zeros_like(tx_bound[1]))
 
             # update model weights
             loss.backward()
