@@ -661,6 +661,7 @@ if __name__ == "__main__":
     # configurations
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    upper_bound = 2
     y, eps = 0, 1
     a, b = y - eps, y + eps
 
@@ -675,22 +676,25 @@ if __name__ == "__main__":
     def phi_example(x):
         return torch.logical_and(x[0] <= b, x[0] >= a).float()
 
-    def exact_example(t, x, T):
+    def exact_example(t, x, T, with_bound=False):
         if t == T:
             return np.logical_and(x[0] <= b, x[0] >= a)
         else:
+            prob_without_bound = norm.cdf(b - x[0]) - norm.cdf(a - x[0])
+            if not with_bound:
+                # without bound
+                return prob_without_bound
             # with bound
-            # return 1 - np.exp(((y - x[0]) ** 2 - (4 - x[0] - y) ** 2) / (2 * (T - t)))
-            # without bound
-            return norm.cdf(b - x[0]) - norm.cdf(a - x[0])
+            return prob_without_bound - (norm.cdf(2 * upper_bound - a - x[0]) - norm.cdf(2 * upper_bound - b - x[0]))
 
-    t_lo, x_lo, x_hi, n = 0., -10., 10., 0
+    t_lo, x_lo, x_hi, n = 0., 0., upper_bound, 0
     grid = np.linspace(x_lo, x_hi, 100)
     grid_d_dim = np.expand_dims(grid, axis=0)
     grid_d_dim_with_t = np.concatenate((t_lo * np.ones((1, 100)), grid_d_dim), axis=0)
 
     T = 1
     true = exact_example(t_lo, grid_d_dim, T)
+    true_with_bound = exact_example(t_lo, grid_d_dim, T, with_bound=True)
     terminal = exact_example(T, grid_d_dim, T)
     model = Net(
         f_fun=f_example,
@@ -710,6 +714,7 @@ if __name__ == "__main__":
             .numpy()
     )
     plt.plot(grid, nn, label="NN approximation")
-    plt.plot(grid, true, label="True solution")
+    plt.plot(grid, true, label="True solution without bound")
+    plt.plot(grid, true_with_bound, label="True solution with bound")
     plt.legend()
     plt.show()
