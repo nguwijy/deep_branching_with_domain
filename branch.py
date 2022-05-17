@@ -32,8 +32,10 @@ class Net(torch.nn.Module):
         neurons=20,
         layers=5,
         branch_lr=1e-2,
+        lr_milestones=[1000, 2000],
+        lr_gamma=0.1,
         weight_decay=0,
-        branch_nb_path_per_state=300,
+        branch_nb_path_per_state=10000,
         branch_nb_states=1000,
         branch_nb_states_per_batch=1000,
         epochs=3000,
@@ -105,6 +107,8 @@ class Net(torch.nn.Module):
             ]
         )
         self.lr = branch_lr
+        self.lr_milestones = lr_milestones
+        self.lr_gamma = lr_gamma
         self.weight_decay = weight_decay
 
         self.loss = torch.nn.MSELoss()
@@ -596,8 +600,8 @@ class Net(torch.nn.Module):
             # lr *= .1 for every epochs // 3 steps
             scheduler = torch.optim.lr_scheduler.MultiStepLR(
                 optimizer,
-                milestones=[self.epochs // 3, 2 * self.epochs // 3],
-                gamma=0.1,
+                milestones=self.lr_milestones,
+                gamma=self.lr_gamma,
             )
 
             start = time.time()
@@ -697,8 +701,6 @@ if __name__ == "__main__":
         return torch.logical_and(x[0] <= b, x[0] >= a).float()
 
     def exact_example(t, x, T, with_bound=False, k_arr=range(-5, 5)):
-        # TODO: update the exact formula for two boundary problem (using Borodin)
-        # TODO: then, increase lower_bound (to -2) and patches (to 10 or even 100) to test if the branching with boundary really works
         if t == T:
             return np.logical_and(x[0] <= b, x[0] >= a)
         else:
@@ -733,7 +735,7 @@ if __name__ == "__main__":
     grid_d_dim = np.expand_dims(grid, axis=0)
     grid_d_dim_with_t = np.concatenate((t_lo * np.ones((1, 100)), grid_d_dim), axis=0)
 
-    patches = 10
+    patches = 1
     T = patches * 1.0
     true = exact_example(t_lo, grid_d_dim, T)
     true_with_bound = exact_example(t_lo, grid_d_dim, T, with_bound=True)
