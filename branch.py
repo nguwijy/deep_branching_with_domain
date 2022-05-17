@@ -39,7 +39,7 @@ class Net(torch.nn.Module):
         epochs=3000,
         batch_normalization=True,
         antithetic=True,
-        overtrain_rate=0.1,
+        overtrain_rate=0.,
         device="cpu",
         branch_activation="tanh",
         verbose=False,
