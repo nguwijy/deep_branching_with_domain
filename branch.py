@@ -108,7 +108,7 @@ class Net(torch.nn.Module):
             ]
         )
         self.lr = branch_lr
-        self.lr_milestones = lr_milestones
+        self.lr_milestones = list(lr_milestones)
         self.lr_gamma = lr_gamma
         self.weight_decay = weight_decay
 
@@ -601,7 +601,6 @@ class Net(torch.nn.Module):
                 (val for key, val in self.named_parameters() if f'layer.{p}' in key),
                 lr=self.lr, weight_decay=self.weight_decay
             )
-            # lr *= .1 for every epochs // 3 steps
             scheduler = torch.optim.lr_scheduler.MultiStepLR(
                 optimizer,
                 milestones=self.lr_milestones,
@@ -615,6 +614,7 @@ class Net(torch.nn.Module):
                     f"Patch {p}: generation of samples take {time.time() - start} seconds."
                 )
 
+            best_loss = float('inf')
             start = time.time()
             self.train()  # training mode
 
@@ -629,6 +629,11 @@ class Net(torch.nn.Module):
                 loss.backward()
                 optimizer.step()
                 scheduler.step()
+
+                if epoch > self.lr_milestones[-1] and loss.item() < best_loss:
+                    # save the best model when NN enters stabilising zone
+                    best_loss = loss.item()
+                    torch.save(self.state_dict(), "best_model.pt")
 
                 # print loss information every 500 epochs
                 if epoch % 500 == 0 or epoch + 1 == self.epochs:
@@ -678,6 +683,7 @@ class Net(torch.nn.Module):
                         self.train()
                     if self.verbose:
                         print(f"Patch {p}: epoch {epoch} with loss {loss.detach()}")
+            self.load_state_dict(torch.load("best_model.pt"))
             if self.verbose:
                 print(
                     f"Patch {p}: training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
@@ -768,7 +774,7 @@ if __name__ == "__main__":
             .numpy()
     )
     plt.plot(grid, nn, label="NN approximation")
-    plt.plot(grid, true, label="True solution without bound")
+    # plt.plot(grid, true, label="True solution without bound")
     plt.plot(grid, true_with_bound, label="True solution with bound")
     plt.legend()
     plt.show()
