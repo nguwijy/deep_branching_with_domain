@@ -137,7 +137,7 @@ class Net(torch.nn.Module):
         self.outlier_percentile = outlier_percentile
         self.outlier_multiplier = outlier_multiplier
 
-        self.exponential_lambda = branch_exponential_lambda if branch_exponential_lambda is not None else -math.log(.95)/T
+        self.exponential_lambda = branch_exponential_lambda if branch_exponential_lambda is not None else -math.log(.95)/self.delta_t
         self.epochs = epochs
         self.antithetic = antithetic
         self.device = device
