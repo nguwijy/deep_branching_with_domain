@@ -592,7 +592,7 @@ class Net(torch.nn.Module):
             torch.cat(yy),
         )
 
-    def train_and_eval(self, debug_mode=False, return_dict=False):
+    def train_and_eval(self, debug_mode=False, return_dict=False, x=None, y=None):
         """
         generate sample and evaluate (plot) NN approximation when debug_mode=True
         """
@@ -612,7 +612,8 @@ class Net(torch.nn.Module):
             )
 
             start = time.time()
-            x, y = self.gen_sample(patch=p)
+            if x is None:
+                x, y = self.gen_sample(patch=p)
             if self.verbose:
                 print(
                     f"Patch {p}: generation of samples take {time.time() - start} seconds."
