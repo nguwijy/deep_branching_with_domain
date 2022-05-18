@@ -50,6 +50,7 @@ class Net(torch.nn.Module):
         outlier_percentile=1,
         outlier_multiplier=1000,
         code=None,
+        save_for_best=True,
         **kwargs,
     ):
         super(Net, self).__init__()
@@ -111,12 +112,13 @@ class Net(torch.nn.Module):
         self.lr_milestones = list(lr_milestones)
         self.lr_gamma = lr_gamma
         self.weight_decay = weight_decay
+        self.save_for_best = save_for_best
 
         self.loss = torch.nn.MSELoss()
         self.activation = {
             "tanh": torch.nn.Tanh(),
             "relu": torch.nn.ReLU(),
-            "softplus": torch.nn.ReLU(),
+            "softplus": torch.nn.Softplus(),
         }[branch_activation]
         self.batch_normalization = batch_normalization
         self.nb_states = branch_nb_states
@@ -589,10 +591,11 @@ class Net(torch.nn.Module):
             torch.cat(yy),
         )
 
-    def train_and_eval(self, debug_mode=False):
+    def train_and_eval(self, debug_mode=False, return_dict=False):
         """
         generate sample and evaluate (plot) NN approximation when debug_mode=True
         """
+        output_dict = {}
         for p in range(self.patches):
             # initialize optimizer
             # only pass the parameters related to patch p to optmizer
@@ -633,7 +636,8 @@ class Net(torch.nn.Module):
                 if epoch > self.lr_milestones[-1] and loss.item() < best_loss:
                     # save the best model when NN enters stabilising zone
                     best_loss = loss.item()
-                    torch.save(self.state_dict(), "best_model.pt")
+                    if self.save_for_best:
+                        torch.save(self.state_dict(), "best_model.pt")
 
                 # print loss information every 500 epochs
                 if epoch % 500 == 0 or epoch + 1 == self.epochs:
@@ -683,12 +687,16 @@ class Net(torch.nn.Module):
                         self.train()
                     if self.verbose:
                         print(f"Patch {p}: epoch {epoch} with loss {loss.detach()}")
-            self.load_state_dict(torch.load("best_model.pt"))
+            if self.save_for_best:
+                self.load_state_dict(torch.load("best_model.pt"))
             if self.verbose:
                 print(
                     f"Patch {p}: training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
                 )
+            output_dict[f"patch_{p}"] = (time.time() - start, best_loss)
         self.eval()
+        if return_dict:
+            return output_dict
 
 
 if __name__ == "__main__":
