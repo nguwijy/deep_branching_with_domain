@@ -32,13 +32,13 @@ class Net(torch.nn.Module):
         neurons=20,
         layers=5,
         branch_lr=1e-2,
-        lr_milestones=[1000, 2000],
-        lr_gamma=0.1,
+        lr_milestones=(1000, 2000),
+        lr_gamma=0.5,
         weight_decay=0,
         branch_nb_path_per_state=10000,
         branch_nb_states=1000,
-        branch_nb_states_per_batch=1000,
-        epochs=3000,
+        branch_nb_states_per_batch=100,
+        epochs=5000,
         batch_normalization=True,
         antithetic=True,
         overtrain_rate=0.,
@@ -94,10 +94,11 @@ class Net(torch.nn.Module):
                 for _ in range(branch_patches)
             ]
         )
+        # set affine=False and higher eps because it may be the case that t is the constant t_lo
         self.bn_layer = torch.nn.ModuleList(
             [
                 torch.nn.ModuleList(
-                    [torch.nn.BatchNorm1d(self.dim + 1, device=device)]
+                    [torch.nn.BatchNorm1d(self.dim + 1, eps=5e-1, affine=False, device=device)]
                     + [
                         torch.nn.BatchNorm1d(neurons, device=device)
                         for _ in range(layers + 1)
@@ -594,8 +595,11 @@ class Net(torch.nn.Module):
         """
         for p in range(self.patches):
             # initialize optimizer
+            # only pass the parameters related to patch p to optmizer
+            # otherwise, the training time becomes longer for higher p
             optimizer = torch.optim.Adam(
-                self.parameters(), lr=self.lr, weight_decay=self.weight_decay
+                (val for key, val in self.named_parameters() if f'layer.{p}' in key),
+                lr=self.lr, weight_decay=self.weight_decay
             )
             # lr *= .1 for every epochs // 3 steps
             scheduler = torch.optim.lr_scheduler.MultiStepLR(
@@ -650,6 +654,7 @@ class Net(torch.nn.Module):
                         f = plt.figure()
                         plt.plot(x[:, 1].detach().cpu(), y.cpu(), "+", label="Monte Carlo samples")
                         plt.plot(grid, nn, label="Neural network function")
+                        plt.title(f"Epoch {epoch} and patch {p}")
                         plt.legend()
                         plt.show()
                         f.savefig("plot/debug.pdf", bbox_inches="tight")
@@ -735,7 +740,7 @@ if __name__ == "__main__":
     grid_d_dim = np.expand_dims(grid, axis=0)
     grid_d_dim_with_t = np.concatenate((t_lo * np.ones((1, 100)), grid_d_dim), axis=0)
 
-    patches = 1
+    patches = 5
     T = patches * 1.0
     true = exact_example(t_lo, grid_d_dim, T)
     true_with_bound = exact_example(t_lo, grid_d_dim, T, with_bound=True)
