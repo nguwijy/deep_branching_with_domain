@@ -1,3 +1,4 @@
+import os
 import time
 import math
 import torch
@@ -570,14 +571,14 @@ class Net(torch.nn.Module):
                 self.code,
                 patch,
             ).detach()
-            # let (lo, hi) be 
+            # let (lo, hi) be
             # (self.outlier_percentile, 100 - self.outlier_percentile)
             # percentile of yy_tmp
             #
             # set the boundary as [lo-1000*(hi-lo), hi+1000*(hi-lo)]
             # samples out of this boundary is considered as outlier and removed
             lo, hi = (
-                yy_tmp.nanquantile(self.outlier_percentile/100, dim=1, keepdim=True), 
+                yy_tmp.nanquantile(self.outlier_percentile/100, dim=1, keepdim=True),
                 yy_tmp.nanquantile(1 - self.outlier_percentile/100, dim=1, keepdim=True)
             )
             lo, hi = lo - self.outlier_multiplier * (hi - lo), hi + self.outlier_multiplier * (hi - lo)
@@ -666,6 +667,10 @@ class Net(torch.nn.Module):
                         plt.title(f"Epoch {epoch} and patch {p}")
                         plt.legend()
                         plt.show()
+                        if not os.path.isdir("plot"):
+                            os.mkdir("plot")
+                        if not os.path.isdir("log"):
+                            os.mkdir("log")
                         f.savefig("plot/debug.pdf", bbox_inches="tight")
                         # save points to csv
                         data = np.stack((x[:, 1].detach().cpu().numpy(), y.cpu().numpy()), axis=-1)
