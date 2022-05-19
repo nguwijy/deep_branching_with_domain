@@ -700,6 +700,7 @@ class Net(torch.nn.Module):
                     f"Patch {p}: training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
                 )
             output_dict[f"patch_{p}"] = (time.time() - start, best_loss)
+            x, y = None, None
         self.eval()
         if return_dict:
             return output_dict
