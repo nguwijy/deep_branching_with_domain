@@ -101,7 +101,8 @@ class Net(torch.nn.Module):
             [len(self.fdb_lookup[tuple(deriv)]) for deriv in deriv_map]
         )
 
-        self.layer = torch.nn.ModuleList(
+        # NN function for u
+        self.u_layer = torch.nn.ModuleList(
             [
                 torch.nn.ModuleList(
                     [torch.nn.Linear(self.dim_in + 1, neurons, device=device)]
@@ -115,7 +116,7 @@ class Net(torch.nn.Module):
             ]
         )
         # set affine=False and higher eps because it may be the case that t is the constant t_lo
-        self.bn_layer = torch.nn.ModuleList(
+        self.u_bn_layer = torch.nn.ModuleList(
             [
                 torch.nn.ModuleList(
                     [torch.nn.BatchNorm1d(self.dim_in + 1, eps=5e-1, affine=False, device=device)]
@@ -127,6 +128,35 @@ class Net(torch.nn.Module):
                 for _ in range(branch_patches)
             ]
         )
+
+        # NN function for p
+        self.p_layer = torch.nn.ModuleList(
+            [
+                torch.nn.ModuleList(
+                    [torch.nn.Linear(self.dim_in, neurons, device=device)]
+                    + [
+                        torch.nn.Linear(neurons, neurons, device=device)
+                        for _ in range(layers)
+                    ]
+                    + [torch.nn.Linear(neurons, 1, device=device)]
+                )
+                for _ in range(branch_patches)
+            ]
+        )
+        # set affine=False and higher eps because it may be the case that t is the constant t_lo
+        self.p_bn_layer = torch.nn.ModuleList(
+            [
+                torch.nn.ModuleList(
+                    [torch.nn.BatchNorm1d(self.dim_in, eps=5e-1, affine=False, device=device)]
+                    + [
+                        torch.nn.BatchNorm1d(neurons, device=device)
+                        for _ in range(layers + 1)
+                    ]
+                )
+                for _ in range(branch_patches)
+            ]
+        )
+
         self.lr = branch_lr
         self.lr_milestones = list(lr_milestones)
         self.lr_gamma = lr_gamma
@@ -181,16 +211,19 @@ class Net(torch.nn.Module):
         self.working_dir = f"logs/{timestr}-{problem_name}"
         self.log_config()
 
-    def forward(self, x, patch=None, p_or_u="p"):
+    def forward(self, x, patch=None, p_or_u="u"):
         """
         self(x) evaluates the neural network approximation NN(x)
         """
+        layer = self.u_layer if p_or_u == "u" else self.p_layer
+        bn_layer = self.u_bn_layer if p_or_u == "u" else self.p_bn_layer
+
         if patch is not None:
             if self.batch_normalization:
-                x = self.bn_layer[patch][0](x)
+                x = bn_layer[patch][0](x)
             y = x
             for idx, (f, bn) in enumerate(
-                zip(self.layer[patch][:-1], self.bn_layer[patch][1:])
+                zip(layer[patch][:-1], bn_layer[patch][1:])
             ):
                 tmp = f(y)
                 tmp = self.activation(tmp)
@@ -202,15 +235,15 @@ class Net(torch.nn.Module):
                     # resnet
                     y = tmp + y
 
-            y = self.layer[patch][-1](y)
+            y = layer[patch][-1](y)
         else:
             yy = []
             for p in range(self.patches):
                 if self.batch_normalization:
-                    x = self.bn_layer[p][0](x)
+                    x = bn_layer[p][0](x)
                 y = x
                 for idx, (f, bn) in enumerate(
-                    zip(self.layer[p][:-1], self.bn_layer[p][1:])
+                    zip(layer[p][:-1], bn_layer[p][1:])
                 ):
                     tmp = f(y)
                     tmp = self.activation(tmp)
@@ -221,7 +254,7 @@ class Net(torch.nn.Module):
                     else:
                         # resnet
                         y = tmp + y
-                yy.append(self.layer[p][-1](y))
+                yy.append(layer[p][-1](y))
             idx = self.bisect_left(x[:, 0])
             y = torch.gather(torch.stack(yy, dim=-1), -1, idx.reshape(-1, 1)).squeeze(
                 -1
