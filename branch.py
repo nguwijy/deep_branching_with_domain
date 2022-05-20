@@ -18,6 +18,7 @@ class Net(torch.nn.Module):
     """
     def __init__(
         self,
+        problem_name,
         f_fun,
         deriv_map,
         zeta_map=None,
@@ -62,6 +63,7 @@ class Net(torch.nn.Module):
         **kwargs,
     ):
         super(Net, self).__init__()
+        self.problem_name = problem_name
         self.f_fun = f_fun
         self.phi_fun = phi_fun
         self.phi0 = phi0
@@ -168,6 +170,9 @@ class Net(torch.nn.Module):
         self.adjusted_t_boundaries = [
             (lo, hi) for hi, lo in zip(self.t_boundaries[1:], self.t_boundaries[1:])
         ]
+        timestr = time.strftime("%Y%m%d-%H%M%S")  # current time stamp
+        self.working_dir = f"logs/{timestr}"
+        self.log_config()
 
     def forward(self, x, patch=None):
         """
@@ -215,6 +220,30 @@ class Net(torch.nn.Module):
                 -1
             )
         return y
+
+    def log_config(self):
+        """
+        set up configuration for log files and mkdir
+        """
+        os.makedirs(self.working_dir)
+        os.mkdir(f"{self.working_dir}/plot")
+        os.mkdir(f"{self.working_dir}/data")
+        if self.train_for_p:
+            os.mkdir(f"{self.working_dir}/plot/p")
+        for i in range(self.dim_out):
+            os.mkdir(f"{self.working_dir}/plot/u{i}")
+        formatter = "%(asctime)s | %(name)s |  %(levelname)s: %(message)s"
+        logging.getLogger().handlers = []  # clear previous loggers if any
+        logging.basicConfig(
+            filename=f"{self.working_dir}/run.log",
+            filemode="w",
+            level=logging.DEBUG,
+            format=formatter,
+        )
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        logging.getLogger().addHandler(console)
+        logging.debug(f"Current configuration: {self.__dict__}")
 
     def bisect_left(self, val):
         """
@@ -1018,7 +1047,8 @@ class Net(torch.nn.Module):
                         fig.savefig(
                             f"{self.working_dir}/plot/p/epoch_{epoch:04}.png", bbox_inches="tight"
                         )
-                        # TODO: show plot when debug_mode=True?
+                        if debug_mode:
+                            plt.show()
                         plt.close()
                         if not self.save_for_best:
                             # if we do not always save for the best model, save it every 500 epochs
@@ -1033,7 +1063,7 @@ class Net(torch.nn.Module):
                 )
 
             if self.save_for_best and self.train_for_p:
-                self.load_state_dict(torch.load("best_model.pt"))
+                self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
 
             # initialize optimizer for u
             # only pass the parameters related to patch p to optmizer
@@ -1075,11 +1105,15 @@ class Net(torch.nn.Module):
                     # save the best model when NN enters stabilising zone
                     best_loss = loss.item()
                     if self.save_for_best:
-                        torch.save(self.state_dict(), "best_model.pt")
+                        torch.save(self.state_dict(), f"{self.working_dir}/checkpoint.pt")
 
-                # print loss information every 500 epochs
+                # print loss information and plot every 500 epochs
                 if epoch % 500 == 0 or epoch + 1 == self.epochs:
-                    if debug_mode:
+                    # loss info
+                    self.print_msg(f"Patch {p}: epoch {epoch} with loss {loss.detach()}")
+
+                    # plots only in 1d or fix_all_dim_except_first
+                    if self.dim_in == 1 or self.fix_all_dim_except_first:
                         grid = np.linspace(self.x_lo, self.x_hi, 100)
                         x_mid = (self.x_lo + self.x_hi) / 2
                         t_lo = x[:, 0].min().item()
@@ -1097,39 +1131,46 @@ class Net(torch.nn.Module):
                             .detach()
                             .cpu()
                             .numpy()
-                        ).reshape(-1)
-                        f = plt.figure()
-                        plt.plot(x[:, 1].detach().cpu(), y.reshape(-1).cpu(), "+", label="Monte Carlo samples")
-                        plt.plot(grid, nn, label="Neural network function")
-                        plt.title(f"Epoch {epoch} and patch {p}")
-                        plt.legend()
-                        plt.show()
-                        if not os.path.isdir("plot"):
-                            os.mkdir("plot")
-                        if not os.path.isdir("log"):
-                            os.mkdir("log")
-                        f.savefig("plot/debug.pdf", bbox_inches="tight")
-                        # save points to csv
-                        data = np.stack((x[:, 1].detach().cpu().numpy(), y.reshape(-1).cpu().numpy()), axis=-1)
-                        np.savetxt(
-                            "log/debug_mc_samples.csv",
-                            data,
-                            delimiter=",",
-                            header="x,y",
-                            comments="",
-                        )
-                        data = np.stack((grid, nn), axis=-1)
-                        np.savetxt(
-                            "log/debug_nn.csv",
-                            data,
-                            delimiter=",",
-                            header="x,nn",
-                            comments="",
                         )
                         self.train()
-                    self.print_msg(f"Patch {p}: epoch {epoch} with loss {loss.detach()}")
+                        for i in range(self.dim_out):
+                            f = plt.figure()
+                            plt.plot(x[:, 1].detach().cpu(), y[:, i].cpu(), "+", label="Monte Carlo samples")
+                            plt.plot(grid, nn[:, i], label="Neural network function")
+                            plt.title(f"Epoch {epoch} and patch {p}")
+                            plt.legend()
+                            f.savefig(
+                                f"{self.working_dir}/plot/u{i}/patch_{p}_epoch_{epoch:04}.png", bbox_inches="tight"
+                            )
+                            if debug_mode:
+                                plt.show()
+                            plt.close()
+
+                    # save data to csv
+                    if epoch == 0:
+                        data = np.concatenate((x.detach().cpu().numpy(), y.cpu().numpy()), axis=-1)
+                        header = (
+                                "t,"
+                                + "".join([f"x{i}," for i in range(self.dim_in)])
+                                + "".join([f"y{i}," for i in range(self.dim_out)])
+                        )
+                        np.savetxt(
+                            f"{self.working_dir}/data/mc_samples_patch_{p}.csv",
+                            data,
+                            delimiter=",",
+                            header=header,
+                            comments="",
+                        )
+                    data = np.concatenate((grid_nd.T, nn), axis=-1)
+                    np.savetxt(
+                        f"{self.working_dir}/data/nn_patch_{p}.csv",
+                        data,
+                        delimiter=",",
+                        header=header,
+                        comments="",
+                    )
             if self.save_for_best:
-                self.load_state_dict(torch.load("best_model.pt"))
+                self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
             self.print_msg(
                 f"Patch {p}: training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
             )
@@ -1190,6 +1231,7 @@ if __name__ == "__main__":
     def is_x_inside(x):
         return torch.logical_and(lower_bound <= x, x <= upper_bound).all(dim=0)
 
+    problem_name = "heat equation"
     t_lo, x_lo, x_hi, n = 0., lower_bound, upper_bound, 0
     grid = np.linspace(x_lo, x_hi, 100)
     grid_d_dim = np.expand_dims(grid, axis=0)
@@ -1201,6 +1243,7 @@ if __name__ == "__main__":
     true_with_bound = exact_example(t_lo, grid_d_dim, T, with_bound=True)
     terminal = exact_example(T, grid_d_dim, T)
     model = Net(
+        problem_name=problem_name,
         f_fun=f_example,
         deriv_map=deriv_map,
         phi_fun=phi_example,
