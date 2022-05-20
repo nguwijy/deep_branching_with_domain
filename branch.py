@@ -164,23 +164,24 @@ class Net(torch.nn.Module):
         self.device = device
         self.verbose = verbose
         self.fix_all_dim_except_first = fix_all_dim_except_first
+        self.fix_t_dim = fix_t_dim
         self.t_boundaries = torch.tensor(
             ([t_lo + i * self.delta_t for i in range(branch_patches)] + [T])[::-1],
             device=device,
         )
         if fix_t_dim:
             self.adjusted_t_boundaries = [
-                (lo, hi) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
+                (lo, lo) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
             ]
         else:
             self.adjusted_t_boundaries = [
-                (lo, lo) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
+                (lo, hi) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
             ]
         timestr = time.strftime("%Y%m%d-%H%M%S")  # current time stamp
         self.working_dir = f"logs/{timestr}-{problem_name}"
         self.log_config()
 
-    def forward(self, x, patch=None):
+    def forward(self, x, patch=None, p_or_u="p"):
         """
         self(x) evaluates the neural network approximation NN(x)
         """
@@ -235,7 +236,7 @@ class Net(torch.nn.Module):
         os.mkdir(f"{self.working_dir}/plot")
         os.mkdir(f"{self.working_dir}/data")
         if self.train_for_p:
-            os.mkdir(f"{self.working_dir}/plot/p")
+            os.mkdir(f"{self.working_dir}/plot/p0")
         for i in range(self.dim_out):
             os.mkdir(f"{self.working_dir}/plot/u{i}")
         formatter = "%(asctime)s | %(name)s |  %(levelname)s: %(message)s"
@@ -874,6 +875,81 @@ class Net(torch.nn.Module):
 
         return ans
 
+    def log_plot_save(self, patch, epoch, loss, x, y, debug_mode=False, p_or_u="u"):
+        # loss info
+        self.print_msg(f"Patch {patch:2.0f}: epoch {epoch:4.0f} with loss {loss.detach():.2E}")
+
+        # if we do not always save for the best model, save it every 500 epochs
+        if not self.save_for_best:
+            torch.save(
+                self.state_dict(), f"{self.working_dir}/checkpoint.pt"
+            )
+        # plots only in 1d or fix_all_dim_except_first
+        if (self.fix_t_dim or p_or_u == "p") and (self.dim_in == 1 or self.fix_all_dim_except_first):
+            grid = np.linspace(self.x_lo, self.x_hi, 100)
+            if self.fix_all_dim_except_first:
+                x_mid = x[2, 0].item() if p_or_u == "u" else x[1, 0].item()
+            else:
+                x_mid = (self.x_lo + self.x_hi) / 2
+            t_lo = x[:, 0].min().item()
+            grid_nd = np.concatenate(
+                (
+                    t_lo * np.ones((1, 100)),
+                    np.expand_dims(grid, axis=0),
+                    x_mid * np.ones((self.dim_in - 1, 100)),
+                ),
+                axis=0,
+            )
+            nn = (
+                self(
+                    torch.tensor(
+                        grid_nd.T if p_or_u == "u" else grid_nd[1:].T,
+                        device=self.device,
+                        dtype=torch.get_default_dtype()
+                    ), patch=patch, p_or_u=p_or_u,
+                ).detach().cpu()
+            )
+            loop_range = range(self.dim_out) if p_or_u == "u" else range(1)
+            for i in loop_range:
+                f = plt.figure()
+                if p_or_u == "u":
+                    plt.plot(x[:, 1].detach().cpu(), y[:, i].cpu(), "+", label="MC samples")
+                else:
+                    plt.plot(x[0, :].detach().cpu(), y[:, i].cpu(), "+", label="MC samples")
+                plt.plot(grid, nn[:, i], label="NN")
+                plt.title(f"Epoch {epoch:4.0f} and patch {patch:2.0f}")
+                plt.legend()
+                f.savefig(
+                    f"{self.working_dir}/plot/{p_or_u}{i}/patch_{patch:02}_epoch_{epoch:04}.png", bbox_inches="tight"
+                )
+                if debug_mode:
+                    plt.show()
+                plt.close()
+
+        header = (
+                ("t," if p_or_u == "u" else "")
+                + "".join([f"x{i}," for i in range(self.dim_in)])
+                + "".join([f"y{i}," for i in range(self.dim_out)])
+        )[:-1]
+        # save data to csv
+        if epoch == 0:
+            data = np.concatenate((x.detach().cpu().numpy(), y.cpu().numpy()), axis=-1)
+            np.savetxt(
+                f"{self.working_dir}/data/mc_samples_{p_or_u}_patch_{patch:02}.csv",
+                data,
+                delimiter=",",
+                header=header,
+                comments="",
+            )
+        data = np.concatenate((grid_nd.T, nn), axis=-1)
+        np.savetxt(
+            f"{self.working_dir}/data/nn_patch_{p_or_u}_{patch:02}_epoch_{epoch:04}.csv",
+            data,
+            delimiter=",",
+            header=header,
+            comments="",
+        )
+
     def gen_sample(self, patch, t=None):
         """
         generate sample based on the (t, x) boundary and the function gen_sample_batch
@@ -941,6 +1017,42 @@ class Net(torch.nn.Module):
             torch.cat(yy),
         )
 
+    def gen_sample_for_p(self, gen_y=True, overtrain_rate=.5):
+        # TODO: make sure y is not squeezed!!!
+        self.nb_path_per_state *= 1000
+        self.nb_states_per_batch //= 1000
+        states_per_batch = min(self.nb_states, self.nb_states_per_batch)
+        batches = math.ceil(self.nb_states / states_per_batch)
+        xx, yy = [], []
+        # widen the domain from [x_lo, x_hi] to [x_lo - .5*(x_hi-x_lo), x_hi + .5*(x_hi-x_lo)]
+        x_lo, x_hi = self.x_lo, self.x_hi
+        x_lo, x_hi = x_lo - overtrain_rate * (x_hi - x_lo), x_hi + overtrain_rate * (x_hi - x_lo)
+        start = time.time()
+        for batch_now in range(batches):
+            unif = (
+                torch.rand(self.dim * states_per_batch, device=self.device)
+                     .reshape(states_per_batch, self.dim)
+            )
+            x = (x_lo + (x_hi - x_lo) * unif).T
+            if self.dim > 1 and self.fix_all_dim_except_first:
+                x[1:, :] = (x_hi + x_lo) / 2
+            if gen_y:
+                if self.quantization:
+                    y = self.calculate_p_from_u_quant(x.T)
+                else:
+                    y = self.calculate_p_from_u(x.T)
+                yy.append(y)
+            xx.append(x)
+            if batch_now % 1000 == 0 or batch_now == batches - 1:
+                logging.info(f"Generated {batch_now + 1} out of {batches} batches with {time.time() - start} seconds.")
+                start = time.time()
+        self.nb_path_per_state //= 1000
+        self.nb_states_per_batch *= 1000
+        return (
+            torch.cat(xx, dim=-1),
+            torch.cat(yy, dim=-1) if yy else None,
+        )
+
     def train_and_eval(self, debug_mode=False, return_dict=False, x=None, y=None):
         """
         generate sample and evaluate (plot) NN approximation when debug_mode=True
@@ -950,23 +1062,30 @@ class Net(torch.nn.Module):
             if self.train_for_p:
                 # initialize optimizer for p
                 optimizer = torch.optim.Adam(
-                    self.parameters(), lr=self.lr, weight_decay=self.weight_decay
+                    (val for key, val in self.named_parameters() if f'layer.{p}' in key),
+                    lr=self.lr, weight_decay=self.weight_decay
                 )
                 scheduler = torch.optim.lr_scheduler.MultiStepLR(
                     optimizer,
                     milestones=self.lr_milestones,
                     gamma=self.lr_gamma,
                 )
-                best_loss = float('inf')
-                train_p_start = time.time()
-                for epoch in range(self.epochs):
-                    start = time.time()
 
-                    # use gen_sample_for_p to train
+                start = time.time()
+                if x is None:
+                    x, y = self.gen_sample_for_p(patch=p)
+                self.print_msg(
+                    f"Patch {p}: generation of p samples take {time.time() - start} seconds."
+                )
+
+                best_loss = float('inf')
+                start = time.time()
+                for epoch in range(self.epochs):
+                    # clear gradients and evaluate training loss
                     optimizer.zero_grad()
                     x, y = self.gen_sample_for_p()
                     self.train()
-                    loss = self.loss(self(x.T, p_or_u="p", patch=p).squeeze(), y)
+                    loss = self.loss(self(x.T, p_or_u="p", patch=p), y)
                     self.eval()
 
                     # use loss related to poisson equation to train
@@ -1006,74 +1125,19 @@ class Net(torch.nn.Module):
                         # save the best model when NN enters stabilising zone
                         best_loss = loss.item()
                         if self.save_for_best:
-                            torch.save(
-                                self.state_dict(), f"{self.working_dir}/checkpoint.pt"
-                            )
+                            torch.save(self.state_dict(), f"{self.working_dir}/checkpoint.pt")
 
-                    # print loss information every 500 epochs
+                    # print loss information and plot every 500 epochs
                     if epoch % 500 == 0 or epoch + 1 == self.epochs:
-                        grid = np.linspace(self.x_lo, self.x_hi, 100)
-                        x_mid = x[1, 0].item() if self.fix_all_dim_except_first else (self.x_lo + self.x_hi) / 2
-                        t_lo = self.T
-                        grid_nd = np.concatenate(
-                            (
-                                t_lo * np.ones((1, 100)),
-                                np.expand_dims(grid, axis=0),
-                                x_mid * np.ones((self.dim_in - 1, 100)),
-                            ),
-                            axis=0,
-                        )
-                        nn = (
-                            self(
-                                torch.tensor(
-                                    grid_nd[1:].T,
-                                    device=self.device,
-                                    dtype=torch.get_default_dtype()
-                                ), patch=0, p_or_u="p"
-                            ).detach().cpu()
-                        )
-                        exact = (
-                            self.exact_p_fun(
-                                torch.tensor(
-                                    grid_nd.T,
-                                    device=self.device,
-                                    dtype=torch.get_default_dtype()
-                                )
-                            ).detach().cpu()
-                        )
-                        if not self.fix_all_dim_except_first:
-                            exact += nn.mean() - exact.mean()
-                        fig = plt.figure()
-                        if self.fix_all_dim_except_first:
-                            plt.plot(x.detach().cpu()[0, :], y.detach().cpu(), '+', label="MC samples")
-                        plt.plot(grid, nn, label=f"NN")
-                        plt.plot(grid, exact, label=f"exact")
-                        plt.title(f"Epoch {epoch:04}")
-                        plt.legend(loc="upper left")
-                        fig.savefig(
-                            f"{self.working_dir}/plot/p/epoch_{epoch:04}.png", bbox_inches="tight"
-                        )
-                        if debug_mode:
-                            plt.show()
-                        plt.close()
-                        if not self.save_for_best:
-                            # if we do not always save for the best model, save it every 500 epochs
-                            torch.save(
-                                self.state_dict(), f"{self.working_dir}/checkpoint.pt"
-                            )
-                    self.print_msg(
-                        f"Pre-training epoch {epoch:3.0f}: one loop takes {time.time() - start:4.0f} seconds with loss {loss.detach():.2E}."
-                    )
+                        self.log_plot_save(patch=p, epoch=epoch, loss=loss, x=x, y=y, debug_mode=debug_mode, p_or_u="p")
+
+                if self.save_for_best:
+                    self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
                 self.print_msg(
-                    f"Training of p takes {time.time() - train_p_start:4.0f} seconds."
+                    f"Patch{p}: pre-training of p with {self.epochs} epochs takes {time.time() - start:4.0f} seconds."
                 )
 
-            if self.save_for_best and self.train_for_p:
-                self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
-
             # initialize optimizer for u
-            # only pass the parameters related to patch p to optmizer
-            # otherwise, the training time becomes longer for higher p
             optimizer = torch.optim.Adam(
                 (val for key, val in self.named_parameters() if f'layer.{p}' in key),
                 lr=self.lr, weight_decay=self.weight_decay
@@ -1088,101 +1152,52 @@ class Net(torch.nn.Module):
             if x is None:
                 x, y = self.gen_sample(patch=p)
             self.print_msg(
-                f"Patch {p}: generation of samples take {time.time() - start} seconds."
+                f"Patch {p}: generation of u samples take {time.time() - start} seconds."
             )
 
             best_loss = float('inf')
             start = time.time()
-            self.train()  # training mode
-
             # loop through epochs
             for epoch in range(self.epochs):
                 # clear gradients and evaluate training loss
                 optimizer.zero_grad()
-                predict = self(x, patch=p)
-                loss = self.loss(predict, y)
+                self.train()
+                loss = self.loss(self(x, patch=p), y)
+                self.eval()
+
+                # divergence free condition
+                if self.deriv_condition_zeta_map is not None:
+                    grad = 0
+                    xx = x.T.detach().clone().requires_grad_(True)
+                    for (idx, c) in zip(self.deriv_condition_zeta_map, self.deriv_condition_deriv_map):
+                        # additional t coordinate
+                        grad += self.nth_derivatives(
+                            np.insert(c, 0, 0), self(xx.T, patch=p)[:, idx], xx
+                        )
+                    loss += self.loss(grad, torch.zeros_like(grad))
 
                 # update model weights and schedule
                 loss.backward()
                 optimizer.step()
                 scheduler.step()
 
+                # save the best model when NN enters stabilising zone
                 if epoch > self.lr_milestones[-1] and loss.item() < best_loss:
-                    # save the best model when NN enters stabilising zone
                     best_loss = loss.item()
                     if self.save_for_best:
                         torch.save(self.state_dict(), f"{self.working_dir}/checkpoint.pt")
 
                 # print loss information and plot every 500 epochs
                 if epoch % 500 == 0 or epoch + 1 == self.epochs:
-                    # loss info
-                    self.print_msg(f"Patch {p}: epoch {epoch} with loss {loss.detach()}")
+                    self.log_plot_save(patch=p, epoch=epoch, loss=loss, x=x, y=y, debug_mode=debug_mode, p_or_u="u")
 
-                    # plots only in 1d or fix_all_dim_except_first
-                    if self.dim_in == 1 or self.fix_all_dim_except_first:
-                        grid = np.linspace(self.x_lo, self.x_hi, 100)
-                        x_mid = (self.x_lo + self.x_hi) / 2
-                        t_lo = x[:, 0].min().item()
-                        grid_nd = np.concatenate(
-                            (
-                                t_lo * np.ones((1, 100)),
-                                np.expand_dims(grid, axis=0),
-                                x_mid * np.ones((self.dim_in - 1, 100)),
-                            ),
-                            axis=0,
-                        ).astype(np.float32)
-                        self.eval()
-                        nn = (
-                            self(torch.tensor(grid_nd.T, device=self.device), patch=p)
-                            .detach()
-                            .cpu()
-                            .numpy()
-                        )
-                        self.train()
-                        for i in range(self.dim_out):
-                            f = plt.figure()
-                            plt.plot(x[:, 1].detach().cpu(), y[:, i].cpu(), "+", label="Monte Carlo samples")
-                            plt.plot(grid, nn[:, i], label="Neural network function")
-                            plt.title(f"Epoch {epoch} and patch {p}")
-                            plt.legend()
-                            f.savefig(
-                                f"{self.working_dir}/plot/u{i}/patch_{p}_epoch_{epoch:04}.png", bbox_inches="tight"
-                            )
-                            if debug_mode:
-                                plt.show()
-                            plt.close()
-
-                    # save data to csv
-                    if epoch == 0:
-                        data = np.concatenate((x.detach().cpu().numpy(), y.cpu().numpy()), axis=-1)
-                        header = (
-                                "t,"
-                                + "".join([f"x{i}," for i in range(self.dim_in)])
-                                + "".join([f"y{i}," for i in range(self.dim_out)])
-                        )
-                        np.savetxt(
-                            f"{self.working_dir}/data/mc_samples_patch_{p}.csv",
-                            data,
-                            delimiter=",",
-                            header=header,
-                            comments="",
-                        )
-                    data = np.concatenate((grid_nd.T, nn), axis=-1)
-                    np.savetxt(
-                        f"{self.working_dir}/data/nn_patch_{p}.csv",
-                        data,
-                        delimiter=",",
-                        header=header,
-                        comments="",
-                    )
             if self.save_for_best:
                 self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
             self.print_msg(
-                f"Patch {p}: training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
+                f"Patch {p}: training of u with {self.epochs} epochs take {time.time() - start} seconds."
             )
             output_dict[f"patch_{p}"] = (time.time() - start, best_loss)
             x, y = None, None
-        self.eval()
         if return_dict:
             return output_dict
 
