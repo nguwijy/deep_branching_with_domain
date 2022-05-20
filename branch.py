@@ -53,6 +53,7 @@ class Net(torch.nn.Module):
         branch_activation="softplus",
         verbose=False,
         fix_all_dim_except_first=True,
+        fix_t_dim=True,
         branch_patches=1,
         outlier_percentile=1,
         outlier_multiplier=1000,
@@ -167,11 +168,16 @@ class Net(torch.nn.Module):
             ([t_lo + i * self.delta_t for i in range(branch_patches)] + [T])[::-1],
             device=device,
         )
-        self.adjusted_t_boundaries = [
-            (lo, hi) for hi, lo in zip(self.t_boundaries[1:], self.t_boundaries[1:])
-        ]
+        if fix_t_dim:
+            self.adjusted_t_boundaries = [
+                (lo, hi) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
+            ]
+        else:
+            self.adjusted_t_boundaries = [
+                (lo, lo) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
+            ]
         timestr = time.strftime("%Y%m%d-%H%M%S")  # current time stamp
-        self.working_dir = f"logs/{timestr}"
+        self.working_dir = f"logs/{timestr}-{problem_name}"
         self.log_config()
 
     def forward(self, x, patch=None):
@@ -1231,7 +1237,7 @@ if __name__ == "__main__":
     def is_x_inside(x):
         return torch.logical_and(lower_bound <= x, x <= upper_bound).all(dim=0)
 
-    problem_name = "heat equation"
+    problem_name = "heat_equation"
     t_lo, x_lo, x_hi, n = 0., lower_bound, upper_bound, 0
     grid = np.linspace(x_lo, x_hi, 100)
     grid_d_dim = np.expand_dims(grid, axis=0)
