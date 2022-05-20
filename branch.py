@@ -1334,7 +1334,7 @@ if __name__ == "__main__":
     def phi_example(x, coodinate=0):
         return torch.logical_and(x[0] <= b, x[0] >= a).float()
 
-    def exact_example(t, x, T, coordinate=0, with_bound=False, k_arr=range(-5, 5)):
+    def exact_example(t, x, T, coordinate=0, with_bound=True, k_arr=range(-5, 5)):
         if t == T:
             return np.logical_and(x[0] <= b, x[0] >= a)
         else:
