@@ -191,7 +191,10 @@ class Net(torch.nn.Module):
         self.outlier_percentile = outlier_percentile
         self.outlier_multiplier = outlier_multiplier
 
-        self.exponential_lambda = branch_exponential_lambda if branch_exponential_lambda is not None else -math.log(.95)/self.delta_t
+        self.exponential_lambda = (
+            branch_exponential_lambda if branch_exponential_lambda is not None
+            else -math.log(.95)/self.delta_t
+        )
         self.epochs = epochs
         self.antithetic = antithetic
         self.device = device
@@ -1322,16 +1325,16 @@ if __name__ == "__main__":
 
     # function definition
     deriv_map = np.array([0]).reshape(-1, 1)
-    def f_example(y, coodinate):
+    def f_example(y, coodinate=0):
         """
         idx 0 -> no deriv
         """
         return torch.zeros_like(y[0])
 
-    def phi_example(x, coodinate):
+    def phi_example(x, coodinate=0):
         return torch.logical_and(x[0] <= b, x[0] >= a).float()
 
-    def exact_example(t, x, T, with_bound=False, k_arr=range(-5, 5)):
+    def exact_example(t, x, T, coordinate=0, with_bound=False, k_arr=range(-5, 5)):
         if t == T:
             return np.logical_and(x[0] <= b, x[0] >= a)
         else:
@@ -1353,8 +1356,10 @@ if __name__ == "__main__":
         ans = 0
         for k in k_arr:
             ans += (
-                    torch.exp(((y - x) ** 2 - (y - x + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t))
-                    - torch.exp(((y - x) ** 2 - (y + x - 2 * lower_bound + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t))
+                torch.exp(((y - x) ** 2 - (y - x + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t))
+                - torch.exp(
+                    ((y - x) ** 2 - (y + x - 2 * lower_bound + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t)
+                )
             )
         return ans.prod(dim=0)
 
@@ -1386,17 +1391,7 @@ if __name__ == "__main__":
         verbose=True,
         nu=nu,
         branch_patches=patches,
+        overtrain_rate=0.,
     )
     model.train_and_eval(debug_mode=True)
-
-    nn = (
-        model(torch.tensor(grid_d_dim_with_t.astype(np.float32).T, device=model.device), patch=patches-1)
-            .detach()
-            .cpu()
-            .numpy()
-    )
-    plt.plot(grid, nn, label="NN approximation")
-    # plt.plot(grid, true, label="True solution without bound")
-    plt.plot(grid, true_with_bound, label="True solution with bound")
-    plt.legend()
-    plt.show()
+    model.compare_with_exact(exact_fun=exact_example)
