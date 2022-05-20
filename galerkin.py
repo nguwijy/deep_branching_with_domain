@@ -32,8 +32,6 @@ class DGMNet(torch.nn.Module):
         dgm_activation="tanh",
         verbose=False,
         fix_all_dim_except_first=False,
-        lambda_terminal=1.,
-        lambda_boundary=1.,
         **kwargs,
     ):
         super(DGMNet, self).__init__()
@@ -54,8 +52,7 @@ class DGMNet(torch.nn.Module):
             + [torch.nn.Linear(neurons, 1, device=device)]
         )
         self.bn_layer = torch.nn.ModuleList(
-            [torch.nn.BatchNorm1d(self.dim + 1, device=device)]
-            + [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers + 1)]
+            [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers)]
         )
         self.lr = dgm_lr
         self.weight_decay = weight_decay
@@ -80,16 +77,12 @@ class DGMNet(torch.nn.Module):
         self.device = device
         self.verbose = verbose
         self.fix_all_dim_except_first = fix_all_dim_except_first
-        self.lambda_terminal = lambda_terminal
-        self.lambda_boundary = lambda_boundary
 
     def forward(self, x):
         """
         self(x) evaluates the neural network approximation NN(x)
         """
-        if self.batch_normalization:
-            x = self.bn_layer[0](x)
-        for idx, (f, bn) in enumerate(zip(self.layer[:-1], self.bn_layer[1:])):
+        for idx, (f, bn) in enumerate(zip(self.layer[:-1], self.bn_layer)):
             tmp = f(x)
             tmp = self.activation(tmp)
             if self.batch_normalization:
@@ -102,7 +95,6 @@ class DGMNet(torch.nn.Module):
 
         x = self.layer[-1](x).reshape(-1)
         return x
-        # return torch.nn.Sigmoid()(x)
 
     @staticmethod
     def nth_derivatives(order, y, x):
@@ -159,16 +151,6 @@ class DGMNet(torch.nn.Module):
         x = self.x_lo + (self.x_hi - self.x_lo) * unif
         tx = torch.cat([tx, torch.cat((t.unsqueeze(0), x), dim=0)], dim=-1)
 
-        # TODO: make this more general than just upper boundary!!
-        # sample for boundary value
-        unif = torch.rand(self.nb_states, device=self.device)
-        t = self.t_lo + (self.t_hi - self.t_lo) * unif
-        unif = torch.rand(self.nb_states * self.dim, device=self.device).reshape(
-            self.dim, -1
-        )
-        x = self.x_hi + (self.x_hi - self.x_hi) * unif
-        tx_bound = torch.cat((t.unsqueeze(0), x), dim=0)
-
         # sample for terminal time
         t = self.t_hi * torch.ones(self.nb_states, device=self.device)
         unif = torch.rand(self.nb_states * self.dim, device=self.device).reshape(
@@ -183,7 +165,7 @@ class DGMNet(torch.nn.Module):
             tx[2:, :] = x_mid
             tx_term[2:, :] = x_mid
 
-        return tx, tx_term, tx_bound
+        return tx, tx_term
 
     def train_and_eval(self, debug_mode=False):
         """
@@ -195,26 +177,18 @@ class DGMNet(torch.nn.Module):
         )
 
         start = time.time()
-        self.eval()
+        self.train()  # training mode
 
         # loop through epochs
         for epoch in range(self.epochs):
-            tx, tx_term, tx_bound = self.gen_sample()
-
-            if self.batch_normalization:
-                # for the correct calculation of batch statistics
-                self.train()
-                _ = self(tx.T)
-                self.eval()
+            tx, tx_term = self.gen_sample()
 
             # clear gradients and evaluate training loss
             optimizer.zero_grad()
 
             # terminal loss + pde loss
-            loss = self.pde_loss(tx)
-            loss += self.lambda_terminal * self.loss(self(tx_term.T), self.phi_fun(tx_term[1:, :]))
-            # TODO: make this more general than just zero!!
-            loss += self.lambda_boundary * self.loss(self(tx_bound.T), torch.zeros_like(tx_bound[1]))
+            loss = self.loss(self(tx_term.T), self.phi_fun(tx_term[1:, :]))
+            loss = loss + self.pde_loss(tx)
 
             # update model weights
             loss.backward()
@@ -233,6 +207,7 @@ class DGMNet(torch.nn.Module):
                         ),
                         axis=0,
                     ).astype(np.float32)
+                    self.eval()
                     nn = (
                         self(torch.tensor(grid_nd.T, device=self.device))
                         .detach()
@@ -241,12 +216,14 @@ class DGMNet(torch.nn.Module):
                     )
                     plt.plot(grid, nn)
                     plt.show()
+                    self.train()
                 if self.verbose:
                     print(f"Epoch {epoch} with loss {loss.detach()}")
         if self.verbose:
             print(
                 f"Training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
             )
+        self.eval()
 
 
 if __name__ == "__main__":
