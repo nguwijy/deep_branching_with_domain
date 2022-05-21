@@ -62,6 +62,7 @@ class Net(torch.nn.Module):
         train_for_p=None,
         save_for_best_model=True,
         save_data=False,
+        continue_from_checkpoint=None,
         **kwargs,
     ):
         super(Net, self).__init__()
@@ -213,8 +214,13 @@ class Net(torch.nn.Module):
             self.adjusted_t_boundaries = [
                 (lo, hi) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
             ]
+        if continue_from_checkpoint is not None:
+            self.load_state_dict(torch.load(f"{continue_from_checkpoint}/checkpoint.pt"))
+            self.train_for_p = False
+            self.eval()
+
         timestr = time.strftime("%Y%m%d-%H%M%S")  # current time stamp
-        self.working_dir = f"logs/{timestr}-{problem_name}"
+        self.working_dir = f"logs/{timestr}-{problem_name}-T{self.T}-nu{self.nu}"
         self.log_config()
 
     def forward(self, x, patch=None, p_or_u="u"):
@@ -306,6 +312,122 @@ class Net(torch.nn.Module):
             (self.t_boundaries.shape[0] - 2) * torch.ones_like(idx),
         )
         return idx
+
+    @staticmethod
+    def pretty_print(tensor):
+        mess = ""
+        for i in tensor[:-1]:
+            mess += f"& {i.item():.2E} "
+        mess += "& --- \\\\"
+        logging.info(mess)
+
+    def error_calculation(self, exact_u_fun, exact_p_fun, nb_pts_time=11, nb_pts_spatial=2*126+1, error_multiplier=1):
+        x = np.linspace(self.x_lo, self.x_hi, nb_pts_spatial)
+        t = np.linspace(self.t_lo, self.t_hi, nb_pts_time)
+        arr = np.array(np.meshgrid(*([x]*self.dim_in + [t]))).T.reshape(-1, self.dim_in + 1)
+        arr[:, [-1, 0]] = arr[:, [0, -1]]
+        arr = torch.tensor(arr, device=self.device, dtype=torch.get_default_dtype())
+        error = []
+        nn = []
+        cur, batch_size, last = 0, 100000, arr.shape[0]
+        while cur < last:
+            nn.append(self(arr[cur:min(cur+batch_size, last)], patch=0).detach())
+            cur += batch_size
+        nn = torch.cat(nn, dim=0)
+
+        # Lejay
+        logging.info("The error as in Lejay is calculated as follows.")
+        overall_error = 0
+        for i in range(self.dim_in):
+            error.append(error_multiplier * (nn[:, i] - exact_u_fun(arr.T, i)).reshape(nb_pts_time, -1) ** 2)
+            overall_error += (error[-1])
+        error.append(overall_error)
+        for i in range(self.dim_in):
+            logging.info(f"$\\hat{{e}}_{i}(t_k)$")
+            self.pretty_print(error[i].max(dim=1)[0])
+        logging.info("$\\hat{e}(t_k)$")
+        self.pretty_print(error[-1].max(dim=1)[0])
+        logging.info("\\hline")
+
+        # erru
+        logging.info("\nThe relative L2 error of u (erru) is calculated as follows.")
+        denominator, numerator = 0, 0
+        for i in range(self.dim_in):
+            denominator += exact_u_fun(arr.T, i).reshape(nb_pts_time, -1) ** 2
+            numerator += (nn[:, i] - exact_u_fun(arr.T, i)).reshape(nb_pts_time, -1) ** 2
+        logging.info("erru($t_k$)")
+        self.pretty_print((numerator.mean(dim=-1)/denominator.mean(dim=-1)).sqrt())
+
+        del nn
+        torch.cuda.empty_cache()
+        grad = []
+        cur, batch_size, last = 0, 100000, arr.shape[0]
+        while cur < last:
+            xx = arr[cur:min(cur+batch_size, last)].detach().clone().requires_grad_(True)
+            tmp = []
+            for i in range(self.dim_in):
+                tmp.append(
+                    torch.autograd.grad(
+                        self(xx, patch=0)[:, i].sum(),
+                        xx,
+                    )[0][:, 1:].detach()
+                )
+            grad.append(torch.stack(tmp, dim=-1))
+            cur += batch_size
+        grad = torch.cat(grad, dim=0)
+
+        # errgu
+        logging.info("\nThe relative L2 error of gradient of u (errgu) is calculated as follows.")
+        denominator, numerator = 0, 0
+        xx = arr.detach().clone().requires_grad_(True)
+        for i in range(self.dim_in):
+            exact = torch.autograd.grad(
+                    exact_u_fun(xx.T, i).sum(),
+                    xx,
+            )[0][:, 1:]
+            denominator += exact.reshape(nb_pts_time, -1, self.dim_in) ** 2
+            numerator += (exact - grad[:, :, i]).reshape(nb_pts_time, -1, self.dim_in) ** 2
+        logging.info("errgu($t_k$)")
+        self.pretty_print((numerator.mean(dim=(1, 2))/denominator.mean(dim=(1, 2))).sqrt())
+
+        # errdivu
+        logging.info("\nThe absolute divergence of u (errdivu) is calculated as follows.")
+        numerator = 0
+        for i in range(self.dim_in):
+            numerator += (grad[:, i, i]).reshape(nb_pts_time, -1)
+        numerator = numerator**2
+        logging.info("errdivu($t_k$)")
+        self.pretty_print(
+                ((self.x_hi - self.x_lo)**self.dim_in * numerator.mean(dim=-1)).sqrt()
+        )
+
+        del grad, xx
+        torch.cuda.empty_cache()
+        arr = arr.reshape(nb_pts_time, -1, self.dim_in + 1)[-1].detach()
+        nn = []
+        cur, batch_size, last = 0, 100000, arr.shape[0]
+        while cur < last:
+            nn.append(
+                self(
+                    arr[cur:min(cur+batch_size, last), 1:],
+                    patch=0,
+                    p_or_u="p",
+                ).squeeze().detach()
+            )
+            cur += batch_size
+        nn = torch.cat(nn, dim=0)
+
+        # errp
+        logging.info("\nThe relative L2 error of p (errp) is calculated as follows.")
+        denominator = (exact_p_fun(arr.T) - exact_p_fun(arr.T).mean()) ** 2
+        numerator = (
+                nn - nn.mean() - exact_p_fun(arr.T) + exact_p_fun(arr.T).mean()
+        ) ** 2
+        logging.info("errp($t_k$)")
+        logging.info(
+                "& --- " * (nb_pts_time - 1)
+                + f"& {(numerator.mean()/denominator.mean()).sqrt().item():.2E} \\\\"
+        )
 
     @staticmethod
     def nth_derivatives(order, y, x):
