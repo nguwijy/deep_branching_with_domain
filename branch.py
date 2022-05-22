@@ -32,7 +32,6 @@ class Net(torch.nn.Module):
         x_lo=-10.0,
         x_hi=10.0,
         t_lo=0.0,
-        t_hi=0.0,
         T=1.0,
         nu=0.5,
         branch_exponential_lambda=None,
@@ -184,7 +183,7 @@ class Net(torch.nn.Module):
             x_hi + overtrain_rate * (x_hi - x_lo),
         )
         self.t_lo = t_lo
-        self.t_hi = t_hi
+        self.t_hi = T
         self.T = T
         self.tau_lo, self.tau_hi = 1e-5, 10  # for negative coordinate
         self.nu = nu
