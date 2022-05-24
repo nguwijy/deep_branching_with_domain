@@ -164,7 +164,9 @@ class Net(torch.nn.Module):
         self.lr_milestones = list(lr_milestones)
         self.lr_gamma = lr_gamma
         self.weight_decay = weight_decay
-        self.save_for_best_model = save_for_best_model
+        # only save for the best model if we run epochs for long enough
+        self.save_for_best_model = save_for_best_model and epochs > self.lr_milestones[-1]
+        
         self.save_data = save_data
 
         self.loss = torch.nn.MSELoss()
