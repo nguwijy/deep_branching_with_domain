@@ -33,7 +33,7 @@ class Net(torch.nn.Module):
         x_hi=10.0,
         t_lo=0.0,
         T=1.0,
-        nu=0.5,
+        nu=1.0,
         branch_exponential_lambda=None,
         neurons=50,
         layers=6,
