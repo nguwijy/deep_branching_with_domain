@@ -26,6 +26,7 @@ class Net(torch.nn.Module):
         deriv_condition_zeta_map=None,
         dim_out=None,
         phi_fun=(lambda x: x),
+        exact_p_fun=None,
         phi0=0,
         conditional_probability_to_survive=(lambda t, x, y: torch.ones_like(x[0])),
         is_x_inside=(lambda x: torch.ones_like(x[0]).bool()),
@@ -78,7 +79,8 @@ class Net(torch.nn.Module):
         self.deriv_condition_zeta_map = deriv_condition_zeta_map
         self.dim_out = dim_out if dim_out is not None else self.zeta_map.max() + 1
         self.nprime = sum(self.zeta_map == -1)
-        self.train_for_p = train_for_p if train_for_p is not None else (self.nprime > 0)
+        self.exact_p_fun = exact_p_fun
+        self.train_for_p = train_for_p if train_for_p is not None else (self.nprime > 0) and self.exact_p_fun is None
 
         # patching is used for calculating the target expected value of the tree in branch_patches steps
         #
@@ -226,6 +228,9 @@ class Net(torch.nn.Module):
         """
         self(x) evaluates the neural network approximation NN(x)
         """
+        if self.exact_p_fun is not None and p_or_u == "p":
+            return self.exact_p_fun(x.T)
+ 
         layer = self.u_layer if p_or_u == "u" else self.p_layer
         bn_layer = self.u_bn_layer if p_or_u == "u" else self.p_bn_layer
 
