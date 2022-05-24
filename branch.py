@@ -506,7 +506,7 @@ class Net(torch.nn.Module):
                 if self.zeta_map[idx] < 0:
                     y.append(
                         self.nth_derivatives(
-                            order, self(x.T, p_or_u="p", patch=patch), x
+                            order, self(x.T, p_or_u="p", patch=patch).squeeze(dim=-1), x
                         )
                     )
                 else:
