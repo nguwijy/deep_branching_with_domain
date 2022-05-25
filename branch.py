@@ -14,7 +14,247 @@ torch.manual_seed(0)  # set seed for reproducibility
 
 class Net(torch.nn.Module):
     """
-    deep branching approach to solve PDE with utility functions
+    Deep branching approach to solve PDE with utility functions
+
+
+    Attributes
+    ----------
+    problem_name : str
+        Describe...
+
+    f_fun : function
+        Describe...
+
+    phi_fun : function
+        Describe...
+
+    phi0 : float
+        Describe...
+
+    conditional_probability_to_survive : function
+        Describe...
+
+    is_x_inside : function
+        Describe...
+
+    deriv_map : numpy.ndarray
+        Describe...
+
+    n : int
+        Describe...
+
+    dim_in : int
+        Describe...
+
+    zeta_map : numpy.ndarray
+        Describe...
+
+    deriv_condition_deriv_map : numpy.ndarray
+        Describe...
+
+    deriv_condition_zeta_map : numpy.ndarray
+        Describe...
+
+    dim_out : int
+        Describe...
+
+    nprime : int
+        Describe...
+
+    exact_p_fun : function
+        Describe...
+
+    train_for_p : bool
+        Describe...
+
+    patches : int
+        Describe...
+
+    code : numpy.ndarray
+        Describe...
+
+    coordinate : numpy.ndarray
+        Describe...
+
+    fdb_lookup : dict
+        Describe...
+
+    fdb_runtime : float
+        Describe...
+
+    mechanism_tot_len : int
+        Describe...
+
+    u_layer : torch.nn.modules.container.ModuleList
+        Describe...
+
+    u_bn_layer : torch.nn.modules.container.ModuleList
+        Describe...
+
+    p_layer : torch.nn.modules.container.ModuleList
+        Describe...
+
+    p_bn_layer : torch.nn.modules.container.ModuleList
+        Describe...
+
+    lr : float
+        Describe...
+
+    lr_milestones : list
+        Describe...
+
+    lr_gamma : float
+        Describe...
+
+    weight_decay : float
+        Describe...
+
+    save_for_best_model : bool
+        Describe...
+
+    save_data : bool
+        Describe...
+
+    loss : torch.nn.modules.loss
+        Describe...
+
+    activation : torch.nn.modules.activation
+        Describe...
+
+    batch_normalization : bool
+        Describe...
+
+    nb_states : int
+        Describe...
+
+    nb_states_per_batch : int
+        Describe...
+
+    nb_path_per_state : int
+        Describe...
+
+    x_lo : float
+        Describe...
+
+    x_hi : float
+        Describe...
+
+    adjusted_x_boundaries : tuple
+        Describe...
+
+    t_lo : float
+        Describe...
+
+    t_hi : float
+        Describe...
+
+    T : float
+        Describe...
+
+    tau_lo : float
+        Describe...
+
+    tau_hi : float
+        Describe...
+
+    nu : float
+        Describe...
+
+    delta_t : float
+        Describe...
+
+    outlier_percentile : float
+        Describe...
+
+    outlier_multiplier : float
+        Describe...
+
+    exponential_lambda : float
+        Describe...
+
+    epochs : int
+        Describe...
+
+    antithetic : bool
+        Describe...
+
+    device : torch.device
+        Describe...
+
+    verbose : bool
+        Describe...
+
+    fix_all_dim_except_first : bool
+        Describe...
+
+    fix_t_dim : bool
+        Describe...
+
+    t_boundaries : torch.Tensor
+        Describe...
+
+    adjusted_t_boundaries : list
+        Describe...
+
+    working_dir : str
+        Describe...
+
+
+    Methods
+    -------
+    forward(x, patch=None, p_or_u="u")
+        Describe
+
+    log_config()
+        Describe
+
+    bisect_left(val)
+        Describe
+
+    pretty_print(tensor)
+        Describe
+
+    error_calculation(exact_u_fun, exact_p_fun, nb_pts_time=11, nb_pts_spatial=2*126+1, error_multiplier=1)
+        Describe
+
+    nth_derivatives(order, y, x)
+        Describe
+
+    adjusted_phi(x, T, patch, coordinate)
+        Describe
+
+    print_msg(msg)
+        Describe
+
+    code_to_function(code, x, T, patch, coordinate)
+        Describe
+
+    gen_bm(dt, nb_states, var=None)
+        Describe
+
+    helper_negative_code_on_f(t, T, x, mask, H, code, patch, coordinate)
+        Describe
+
+    gen_sample_batch(t, T, x, mask, H, code, patch, coordinate)
+        Describe
+
+    compare_with_exact(exact_fun)
+        Describe
+
+    log_plot_save(patch, epoch, loss, x, y, debug_mode=False, p_or_u="u")
+        Describe
+
+    gen_sample(patch, t=None)
+        Describe
+
+    calculate_p_from_u(x, patch)
+        Describe
+
+    gen_sample_for_p(patch, gen_y=True, overtrain_rate=.5)
+        Describe
+
+    train_and_eval(debug_mode=False, return_dict=False, reuse_x=None, reuse_y=None)
+        Describe
     """
     def __init__(
         self,
@@ -65,6 +305,144 @@ class Net(torch.nn.Module):
         continue_from_checkpoint=None,
         **kwargs,
     ):
+        """
+        Parameters
+        ----------
+        problem_name : str
+            Describe
+
+        f_fun : function
+            Describe
+
+        deriv_map : numpy.ndarray
+            Describe
+
+        zeta_map : numpy.ndarray, optional
+            Describe
+
+        deriv_condition_deriv_map : numpy.ndarray, optional
+            Describe
+
+        deriv_condition_zeta_map : numpy.ndarray, optional
+            Describe
+
+        dim_out : int, optional
+            Describe
+
+        phi_fun : function, optional
+            Describe
+
+        exact_p_fun : function, optional
+            Describe
+
+        phi0 : float, optional
+            Describe
+
+        conditional_probability_to_survive : function, optional
+            Describe
+
+        is_x_inside : function, optional
+            Describe
+
+        x_lo : float, optional
+            Describe
+
+        x_hi : float, optional
+            Describe
+
+        t_lo : float, optional
+            Describe
+
+        T : float, optional
+            Describe
+
+        nu : float, optional
+            Describe
+
+        branch_exponential_lambda : float, optional
+            Describe
+
+        neurons : int, optional
+            Describe
+
+        layers : int, optional
+            Describe
+
+        branch_lr : float, optional
+            Describe
+
+        lr_milestones : tuple, optional
+            Describe
+
+        lr_gamma : float, optional
+            Describe
+
+        weight_decay : float, optional
+            Describe
+
+        branch_nb_path_per_state : int, optional
+            Describe
+
+        branch_nb_states : int, optional
+            Describe
+
+        branch_nb_states_per_batch : int, optional
+            Describe
+
+        epochs : int, optional
+            Describe
+
+        batch_normalization : bool, optional
+            Describe
+
+        antithetic : bool, optional
+            Describe
+
+        overtrain_rate : float, optional
+            Describe
+
+        device : str, optional
+            Describe
+
+        branch_activation : str, optional
+            Describe
+
+        verbose : bool, optional
+            Describe
+
+        fix_all_dim_except_first : bool, optional
+            Describe
+
+        fix_t_dim : bool, optional
+            Describe
+
+        branch_patches : int, optional
+            Describe
+
+        outlier_percentile : float, optional
+            Describe
+
+        outlier_multiplier : float, optional
+            Describe
+
+        code : numpy.ndarray, optional
+            Describe
+
+        coordinate : numpy.ndarray, optional
+            Describe
+
+        train_for_p : bool, optional
+            Describe
+
+        save_for_best_model : bool, optional
+            Describe
+
+        save_data : bool, optional
+            Describe
+
+        continue_from_checkpoint : str, optional
+            Describe
+        """
         super(Net, self).__init__()
         self.problem_name = problem_name
         self.f_fun = f_fun
@@ -166,7 +544,7 @@ class Net(torch.nn.Module):
         self.weight_decay = weight_decay
         # only save for the best model if we run epochs for long enough
         self.save_for_best_model = save_for_best_model and epochs > self.lr_milestones[-1]
-        
+
         self.save_data = save_data
 
         self.loss = torch.nn.MSELoss()
@@ -228,11 +606,22 @@ class Net(torch.nn.Module):
 
     def forward(self, x, patch=None, p_or_u="u"):
         """
-        self(x) evaluates the neural network approximation NN(x)
+        Describe
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Describe
+
+        patch : int, optional
+            Describe
+
+        p_or_u : str, optional
+            Describe
         """
         if self.exact_p_fun is not None and p_or_u == "p":
             return self.exact_p_fun(x.T)
- 
+
         layer = self.u_layer if p_or_u == "u" else self.p_layer
         bn_layer = self.u_bn_layer if p_or_u == "u" else self.p_bn_layer
 
@@ -281,7 +670,7 @@ class Net(torch.nn.Module):
 
     def log_config(self):
         """
-        set up configuration for log files and mkdir
+        Set up configuration for log files and mkdir
         """
         os.makedirs(self.working_dir)
         os.mkdir(f"{self.working_dir}/plot")
@@ -301,8 +690,13 @@ class Net(torch.nn.Module):
 
     def bisect_left(self, val):
         """
-        find the index of val based on the discretization of self.t_boundaries
+        Find the index of val based on the discretization of self.t_boundaries
         it is only used when branch_patches > 1
+
+        Parameters
+        ----------
+        val : torch.Tensor
+            Describe
         """
         idx = (
             torch.max(self.t_boundaries <= (val + 1e-8).reshape(-1, 1), dim=1)[
@@ -321,6 +715,15 @@ class Net(torch.nn.Module):
 
     @staticmethod
     def pretty_print(tensor):
+        """
+        Describe
+
+
+        Parameters
+        ----------
+        tensor : torch.Tensor
+            Describe
+        """
         mess = ""
         for i in tensor[:-1]:
             mess += f"& {i.item():.2E} "
@@ -328,6 +731,26 @@ class Net(torch.nn.Module):
         logging.info(mess)
 
     def error_calculation(self, exact_u_fun, exact_p_fun, nb_pts_time=11, nb_pts_spatial=2*126+1, error_multiplier=1):
+        """
+        Describe
+
+        Parameters
+        ----------
+        exact_u_fun : function
+            Describe
+
+        exact_p_fun : function
+            Describe
+
+        nb_pts_time : int, optional
+            Describe
+
+        nb_pts_spatial : int, optional
+            Describe
+
+        error_multiplier : float, optional
+            Describe
+        """
         x = np.linspace(self.x_lo, self.x_hi, nb_pts_spatial)
         t = np.linspace(self.t_lo, self.t_hi, nb_pts_time)
         arr = np.array(np.meshgrid(*([x]*self.dim_in + [t]))).T.reshape(-1, self.dim_in + 1)
@@ -438,7 +861,18 @@ class Net(torch.nn.Module):
     @staticmethod
     def nth_derivatives(order, y, x):
         """
-        calculate the derivatives of y wrt x with order `order`
+        Calculate the derivatives of y wrt x with order `order`
+
+        Parameters
+        ----------
+        order : numpy.ndarray
+            Describe
+
+        y : torch.Tensor
+            Describe
+
+        x : torch.Tensor
+            Describe
         """
         for cur_dim, cur_order in enumerate(order):
             for _ in range(int(cur_order)):
@@ -456,8 +890,22 @@ class Net(torch.nn.Module):
 
     def adjusted_phi(self, x, T, patch, coordinate):
         """
-        find the suitable terminal condition based on the value of patch
+        Find the suitable terminal condition based on the value of patch
         when branch_patches=1, this function always outputs self.phi_fun(x)
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Describe
+
+        T : torch.Tensor
+            Describe
+
+        patch : int
+            Describe
+
+        coordinate : numpy.ndarray
+            Describe
         """
         if patch == 0:
             return self.phi_fun(x, coordinate)
@@ -471,6 +919,14 @@ class Net(torch.nn.Module):
             return ans
 
     def print_msg(self, msg):
+        """
+        Describe
+
+        Parameters
+        ----------
+        msg : str
+            Describe
+        """
         if self.verbose:
             logging.info(msg)
         else:
@@ -478,17 +934,32 @@ class Net(torch.nn.Module):
 
     def code_to_function(self, code, x, T, patch, coordinate):
         """
-        calculate the functional of tree based on code and x
+        Calculate the functional of tree based on code and x
 
-        there are two ways of representing the code
+        There are two ways of representing the code
         1. negative code of size d
-                (neg_num_1, ..., neg_num_d) -> d/dx1^{-neg_num_1 - 1} ... d/dxd^{-neg_num_d - 1} phi(x1, ..., xd)
+            (neg_num_1, ..., neg_num_d) -> d/dx1^{-neg_num_1 - 1} ... d/dxd^{-neg_num_d - 1} phi(x1, ..., xd)
         2. positive code of size n
-                (pos_num_1, ..., pos_num_n) -> d/dy1^{pos_num_1 - 1} ... d/dyd^{-pos_num_1 - 1} phi(y1, ..., yn)
-                    y_i is the derivatives of phi wrt x with order self.deriv_map[i-1]
+            (pos_num_1, ..., pos_num_n) -> d/dy1^{pos_num_1 - 1} ... d/dyd^{-pos_num_1 - 1} phi(y1, ..., yn)
+                y_i is the derivatives of phi wrt x with order self.deriv_map[i-1]
 
-        shape of x      -> d x batch
-        shape of output -> batch
+        Parameters
+        ----------
+        code : numpy.ndarray
+            Describe
+
+        x : torch.Tensor
+            Describe
+
+        T : torch.Tensor
+            Describe
+
+        patch : int, optional
+            Describe
+
+        coordinate : numpy.ndarray
+            Describe
+
         """
         x = x.detach().clone().requires_grad_(True)
         fun_val = torch.zeros_like(x[0])
@@ -525,11 +996,22 @@ class Net(torch.nn.Module):
 
     def gen_bm(self, dt, nb_states, var=None):
         """
-        generate brownian motion sqrt{dt} x Gaussian
+        Generate brownian motion sqrt{dt} x Gaussian
 
-        when self.antithetic=true, we generate
+        When self.antithetic=true, we generate
         dw = sqrt{dt} x Gaussian of size nb_states//2
         and return (dw, -dw)
+
+        Parameters
+        ----------
+        dt : torch.Tensor
+            Describe
+
+        nb_states : int
+            Describe
+
+        var : float, optional
+            Describe
         """
         var = self.nu if var is None else var
         dt = dt.clip(min=0.0)  # so that we can safely take square root of dt
@@ -548,6 +1030,36 @@ class Net(torch.nn.Module):
         return dw
 
     def helper_negative_code_on_f(self, t, T, x, mask, H, code, patch, coordinate):
+        """
+        Describe
+
+
+        Parameters
+        ----------
+        t : torch.Tensor
+            Describe
+
+        T : torch.Tensor
+            Describe
+
+        x : torch.Tensor
+            Describe
+
+        mask : torch.Tensor
+            Describe
+
+        H : torch.Tensor
+            Describe
+
+        code : numpy.ndarray
+            Describe
+
+        patch : int, optional
+            Describe
+
+        coordinate : numpy.ndarray
+            Describe
+        """
         ans = torch.zeros_like(t)
         order = tuple(-code - 1)
         # if c is not in the lookup, add it
@@ -591,21 +1103,34 @@ class Net(torch.nn.Module):
 
     def gen_sample_batch(self, t, T, x, mask, H, code, patch, coordinate):
         """
-        recursive function to calculate E[ H(t, x, code) ]
+        Recursive function to calculate E[ H(t, x, code) ]
 
-        t    -> current time
-             -> shape of nb_states x nb_paths_per_state
-        T    -> terminal time
-             -> shape of nb_states x nb_paths_per_state
-        x    -> value of brownian motion at time t
-             -> shape of d x nb_states x nb_paths_per_state
-        mask -> mask[idx]=1 means the state at index idx is still alive
-             -> mask[idx]=0 means the state at index idx is dead
-             -> shape of nb_states x nb_paths_per_state
-        H    -> cummulative value of the product of functional H
-             -> shape of nb_states x nb_paths_per_state
-        code -> determine the operation to be taken on the functions f and phi
-             -> negative code of size d or positive code of size n
+        Parameters
+        ----------
+        t : torch.Tensor
+            Current time
+
+        T : torch.Tensor
+            Terminal time
+
+        x : torch.Tensor
+            Value of brownian motion at time t
+
+        mask : torch.Tensor
+            mask[idx]=1 means the state at index idx is still alive
+            mask[idx]=0 means the state at index idx is dead
+
+        H : torch.Tensor
+            Cummulative value of the product of functional H
+
+        code : numpy.ndarray
+            Determine the operation to be taken on the functions f and phi
+
+        patch : int
+            Describe
+
+        coordinate : numpy.ndarray
+            Describe
         """
         # return zero tensor when no operation is needed
         ans = torch.zeros_like(t)
@@ -1040,6 +1565,14 @@ class Net(torch.nn.Module):
         return ans
 
     def compare_with_exact(self, exact_fun):
+        """
+        Describe
+
+        Parameters
+        ----------
+        exact_fun : function
+            Describe
+        """
         nb_points = 100
         grid = np.linspace(self.x_lo, self.x_hi, nb_points)
         x_mid = (self.x_lo + self.x_hi) / 2
@@ -1081,6 +1614,33 @@ class Net(torch.nn.Module):
             )
 
     def log_plot_save(self, patch, epoch, loss, x, y, debug_mode=False, p_or_u="u"):
+        """
+        Describe
+
+
+        Parameters
+        ----------
+        patch : int
+            Describe
+
+        epoch : int
+            Describe
+
+        loss : torch.Tensor
+            Describe
+
+        x : torch.Tensor
+            Describe
+
+        y : torch.Tensor
+            Describe
+
+        debug_mode : bool, optional
+            Describe
+
+        p_or_u : str, optional
+            Describe
+        """
         # loss info
         self.print_msg(f"Patch {patch:2.0f}: epoch {epoch:4.0f} with loss {loss.detach():.2E}")
 
@@ -1157,14 +1717,16 @@ class Net(torch.nn.Module):
                 comments="",
             )
 
-    def gen_sample(self, patch, t=None):
+    def gen_sample(self, patch):
         """
-        generate sample based on the (t, x) boundary and the function gen_sample_batch
+        Generate sample based on the (t, x) boundary and the function gen_sample_batch
+
+        Parameters
+        ----------
+        patch : int
+            Describe
         """
-        if t is None:
-            nb_states = self.nb_states
-        else:
-            nb_states, _ = t.shape
+        nb_states = self.nb_states
         states_per_batch = min(nb_states, self.nb_states_per_batch)
         batches = math.ceil(nb_states / states_per_batch)
         t_lo, t_hi = self.adjusted_t_boundaries[patch]
@@ -1225,6 +1787,17 @@ class Net(torch.nn.Module):
         )
 
     def calculate_p_from_u(self, x, patch):
+        """
+        Describe
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Describe
+
+        patch : int
+            Describe
+        """
         x = x.detach().clone().requires_grad_(True)
         nb_mc = self.nb_path_per_state
         x = x.repeat(nb_mc, 1, 1)
@@ -1263,6 +1836,20 @@ class Net(torch.nn.Module):
         return ans.mean(dim=0, keepdim=True).detach()
 
     def gen_sample_for_p(self, patch, gen_y=True, overtrain_rate=.5):
+        """
+        Describe
+
+        Parameters
+        ----------
+        patch : int
+            Describe
+
+        gen_y : bool, optional
+            Describe
+
+        overtrain_rate : float, optional
+            Describe
+        """
         self.nb_path_per_state *= 1000
         self.nb_states_per_batch //= 1000
         states_per_batch = min(self.nb_states, self.nb_states_per_batch)
@@ -1296,7 +1883,21 @@ class Net(torch.nn.Module):
 
     def train_and_eval(self, debug_mode=False, return_dict=False, reuse_x=None, reuse_y=None):
         """
-        generate sample and evaluate (plot) NN approximation when debug_mode=True
+        Generate sample and evaluate (plot) NN approximation when debug_mode=True
+
+        Parameters
+        ----------
+        debug_mode : bool, optional
+            Describe
+
+        return_dict : bool, optional
+            Describe
+
+        reuse_x : torch.Tensor, optional
+            Describe
+
+        reuse_y : torch.Tensor, optional
+            Describe
         """
         output_dict = {}
         for p in range(self.patches):
