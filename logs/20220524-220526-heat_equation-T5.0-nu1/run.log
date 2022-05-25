@@ -1,0 +1,410 @@
+2022-05-24 22:05:26,762 | root |  DEBUG: Current configuration: {'training': True, '_parameters': OrderedDict(), '_buffers': OrderedDict(), '_non_persistent_buffers_set': set(), '_backward_hooks': OrderedDict(), '_is_full_backward_hook': None, '_forward_hooks': OrderedDict(), '_forward_pre_hooks': OrderedDict(), '_state_dict_hooks': OrderedDict(), '_load_state_dict_pre_hooks': OrderedDict(), '_modules': OrderedDict([('u_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (1): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (2): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (3): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (4): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+)), ('u_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (1): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (2): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (3): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (4): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('p_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (1): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (2): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (3): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (4): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+)), ('p_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (1): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (2): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (3): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (4): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('loss', MSELoss()), ('activation', Softplus(beta=1, threshold=20))]), 'problem_name': 'heat_equation', 'f_fun': <function f_example at 0x7f8860139160>, 'phi_fun': <function phi_example at 0x7f8860139670>, 'phi0': 0, 'conditional_probability_to_survive': functools.partial(<function conditional_probability_to_survive at 0x7f8860139280>, lower_bound=-2, upper_bound=2), 'is_x_inside': functools.partial(<function is_x_inside at 0x7f8860139310>, lower_bound=-2, upper_bound=2), 'deriv_map': array([[0]]), 'n': 1, 'dim_in': 1, 'zeta_map': array([0]), 'deriv_condition_deriv_map': None, 'deriv_condition_zeta_map': None, 'dim_out': 1, 'nprime': 0, 'exact_p_fun': None, 'train_for_p': False, 'patches': 5, 'code': array([[-1]]), 'coordinate': array([0]), 'fdb_lookup': {(0,): [fdb(coeff=1, lamb=(0,), l_and_k={})]}, 'fdb_runtime': 0.00027370452880859375, 'mechanism_tot_len': 2, 'lr': 0.001, 'lr_milestones': [1000, 2000], 'lr_gamma': 0.8, 'weight_decay': 0, 'save_for_best_model': True, 'save_data': False, 'batch_normalization': True, 'nb_states': 1000, 'nb_states_per_batch': 100, 'nb_path_per_state': 10000, 'x_lo': -2, 'x_hi': 2, 'adjusted_x_boundaries': (-2.0, 2.0), 't_lo': 0.0, 't_hi': 5.0, 'T': 5.0, 'tau_lo': 1e-05, 'tau_hi': 10, 'nu': 1, 'delta_t': 1.0, 'outlier_percentile': 1, 'outlier_multiplier': 1000, 'exponential_lambda': 0.05129329438755058, 'epochs': 5000, 'antithetic': True, 'device': device(type='cuda'), 'verbose': True, 'fix_all_dim_except_first': True, 'fix_t_dim': True, 't_boundaries': tensor([5., 4., 3., 2., 1., 0.], device='cuda:0'), 'adjusted_t_boundaries': [(tensor(4., device='cuda:0'), tensor(4., device='cuda:0')), (tensor(3., device='cuda:0'), tensor(3., device='cuda:0')), (tensor(2., device='cuda:0'), tensor(2., device='cuda:0')), (tensor(1., device='cuda:0'), tensor(1., device='cuda:0')), (tensor(0., device='cuda:0'), tensor(0., device='cuda:0'))], 'working_dir': 'logs/20220524-220526-heat_equation-T5.0-nu1'}
+2022-05-24 22:05:30,741 | root |  INFO: Patch 0: generation of u samples take 3.9784493446350098 seconds.
+2022-05-24 22:05:30,785 | root |  INFO: Patch  0: epoch    0 with loss 1.10E+01
+2022-05-24 22:05:30,792 | matplotlib.pyplot |  DEBUG: Loaded backend module://matplotlib_inline.backend_inline version unknown.
+2022-05-24 22:05:30,795 | matplotlib.pyplot |  DEBUG: Loaded backend module://matplotlib_inline.backend_inline version unknown.
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0.
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneral.ttf', name='STIXGeneral', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymReg.ttf', name='STIXSizeFourSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf', name='DejaVu Serif', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmr10.ttf', name='cmr10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Bold.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansDisplay.ttf', name='DejaVu Sans Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUni.ttf', name='STIXNonUnicode', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBol.ttf', name='STIXGeneral', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,797 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-BoldOblique.ttf', name='DejaVu Sans Mono', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf', name='DejaVu Serif', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf', name='cmmi10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralItalic.ttf', name='STIXGeneral', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymReg.ttf', name='STIXSizeThreeSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmss10.ttf', name='cmss10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmb10.ttf', name='cmb10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-BoldOblique.ttf', name='DejaVu Sans', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 1.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Oblique.ttf', name='DejaVu Sans Mono', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymBol.ttf', name='STIXSizeFourSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBolIta.ttf', name='STIXGeneral', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymReg.ttf', name='STIXSizeOneSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBol.ttf', name='STIXNonUnicode', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniIta.ttf', name='STIXNonUnicode', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymBol.ttf', name='STIXSizeTwoSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBolIta.ttf', name='STIXNonUnicode', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmex10.ttf', name='cmex10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymBol.ttf', name='STIXSizeThreeSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmsy10.ttf', name='cmsy10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFiveSymReg.ttf', name='STIXSizeFiveSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmtt10.ttf', name='cmtt10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymBol.ttf', name='STIXSizeOneSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerifDisplay.ttf', name='DejaVu Serif Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymReg.ttf', name='STIXSizeTwoSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf', name='DejaVu Sans', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 1.05
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+2022-05-24 22:05:30,798 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,799 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+2022-05-24 22:05:30,799 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,799 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,799 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,799 | matplotlib.font_manager |  DEBUG: findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0 to DejaVu Sans ('/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=12.0.
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneral.ttf', name='STIXGeneral', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymReg.ttf', name='STIXSizeFourSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf', name='DejaVu Serif', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmr10.ttf', name='cmr10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Bold.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansDisplay.ttf', name='DejaVu Sans Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUni.ttf', name='STIXNonUnicode', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBol.ttf', name='STIXGeneral', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-BoldOblique.ttf', name='DejaVu Sans Mono', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf', name='DejaVu Serif', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf', name='cmmi10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralItalic.ttf', name='STIXGeneral', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymReg.ttf', name='STIXSizeThreeSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmss10.ttf', name='cmss10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmb10.ttf', name='cmb10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-BoldOblique.ttf', name='DejaVu Sans', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 1.335
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Oblique.ttf', name='DejaVu Sans Mono', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymBol.ttf', name='STIXSizeFourSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,816 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBolIta.ttf', name='STIXGeneral', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymReg.ttf', name='STIXSizeOneSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBol.ttf', name='STIXNonUnicode', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniIta.ttf', name='STIXNonUnicode', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymBol.ttf', name='STIXSizeTwoSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBolIta.ttf', name='STIXNonUnicode', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmex10.ttf', name='cmex10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymBol.ttf', name='STIXSizeThreeSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmsy10.ttf', name='cmsy10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFiveSymReg.ttf', name='STIXSizeFiveSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmtt10.ttf', name='cmtt10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymBol.ttf', name='STIXSizeOneSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerifDisplay.ttf', name='DejaVu Serif Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymReg.ttf', name='STIXSizeTwoSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf', name='DejaVu Sans', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 1.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,817 | matplotlib.font_manager |  DEBUG: findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=12.0 to DejaVu Sans ('/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0.
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneral.ttf', name='STIXGeneral', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymReg.ttf', name='STIXSizeFourSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Italic.ttf', name='DejaVu Serif', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmr10.ttf', name='cmr10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Bold.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansDisplay.ttf', name='DejaVu Sans Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUni.ttf', name='STIXNonUnicode', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBol.ttf', name='STIXGeneral', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-BoldOblique.ttf', name='DejaVu Sans Mono', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-BoldItalic.ttf', name='DejaVu Serif', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmmi10.ttf', name='cmmi10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralItalic.ttf', name='STIXGeneral', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymReg.ttf', name='STIXSizeThreeSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmss10.ttf', name='cmss10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,827 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmb10.ttf', name='cmb10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Bold.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-BoldOblique.ttf', name='DejaVu Sans', style='oblique', variant='normal', weight=700, stretch='normal', size='scalable')) = 1.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSansMono-Oblique.ttf', name='DejaVu Sans Mono', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFourSymBol.ttf', name='STIXSizeFourSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXGeneralBolIta.ttf', name='STIXGeneral', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymReg.ttf', name='STIXSizeOneSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBol.ttf', name='STIXNonUnicode', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniIta.ttf', name='STIXNonUnicode', style='italic', variant='normal', weight=400, stretch='normal', size='scalable')) = 11.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymBol.ttf', name='STIXSizeTwoSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXNonUniBolIta.ttf', name='STIXNonUnicode', style='italic', variant='normal', weight=700, stretch='normal', size='scalable')) = 11.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmex10.ttf', name='cmex10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif-Bold.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizThreeSymBol.ttf', name='STIXSizeThreeSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmsy10.ttf', name='cmsy10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizFiveSymReg.ttf', name='STIXSizeFiveSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/cmtt10.ttf', name='cmtt10', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizOneSymBol.ttf', name='STIXSizeOneSym', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerifDisplay.ttf', name='DejaVu Serif Display', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/STIXSizTwoSymReg.ttf', name='STIXSizeTwoSym', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSerif.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans-Oblique.ttf', name='DejaVu Sans', style='oblique', variant='normal', weight=400, stretch='normal', size='scalable')) = 1.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 0.33499999999999996
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', name='DejaVu Sans', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 0.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf', name='DejaVu Serif', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=700, stretch='normal', size='scalable')) = 10.335
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: score(FontEntry(fname='/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', name='DejaVu Sans Mono', style='normal', variant='normal', weight=400, stretch='normal', size='scalable')) = 10.05
+2022-05-24 22:05:30,828 | matplotlib.font_manager |  DEBUG: findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0 to DejaVu Sans ('/home/nguwijy/.local/lib/python3.8/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.
+2022-05-24 22:05:34,941 | root |  INFO: Patch  0: epoch  500 with loss 1.87E-05
+2022-05-24 22:05:38,847 | root |  INFO: Patch  0: epoch 1000 with loss 1.77E-05
+2022-05-24 22:05:42,750 | root |  INFO: Patch  0: epoch 1500 with loss 1.69E-05
+2022-05-24 22:05:46,778 | root |  INFO: Patch  0: epoch 2000 with loss 1.63E-05
+2022-05-24 22:05:53,428 | root |  INFO: Patch  0: epoch 2500 with loss 1.58E-05
+2022-05-24 22:05:59,204 | root |  INFO: Patch  0: epoch 3000 with loss 5.41E-05
+2022-05-24 22:06:03,106 | root |  INFO: Patch  0: epoch 3500 with loss 4.72E-04
+2022-05-24 22:06:07,055 | root |  INFO: Patch  0: epoch 4000 with loss 1.66E-05
+2022-05-24 22:06:11,917 | root |  INFO: Patch  0: epoch 4500 with loss 3.49E-05
+2022-05-24 22:06:15,960 | root |  INFO: Patch  0: epoch 4999 with loss 1.72E-05
+2022-05-24 22:06:16,254 | root |  INFO: Patch 0: training of u with 5000 epochs take 45.48011088371277 seconds.
+2022-05-24 22:06:21,049 | root |  INFO: Patch 1: generation of u samples take 4.793854713439941 seconds.
+2022-05-24 22:06:21,059 | root |  INFO: Patch  1: epoch    0 with loss 2.11E+00
+2022-05-24 22:06:24,951 | root |  INFO: Patch  1: epoch  500 with loss 7.23E-06
+2022-05-24 22:06:28,840 | root |  INFO: Patch  1: epoch 1000 with loss 4.92E-06
+2022-05-24 22:06:32,748 | root |  INFO: Patch  1: epoch 1500 with loss 4.87E-06
+2022-05-24 22:06:36,588 | root |  INFO: Patch  1: epoch 2000 with loss 4.38E-06
+2022-05-24 22:06:42,017 | root |  INFO: Patch  1: epoch 2500 with loss 6.04E-06
+2022-05-24 22:06:47,200 | root |  INFO: Patch  1: epoch 3000 with loss 5.20E-06
+2022-05-24 22:06:51,884 | root |  INFO: Patch  1: epoch 3500 with loss 4.05E-06
+2022-05-24 22:06:56,294 | root |  INFO: Patch  1: epoch 4000 with loss 5.47E-06
+2022-05-24 22:07:00,372 | root |  INFO: Patch  1: epoch 4500 with loss 5.40E-06
+2022-05-24 22:07:04,833 | root |  INFO: Patch  1: epoch 4999 with loss 4.02E-06
+2022-05-24 22:07:05,046 | root |  INFO: Patch 1: training of u with 5000 epochs take 43.99577808380127 seconds.
+2022-05-24 22:07:09,448 | root |  INFO: Patch 2: generation of u samples take 4.399981498718262 seconds.
+2022-05-24 22:07:09,458 | root |  INFO: Patch  2: epoch    0 with loss 2.26E+00
+2022-05-24 22:07:13,145 | root |  INFO: Patch  2: epoch  500 with loss 2.68E-06
+2022-05-24 22:07:16,795 | root |  INFO: Patch  2: epoch 1000 with loss 8.43E-05
+2022-05-24 22:07:20,440 | root |  INFO: Patch  2: epoch 1500 with loss 2.24E-06
+2022-05-24 22:07:24,090 | root |  INFO: Patch  2: epoch 2000 with loss 3.28E-06
+2022-05-24 22:07:28,164 | root |  INFO: Patch  2: epoch 2500 with loss 2.55E-06
+2022-05-24 22:07:32,416 | root |  INFO: Patch  2: epoch 3000 with loss 6.18E-06
+2022-05-24 22:07:36,837 | root |  INFO: Patch  2: epoch 3500 with loss 3.26E-05
+2022-05-24 22:07:41,622 | root |  INFO: Patch  2: epoch 4000 with loss 4.26E-04
+2022-05-24 22:07:45,302 | root |  INFO: Patch  2: epoch 4500 with loss 2.37E-06
+2022-05-24 22:07:48,974 | root |  INFO: Patch  2: epoch 4999 with loss 2.11E-06
+2022-05-24 22:07:49,191 | root |  INFO: Patch 2: training of u with 5000 epochs take 39.742833375930786 seconds.
+2022-05-24 22:07:53,528 | root |  INFO: Patch 3: generation of u samples take 4.335698127746582 seconds.
+2022-05-24 22:07:53,539 | root |  INFO: Patch  3: epoch    0 with loss 1.98E+00
+2022-05-24 22:07:57,186 | root |  INFO: Patch  3: epoch  500 with loss 3.28E-06
+2022-05-24 22:08:00,878 | root |  INFO: Patch  3: epoch 1000 with loss 1.43E-06
+2022-05-24 22:08:04,720 | root |  INFO: Patch  3: epoch 1500 with loss 5.49E-04
+2022-05-24 22:08:08,466 | root |  INFO: Patch  3: epoch 2000 with loss 1.30E-06
+2022-05-24 22:08:13,694 | root |  INFO: Patch  3: epoch 2500 with loss 1.56E-06
+2022-05-24 22:08:17,863 | root |  INFO: Patch  3: epoch 3000 with loss 1.87E-06
+2022-05-24 22:08:21,630 | root |  INFO: Patch  3: epoch 3500 with loss 2.24E-06
+2022-05-24 22:08:25,389 | root |  INFO: Patch  3: epoch 4000 with loss 1.43E-06
+2022-05-24 22:08:29,147 | root |  INFO: Patch  3: epoch 4500 with loss 1.67E-06
+2022-05-24 22:08:33,011 | root |  INFO: Patch  3: epoch 4999 with loss 1.43E-06
+2022-05-24 22:08:33,229 | root |  INFO: Patch 3: training of u with 5000 epochs take 39.700432777404785 seconds.
+2022-05-24 22:08:37,607 | root |  INFO: Patch 4: generation of u samples take 4.376575708389282 seconds.
+2022-05-24 22:08:37,618 | root |  INFO: Patch  4: epoch    0 with loss 6.78E-01
+2022-05-24 22:08:41,355 | root |  INFO: Patch  4: epoch  500 with loss 4.41E-06
+2022-05-24 22:08:45,099 | root |  INFO: Patch  4: epoch 1000 with loss 9.42E-07
+2022-05-24 22:08:48,862 | root |  INFO: Patch  4: epoch 1500 with loss 8.69E-07
+2022-05-24 22:08:52,615 | root |  INFO: Patch  4: epoch 2000 with loss 7.81E-07
+2022-05-24 22:08:57,041 | root |  INFO: Patch  4: epoch 2500 with loss 4.02E-05
+2022-05-24 22:09:00,819 | root |  INFO: Patch  4: epoch 3000 with loss 5.30E-06
+2022-05-24 22:09:04,600 | root |  INFO: Patch  4: epoch 3500 with loss 2.73E-06
+2022-05-24 22:09:08,457 | root |  INFO: Patch  4: epoch 4000 with loss 7.51E-07
+2022-05-24 22:09:12,399 | root |  INFO: Patch  4: epoch 4500 with loss 2.12E-06
+2022-05-24 22:09:16,345 | root |  INFO: Patch  4: epoch 4999 with loss 1.28E-06
+2022-05-24 22:09:16,569 | root |  INFO: Patch 4: training of u with 5000 epochs take 38.9604287147522 seconds.

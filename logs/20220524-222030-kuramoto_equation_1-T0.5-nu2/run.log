@@ -1,0 +1,273 @@
+2022-05-24 22:20:30,630 | root |  DEBUG: Current configuration: {'training': True, '_parameters': OrderedDict(), '_buffers': OrderedDict(), '_non_persistent_buffers_set': set(), '_backward_hooks': OrderedDict(), '_is_full_backward_hook': None, '_forward_hooks': OrderedDict(), '_forward_pre_hooks': OrderedDict(), '_state_dict_hooks': OrderedDict(), '_load_state_dict_pre_hooks': OrderedDict(), '_modules': OrderedDict([('u_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (1): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (2): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (3): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (4): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+)), ('u_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (1): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (2): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (3): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (4): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('p_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (1): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (2): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (3): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+  (4): ModuleList(
+    (0): Linear(in_features=1, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+)), ('p_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (1): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (2): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (3): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+  (4): ModuleList(
+    (0): BatchNorm1d(1, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('loss', MSELoss()), ('activation', Softplus(beta=1, threshold=20))]), 'problem_name': 'kuramoto_equation_1', 'f_fun': <function f_example at 0x7f875c19f310>, 'phi_fun': <function phi_example at 0x7f875c152d30>, 'phi0': 0, 'conditional_probability_to_survive': functools.partial(<function conditional_probability_to_survive at 0x7f8860139280>, lower_bound=-10, upper_bound=10), 'is_x_inside': functools.partial(<function is_x_inside at 0x7f8860139310>, lower_bound=-10, upper_bound=10), 'deriv_map': array([[0],
+       [1],
+       [3],
+       [4]]), 'n': 4, 'dim_in': 1, 'zeta_map': array([0, 0, 0, 0]), 'deriv_condition_deriv_map': None, 'deriv_condition_zeta_map': None, 'dim_out': 1, 'nprime': 0, 'exact_p_fun': None, 'train_for_p': False, 'patches': 5, 'code': array([[-1]]), 'coordinate': array([0]), 'fdb_lookup': {(0,): [fdb(coeff=1, lamb=(0, 0, 0, 0), l_and_k={})], (1,): [fdb(coeff=1, lamb=(0, 0, 0, 1), l_and_k={(1,): [0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 1, 0), l_and_k={(1,): [0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0), l_and_k={(1,): [0, 1, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0), l_and_k={(1,): [1, 0, 0, 0]})], (3,): [fdb(coeff=1, lamb=(0, 0, 0, 1), l_and_k={(3,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(0, 0, 0, 2), l_and_k={(1,): [0, 0, 0, 1], (2,): [0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 3), l_and_k={(1,): [0, 0, 0, 3]}), fdb(coeff=1, lamb=(0, 0, 1, 0), l_and_k={(3,): [0, 0, 1, 0]}), fdb(coeff=3, lamb=(0, 0, 2, 0), l_and_k={(1,): [0, 0, 1, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 3, 0), l_and_k={(1,): [0, 0, 3, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0), l_and_k={(3,): [0, 1, 0, 0]}), fdb(coeff=3, lamb=(0, 2, 0, 0), l_and_k={(1,): [0, 1, 0, 0], (2,): [0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 3, 0, 0), l_and_k={(1,): [0, 3, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0), l_and_k={(3,): [1, 0, 0, 0]}), fdb(coeff=3, lamb=(2, 0, 0, 0), l_and_k={(1,): [1, 0, 0, 0], (2,): [1, 0, 0, 0]}), fdb(coeff=1, lamb=(3, 0, 0, 0), l_and_k={(1,): [3, 0, 0, 0]}), fdb(coeff=3, lamb=(0, 0, 1, 1), l_and_k={(1,): [0, 0, 1, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(0, 0, 1, 2), l_and_k={(1,): [0, 0, 1, 2]}), fdb(coeff=3, lamb=(0, 0, 1, 1), l_and_k={(2,): [0, 0, 1, 0], (1,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(0, 0, 2, 1), l_and_k={(1,): [0, 0, 2, 1]}), fdb(coeff=3, lamb=(0, 1, 0, 1), l_and_k={(1,): [0, 1, 0, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(0, 1, 0, 2), l_and_k={(1,): [0, 1, 0, 2]}), fdb(coeff=3, lamb=(0, 1, 1, 0), l_and_k={(1,): [0, 1, 0, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=3, lamb=(0, 1, 2, 0), l_and_k={(1,): [0, 1, 2, 0]}), fdb(coeff=3, lamb=(0, 1, 0, 1), l_and_k={(2,): [0, 1, 0, 0], (1,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(0, 2, 0, 1), l_and_k={(1,): [0, 2, 0, 1]}), fdb(coeff=3, lamb=(0, 1, 1, 0), l_and_k={(2,): [0, 1, 0, 0], (1,): [0, 0, 1, 0]}), fdb(coeff=3, lamb=(0, 2, 1, 0), l_and_k={(1,): [0, 2, 1, 0]}), fdb(coeff=3, lamb=(1, 0, 0, 1), l_and_k={(1,): [1, 0, 0, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(1, 0, 0, 2), l_and_k={(1,): [1, 0, 0, 2]}), fdb(coeff=3, lamb=(1, 0, 1, 0), l_and_k={(1,): [1, 0, 0, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=3, lamb=(1, 0, 2, 0), l_and_k={(1,): [1, 0, 2, 0]}), fdb(coeff=3, lamb=(1, 1, 0, 0), l_and_k={(1,): [1, 0, 0, 0], (2,): [0, 1, 0, 0]}), fdb(coeff=3, lamb=(1, 2, 0, 0), l_and_k={(1,): [1, 2, 0, 0]}), fdb(coeff=3, lamb=(1, 0, 0, 1), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(2, 0, 0, 1), l_and_k={(1,): [2, 0, 0, 1]}), fdb(coeff=3, lamb=(1, 0, 1, 0), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 0, 1, 0]}), fdb(coeff=3, lamb=(2, 0, 1, 0), l_and_k={(1,): [2, 0, 1, 0]}), fdb(coeff=3, lamb=(1, 1, 0, 0), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 1, 0, 0]}), fdb(coeff=3, lamb=(2, 1, 0, 0), l_and_k={(1,): [2, 1, 0, 0]}), fdb(coeff=6, lamb=(0, 1, 1, 1), l_and_k={(1,): [0, 1, 1, 1]}), fdb(coeff=6, lamb=(1, 0, 1, 1), l_and_k={(1,): [1, 0, 1, 1]}), fdb(coeff=6, lamb=(1, 1, 0, 1), l_and_k={(1,): [1, 1, 0, 1]}), fdb(coeff=6, lamb=(1, 1, 1, 0), l_and_k={(1,): [1, 1, 1, 0]})], (4,): [fdb(coeff=1, lamb=(0, 0, 0, 1), l_and_k={(4,): [0, 0, 0, 1]}), fdb(coeff=4, lamb=(0, 0, 0, 2), l_and_k={(1,): [0, 0, 0, 1], (3,): [0, 0, 0, 1]}), fdb(coeff=3, lamb=(0, 0, 0, 2), l_and_k={(2,): [0, 0, 0, 2]}), fdb(coeff=6, lamb=(0, 0, 0, 3), l_and_k={(1,): [0, 0, 0, 2], (2,): [0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 4), l_and_k={(1,): [0, 0, 0, 4]}), fdb(coeff=1, lamb=(0, 0, 1, 0), l_and_k={(4,): [0, 0, 1, 0]}), fdb(coeff=4, lamb=(0, 0, 2, 0), l_and_k={(1,): [0, 0, 1, 0], (3,): [0, 0, 1, 0]}), fdb(coeff=3, lamb=(0, 0, 2, 0), l_and_k={(2,): [0, 0, 2, 0]}), fdb(coeff=6, lamb=(0, 0, 3, 0), l_and_k={(1,): [0, 0, 2, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 4, 0), l_and_k={(1,): [0, 0, 4, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0), l_and_k={(4,): [0, 1, 0, 0]}), fdb(coeff=4, lamb=(0, 2, 0, 0), l_and_k={(1,): [0, 1, 0, 0], (3,): [0, 1, 0, 0]}), fdb(coeff=3, lamb=(0, 2, 0, 0), l_and_k={(2,): [0, 2, 0, 0]}), fdb(coeff=6, lamb=(0, 3, 0, 0), l_and_k={(1,): [0, 2, 0, 0], (2,): [0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 4, 0, 0), l_and_k={(1,): [0, 4, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0), l_and_k={(4,): [1, 0, 0, 0]}), fdb(coeff=4, lamb=(2, 0, 0, 0), l_and_k={(1,): [1, 0, 0, 0], (3,): [1, 0, 0, 0]}), fdb(coeff=3, lamb=(2, 0, 0, 0), l_and_k={(2,): [2, 0, 0, 0]}), fdb(coeff=6, lamb=(3, 0, 0, 0), l_and_k={(1,): [2, 0, 0, 0], (2,): [1, 0, 0, 0]}), fdb(coeff=1, lamb=(4, 0, 0, 0), l_and_k={(1,): [4, 0, 0, 0]}), fdb(coeff=4, lamb=(0, 0, 1, 1), l_and_k={(1,): [0, 0, 1, 0], (3,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(0, 0, 1, 2), l_and_k={(1,): [0, 0, 1, 1], (2,): [0, 0, 0, 1]}), fdb(coeff=4, lamb=(0, 0, 1, 3), l_and_k={(1,): [0, 0, 1, 3]}), fdb(coeff=4, lamb=(0, 0, 1, 1), l_and_k={(3,): [0, 0, 1, 0], (1,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(0, 0, 2, 1), l_and_k={(1,): [0, 0, 1, 1], (2,): [0, 0, 1, 0]}), fdb(coeff=4, lamb=(0, 0, 3, 1), l_and_k={(1,): [0, 0, 3, 1]}), fdb(coeff=4, lamb=(0, 1, 0, 1), l_and_k={(1,): [0, 1, 0, 0], (3,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(0, 1, 0, 2), l_and_k={(1,): [0, 1, 0, 1], (2,): [0, 0, 0, 1]}), fdb(coeff=4, lamb=(0, 1, 0, 3), l_and_k={(1,): [0, 1, 0, 3]}), fdb(coeff=4, lamb=(0, 1, 1, 0), l_and_k={(1,): [0, 1, 0, 0], (3,): [0, 0, 1, 0]}), fdb(coeff=12, lamb=(0, 1, 2, 0), l_and_k={(1,): [0, 1, 1, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=4, lamb=(0, 1, 3, 0), l_and_k={(1,): [0, 1, 3, 0]}), fdb(coeff=4, lamb=(0, 1, 0, 1), l_and_k={(3,): [0, 1, 0, 0], (1,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(0, 2, 0, 1), l_and_k={(1,): [0, 1, 0, 1], (2,): [0, 1, 0, 0]}), fdb(coeff=4, lamb=(0, 3, 0, 1), l_and_k={(1,): [0, 3, 0, 1]}), fdb(coeff=4, lamb=(0, 1, 1, 0), l_and_k={(3,): [0, 1, 0, 0], (1,): [0, 0, 1, 0]}), fdb(coeff=12, lamb=(0, 2, 1, 0), l_and_k={(1,): [0, 1, 1, 0], (2,): [0, 1, 0, 0]}), fdb(coeff=4, lamb=(0, 3, 1, 0), l_and_k={(1,): [0, 3, 1, 0]}), fdb(coeff=4, lamb=(1, 0, 0, 1), l_and_k={(1,): [1, 0, 0, 0], (3,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(1, 0, 0, 2), l_and_k={(1,): [1, 0, 0, 1], (2,): [0, 0, 0, 1]}), fdb(coeff=4, lamb=(1, 0, 0, 3), l_and_k={(1,): [1, 0, 0, 3]}), fdb(coeff=4, lamb=(1, 0, 1, 0), l_and_k={(1,): [1, 0, 0, 0], (3,): [0, 0, 1, 0]}), fdb(coeff=12, lamb=(1, 0, 2, 0), l_and_k={(1,): [1, 0, 1, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=4, lamb=(1, 0, 3, 0), l_and_k={(1,): [1, 0, 3, 0]}), fdb(coeff=4, lamb=(1, 1, 0, 0), l_and_k={(1,): [1, 0, 0, 0], (3,): [0, 1, 0, 0]}), fdb(coeff=12, lamb=(1, 2, 0, 0), l_and_k={(1,): [1, 1, 0, 0], (2,): [0, 1, 0, 0]}), fdb(coeff=4, lamb=(1, 3, 0, 0), l_and_k={(1,): [1, 3, 0, 0]}), fdb(coeff=4, lamb=(1, 0, 0, 1), l_and_k={(3,): [1, 0, 0, 0], (1,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(2, 0, 0, 1), l_and_k={(1,): [1, 0, 0, 1], (2,): [1, 0, 0, 0]}), fdb(coeff=4, lamb=(3, 0, 0, 1), l_and_k={(1,): [3, 0, 0, 1]}), fdb(coeff=4, lamb=(1, 0, 1, 0), l_and_k={(3,): [1, 0, 0, 0], (1,): [0, 0, 1, 0]}), fdb(coeff=12, lamb=(2, 0, 1, 0), l_and_k={(1,): [1, 0, 1, 0], (2,): [1, 0, 0, 0]}), fdb(coeff=4, lamb=(3, 0, 1, 0), l_and_k={(1,): [3, 0, 1, 0]}), fdb(coeff=4, lamb=(1, 1, 0, 0), l_and_k={(3,): [1, 0, 0, 0], (1,): [0, 1, 0, 0]}), fdb(coeff=12, lamb=(2, 1, 0, 0), l_and_k={(1,): [1, 1, 0, 0], (2,): [1, 0, 0, 0]}), fdb(coeff=4, lamb=(3, 1, 0, 0), l_and_k={(1,): [3, 1, 0, 0]}), fdb(coeff=6, lamb=(0, 0, 1, 1), l_and_k={(2,): [0, 0, 1, 1]}), fdb(coeff=6, lamb=(0, 0, 1, 2), l_and_k={(2,): [0, 0, 1, 0], (1,): [0, 0, 0, 2]}), fdb(coeff=6, lamb=(0, 0, 2, 1), l_and_k={(1,): [0, 0, 2, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=6, lamb=(0, 0, 2, 2), l_and_k={(1,): [0, 0, 2, 2]}), fdb(coeff=6, lamb=(0, 1, 0, 1), l_and_k={(2,): [0, 1, 0, 1]}), fdb(coeff=6, lamb=(0, 1, 0, 2), l_and_k={(2,): [0, 1, 0, 0], (1,): [0, 0, 0, 2]}), fdb(coeff=6, lamb=(0, 2, 0, 1), l_and_k={(1,): [0, 2, 0, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=6, lamb=(0, 2, 0, 2), l_and_k={(1,): [0, 2, 0, 2]}), fdb(coeff=6, lamb=(0, 1, 1, 0), l_and_k={(2,): [0, 1, 1, 0]}), fdb(coeff=6, lamb=(0, 1, 2, 0), l_and_k={(2,): [0, 1, 0, 0], (1,): [0, 0, 2, 0]}), fdb(coeff=6, lamb=(0, 2, 1, 0), l_and_k={(1,): [0, 2, 0, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=6, lamb=(0, 2, 2, 0), l_and_k={(1,): [0, 2, 2, 0]}), fdb(coeff=6, lamb=(1, 0, 0, 1), l_and_k={(2,): [1, 0, 0, 1]}), fdb(coeff=6, lamb=(1, 0, 0, 2), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 0, 0, 2]}), fdb(coeff=6, lamb=(2, 0, 0, 1), l_and_k={(1,): [2, 0, 0, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=6, lamb=(2, 0, 0, 2), l_and_k={(1,): [2, 0, 0, 2]}), fdb(coeff=6, lamb=(1, 0, 1, 0), l_and_k={(2,): [1, 0, 1, 0]}), fdb(coeff=6, lamb=(1, 0, 2, 0), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 0, 2, 0]}), fdb(coeff=6, lamb=(2, 0, 1, 0), l_and_k={(1,): [2, 0, 0, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=6, lamb=(2, 0, 2, 0), l_and_k={(1,): [2, 0, 2, 0]}), fdb(coeff=6, lamb=(1, 1, 0, 0), l_and_k={(2,): [1, 1, 0, 0]}), fdb(coeff=6, lamb=(1, 2, 0, 0), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 2, 0, 0]}), fdb(coeff=6, lamb=(2, 1, 0, 0), l_and_k={(1,): [2, 0, 0, 0], (2,): [0, 1, 0, 0]}), fdb(coeff=6, lamb=(2, 2, 0, 0), l_and_k={(1,): [2, 2, 0, 0]}), fdb(coeff=12, lamb=(0, 1, 1, 1), l_and_k={(1,): [0, 1, 1, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(0, 1, 1, 2), l_and_k={(1,): [0, 1, 1, 2]}), fdb(coeff=12, lamb=(0, 1, 1, 1), l_and_k={(1,): [0, 1, 0, 1], (2,): [0, 0, 1, 0]}), fdb(coeff=12, lamb=(0, 1, 2, 1), l_and_k={(1,): [0, 1, 2, 1]}), fdb(coeff=12, lamb=(0, 1, 1, 1), l_and_k={(2,): [0, 1, 0, 0], (1,): [0, 0, 1, 1]}), fdb(coeff=12, lamb=(0, 2, 1, 1), l_and_k={(1,): [0, 2, 1, 1]}), fdb(coeff=12, lamb=(1, 0, 1, 1), l_and_k={(1,): [1, 0, 1, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(1, 0, 1, 2), l_and_k={(1,): [1, 0, 1, 2]}), fdb(coeff=12, lamb=(1, 0, 1, 1), l_and_k={(1,): [1, 0, 0, 1], (2,): [0, 0, 1, 0]}), fdb(coeff=12, lamb=(1, 0, 2, 1), l_and_k={(1,): [1, 0, 2, 1]}), fdb(coeff=12, lamb=(1, 1, 0, 1), l_and_k={(1,): [1, 1, 0, 0], (2,): [0, 0, 0, 1]}), fdb(coeff=12, lamb=(1, 1, 0, 2), l_and_k={(1,): [1, 1, 0, 2]}), fdb(coeff=12, lamb=(1, 1, 1, 0), l_and_k={(1,): [1, 1, 0, 0], (2,): [0, 0, 1, 0]}), fdb(coeff=12, lamb=(1, 1, 2, 0), l_and_k={(1,): [1, 1, 2, 0]}), fdb(coeff=12, lamb=(1, 1, 0, 1), l_and_k={(1,): [1, 0, 0, 1], (2,): [0, 1, 0, 0]}), fdb(coeff=12, lamb=(1, 2, 0, 1), l_and_k={(1,): [1, 2, 0, 1]}), fdb(coeff=12, lamb=(1, 1, 1, 0), l_and_k={(1,): [1, 0, 1, 0], (2,): [0, 1, 0, 0]}), fdb(coeff=12, lamb=(1, 2, 1, 0), l_and_k={(1,): [1, 2, 1, 0]}), fdb(coeff=12, lamb=(1, 0, 1, 1), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 0, 1, 1]}), fdb(coeff=12, lamb=(2, 0, 1, 1), l_and_k={(1,): [2, 0, 1, 1]}), fdb(coeff=12, lamb=(1, 1, 0, 1), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 1, 0, 1]}), fdb(coeff=12, lamb=(2, 1, 0, 1), l_and_k={(1,): [2, 1, 0, 1]}), fdb(coeff=12, lamb=(1, 1, 1, 0), l_and_k={(2,): [1, 0, 0, 0], (1,): [0, 1, 1, 0]}), fdb(coeff=12, lamb=(2, 1, 1, 0), l_and_k={(1,): [2, 1, 1, 0]}), fdb(coeff=24, lamb=(1, 1, 1, 1), l_and_k={(1,): [1, 1, 1, 1]})]}, 'fdb_runtime': 0.021158456802368164, 'mechanism_tot_len': 166, 'lr': 0.001, 'lr_milestones': [1000, 2000], 'lr_gamma': 0.8, 'weight_decay': 0, 'save_for_best_model': True, 'save_data': False, 'batch_normalization': True, 'nb_states': 1000, 'nb_states_per_batch': 100, 'nb_path_per_state': 1000, 'x_lo': -10, 'x_hi': 10, 'adjusted_x_boundaries': (-10.0, 10.0), 't_lo': 0.0, 't_hi': 0.5, 'T': 0.5, 'tau_lo': 1e-05, 'tau_hi': 10, 'nu': 2, 'delta_t': 0.1, 'outlier_percentile': 1, 'outlier_multiplier': 100, 'exponential_lambda': 0.5129329438755057, 'epochs': 5000, 'antithetic': True, 'device': device(type='cuda'), 'verbose': True, 'fix_all_dim_except_first': True, 'fix_t_dim': True, 't_boundaries': tensor([0.5000, 0.4000, 0.3000, 0.2000, 0.1000, 0.0000], device='cuda:0'), 'adjusted_t_boundaries': [(tensor(0.4000, device='cuda:0'), tensor(0.4000, device='cuda:0')), (tensor(0.3000, device='cuda:0'), tensor(0.3000, device='cuda:0')), (tensor(0.2000, device='cuda:0'), tensor(0.2000, device='cuda:0')), (tensor(0.1000, device='cuda:0'), tensor(0.1000, device='cuda:0')), (tensor(0., device='cuda:0'), tensor(0., device='cuda:0'))], 'working_dir': 'logs/20220524-222030-kuramoto_equation_1-T0.5-nu2'}
+2022-05-24 22:21:52,540 | root |  INFO: Patch 0: generation of u samples take 81.90786957740784 seconds.
+2022-05-24 22:21:52,550 | root |  INFO: Patch  0: epoch    0 with loss 4.43E+01
+2022-05-24 22:21:56,710 | root |  INFO: Patch  0: epoch  500 with loss 1.95E-02
+2022-05-24 22:22:01,764 | root |  INFO: Patch  0: epoch 1000 with loss 1.82E-02
+2022-05-24 22:22:05,739 | root |  INFO: Patch  0: epoch 1500 with loss 1.87E-02
+2022-05-24 22:22:09,764 | root |  INFO: Patch  0: epoch 2000 with loss 2.10E-02
+2022-05-24 22:22:17,588 | root |  INFO: Patch  0: epoch 2500 with loss 1.81E-02
+2022-05-24 22:22:22,179 | root |  INFO: Patch  0: epoch 3000 with loss 1.86E-02
+2022-05-24 22:22:26,202 | root |  INFO: Patch  0: epoch 3500 with loss 1.81E-02
+2022-05-24 22:22:30,038 | root |  INFO: Patch  0: epoch 4000 with loss 1.81E-02
+2022-05-24 22:22:34,011 | root |  INFO: Patch  0: epoch 4500 with loss 1.81E-02
+2022-05-24 22:22:38,331 | root |  INFO: Patch  0: epoch 4999 with loss 1.80E-02
+2022-05-24 22:22:38,543 | root |  INFO: Patch 0: training of u with 5000 epochs take 46.00157713890076 seconds.
+2022-05-24 22:28:03,633 | root |  INFO: Patch 1: generation of u samples take 325.0890386104584 seconds.
+2022-05-24 22:28:03,644 | root |  INFO: Patch  1: epoch    0 with loss 4.16E+01
+2022-05-24 22:28:07,452 | root |  INFO: Patch  1: epoch  500 with loss 1.07E-01
+2022-05-24 22:28:11,144 | root |  INFO: Patch  1: epoch 1000 with loss 1.05E-01
+2022-05-24 22:28:14,845 | root |  INFO: Patch  1: epoch 1500 with loss 1.04E-01
+2022-05-24 22:28:18,641 | root |  INFO: Patch  1: epoch 2000 with loss 1.02E-01
+2022-05-24 22:28:29,129 | root |  INFO: Patch  1: epoch 2500 with loss 1.01E-01
+2022-05-24 22:28:35,956 | root |  INFO: Patch  1: epoch 3000 with loss 1.02E-01
+2022-05-24 22:28:41,988 | root |  INFO: Patch  1: epoch 3500 with loss 1.01E-01
+2022-05-24 22:28:46,721 | root |  INFO: Patch  1: epoch 4000 with loss 1.04E-01
+2022-05-24 22:28:50,688 | root |  INFO: Patch  1: epoch 4500 with loss 1.03E-01
+2022-05-24 22:28:54,341 | root |  INFO: Patch  1: epoch 4999 with loss 1.02E-01
+2022-05-24 22:28:54,557 | root |  INFO: Patch 1: training of u with 5000 epochs take 50.92278695106506 seconds.
+2022-05-24 22:34:21,251 | root |  INFO: Patch 2: generation of u samples take 326.692800283432 seconds.
+2022-05-24 22:34:21,261 | root |  INFO: Patch  2: epoch    0 with loss 3.27E+01
+2022-05-24 22:34:24,927 | root |  INFO: Patch  2: epoch  500 with loss 2.41E-01
+2022-05-24 22:34:28,523 | root |  INFO: Patch  2: epoch 1000 with loss 1.81E-01
+2022-05-24 22:34:32,095 | root |  INFO: Patch  2: epoch 1500 with loss 1.26E-01
+2022-05-24 22:34:35,761 | root |  INFO: Patch  2: epoch 2000 with loss 9.95E-02
+2022-05-24 22:34:57,650 | root |  INFO: Patch  2: epoch 2500 with loss 8.48E-02
+2022-05-24 22:35:07,476 | root |  INFO: Patch  2: epoch 3000 with loss 8.99E-02
+2022-05-24 22:35:11,081 | root |  INFO: Patch  2: epoch 3500 with loss 8.38E-02
+2022-05-24 22:35:19,838 | root |  INFO: Patch  2: epoch 4000 with loss 8.20E-02
+2022-05-24 22:35:27,409 | root |  INFO: Patch  2: epoch 4500 with loss 8.11E-02
+2022-05-24 22:35:34,974 | root |  INFO: Patch  2: epoch 4999 with loss 8.20E-02
+2022-05-24 22:35:35,187 | root |  INFO: Patch 2: training of u with 5000 epochs take 73.93467402458191 seconds.
+2022-05-24 22:41:09,369 | root |  INFO: Patch 3: generation of u samples take 334.1805217266083 seconds.
+2022-05-24 22:41:09,380 | root |  INFO: Patch  3: epoch    0 with loss 4.20E+01
+2022-05-24 22:41:13,050 | root |  INFO: Patch  3: epoch  500 with loss 4.95E+00
+2022-05-24 22:41:16,747 | root |  INFO: Patch  3: epoch 1000 with loss 1.08E+00
+2022-05-24 22:41:20,433 | root |  INFO: Patch  3: epoch 1500 with loss 9.86E-01
+2022-05-24 22:41:24,107 | root |  INFO: Patch  3: epoch 2000 with loss 9.77E-01
+2022-05-24 22:41:33,395 | root |  INFO: Patch  3: epoch 2500 with loss 9.71E-01
+2022-05-24 22:41:40,688 | root |  INFO: Patch  3: epoch 3000 with loss 9.68E-01
+2022-05-24 22:41:45,050 | root |  INFO: Patch  3: epoch 3500 with loss 9.76E-01
+2022-05-24 22:41:48,756 | root |  INFO: Patch  3: epoch 4000 with loss 9.71E-01
+2022-05-24 22:41:52,484 | root |  INFO: Patch  3: epoch 4500 with loss 9.72E-01
+2022-05-24 22:41:57,537 | root |  INFO: Patch  3: epoch 4999 with loss 9.69E-01
+2022-05-24 22:41:57,750 | root |  INFO: Patch 3: training of u with 5000 epochs take 48.38032078742981 seconds.
+2022-05-24 22:47:10,007 | root |  INFO: Patch 4: generation of u samples take 312.254985332489 seconds.
+2022-05-24 22:47:10,018 | root |  INFO: Patch  4: epoch    0 with loss 2.39E+02
+2022-05-24 22:47:13,684 | root |  INFO: Patch  4: epoch  500 with loss 9.05E+01
+2022-05-24 22:47:17,348 | root |  INFO: Patch  4: epoch 1000 with loss 8.56E+01
+2022-05-24 22:47:21,140 | root |  INFO: Patch  4: epoch 1500 with loss 7.91E+01
+2022-05-24 22:47:24,910 | root |  INFO: Patch  4: epoch 2000 with loss 7.81E+01
+2022-05-24 22:47:40,527 | root |  INFO: Patch  4: epoch 2500 with loss 6.85E+01
+2022-05-24 22:48:23,473 | root |  INFO: Patch  4: epoch 3000 with loss 6.46E+01
+2022-05-24 22:48:50,894 | root |  INFO: Patch  4: epoch 3500 with loss 5.75E+01
+2022-05-24 22:49:04,016 | root |  INFO: Patch  4: epoch 4000 with loss 5.58E+01
+2022-05-24 22:49:15,526 | root |  INFO: Patch  4: epoch 4500 with loss 5.45E+01
+2022-05-24 22:49:21,823 | root |  INFO: Patch  4: epoch 4999 with loss 5.54E+01
+2022-05-24 22:49:22,039 | root |  INFO: Patch 4: training of u with 5000 epochs take 132.0315375328064 seconds.
