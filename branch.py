@@ -1337,7 +1337,7 @@ class Net(torch.nn.Module):
         ).sample()
         dw = self.gen_bm(T - t, nb_states)
         x_is_inside = self.is_x_inside(x + dw)
-        survive_prob = self.conditional_probability_to_survive(self.nu * (T - t), x, x + dw)
+        survive_prob = self.conditional_probability_to_survive(self.nu * (T - t), x, x + dw).clip(0, 1)
 
         ############################### for t + tau >= T
         mask_now = mask.bool() * (t + tau >= T)
@@ -1356,7 +1356,7 @@ class Net(torch.nn.Module):
         ############################### for t + tau < T
         dw = self.gen_bm(tau, nb_states)
         x_is_inside = self.is_x_inside(x + dw)
-        survive_prob = self.conditional_probability_to_survive(self.nu * tau, x, x + dw)
+        survive_prob = self.conditional_probability_to_survive(self.nu * tau, x, x + dw).clip(0, 1)
         mask_now = mask.bool() * (t + tau < T) * x_is_inside
         H = H * survive_prob
 
