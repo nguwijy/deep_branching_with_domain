@@ -14,247 +14,322 @@ torch.manual_seed(0)  # set seed for reproducibility
 
 class Net(torch.nn.Module):
     """
-    Deep branching approach to solve PDE with utility functions
+    Deep branching approach to solve the PDE system
+    $$
+    \\partial_t u_i(t, x) + \\frac{\\nu}{2} \\Delta u_i(t, x)
+    + f_i((\\partial_{\\alpha^j} u_{\\zeta^j}(t, x))_{0 \\le j < n}) = 0,
+    \\quad 0 \\le i < d_{out},
+    $$
+    $$
+    \\Delta u_{-1}(t, x) =
+    -\\sum\\limits_{i=0}^{d_{out}-1}
+    \\partial_{1_i} u_j(t, x)
+    \\partial_{1_j} u_i(t, x),
+    $$
+    $$
+    \\sum\\limits_{i = 0}^{m - 1}
+    \\partial_{\\alpha_{deriv}^i} u_{\\zeta_{deriv}^i}(t, x) = 0,
+    \\quad (t, x) \\in [t_{lo}, T] \\times \\Omega,
+    \\quad \\Omega \\subset \\mathbb{R}^{d_{in}}.
+    $$
 
 
     Attributes
     ----------
     problem_name : str
-        Describe...
+        The name of the problem that will be used for naming
+        the directory of logs and plots.
 
     f_fun : function
-        Describe...
+        The f function `f_fun(x, coordinate)`
+        in the PDE written in PyTorch framework
+        that takes x tensor of size `n x batch_size`
+        and `int` as input,
+        and outputs tensor of size `batch_size`.
 
     phi_fun : function
-        Describe...
+        The terminal condition `phi_fun(x, coordinate)`
+        of PDE, i.e. phi_fun(x, i) = u_i(T, x),
+        written in PyTorch framework
+        that takes x tensor of size `d_in x batch_size`
+        and `int` as input,
+        and outputs tensor of size `batch_size`.
 
     phi0 : float
-        Describe...
+        The boundary condition of PDE,
+        currently works only for `phi0 = 0`.
 
     conditional_probability_to_survive : function
-        Describe...
+        The function `conditional_probability_to_survive(t, x, y)`
+        written in PyTorch framework
+        that takes t tensor of size `batch_size`,
+        x tensor of size `d_in x batch_size`,
+        y tensor of size `d_in x batch_size`,
+        and outputs tensor of size `batch_size`.
+        The function should satisfy
+        $$
+        \\text{conditional_probability_to_survive}(t, x, y)
+        = \\mathbb{P}
+        (W \\text{ does not exit the domain before } t | W_0 = x, W_t = y).
+        $$
 
     is_x_inside : function
-        Describe...
+        The function `is_x_inside(x)`
+        written in PyTorch framework
+        that takes x tensor of size `d_in x batch_size`
+        and outputs bool tensor of size `batch_size`.
+        The function checks whether x is stll inside the domain.
 
     deriv_map : numpy.ndarray
-        Describe...
+        Numpy array of size `n x d_in` such that
+        $$
+        \\text{deriv_map}[i] = \\alpha^i.
+        $$
 
     n : int
-        Describe...
-
-    dim_in : int
-        Describe...
-
-    zeta_map : numpy.ndarray
-        Describe...
-
-    deriv_condition_deriv_map : numpy.ndarray
-        Describe...
-
-    deriv_condition_zeta_map : numpy.ndarray
-        Describe...
-
-    dim_out : int
-        Describe...
-
-    nprime : int
-        Describe...
-
-    exact_p_fun : function
-        Describe...
-
-    train_for_p : bool
-        Describe...
-
-    patches : int
-        Describe...
-
-    code : numpy.ndarray
-        Describe...
-
-    coordinate : numpy.ndarray
-        Describe...
-
-    fdb_lookup : dict
-        Describe...
-
-    fdb_runtime : float
-        Describe...
-
-    mechanism_tot_len : int
-        Describe...
-
-    u_layer : torch.nn.modules.container.ModuleList
-        Describe...
-
-    u_bn_layer : torch.nn.modules.container.ModuleList
-        Describe...
-
-    p_layer : torch.nn.modules.container.ModuleList
-        Describe...
-
-    p_bn_layer : torch.nn.modules.container.ModuleList
-        Describe...
-
-    lr : float
-        Describe...
-
-    lr_milestones : list
-        Describe...
-
-    lr_gamma : float
-        Describe...
-
-    weight_decay : float
-        Describe...
-
-    save_for_best_model : bool
-        Describe...
-
-    save_data : bool
-        Describe...
-
-    loss : torch.nn.modules.loss
-        Describe...
-
-    activation : torch.nn.modules.activation
-        Describe...
-
-    batch_normalization : bool
-        Describe...
-
-    nb_states : int
-        Describe...
-
-    nb_states_per_batch : int
-        Describe...
-
-    nb_path_per_state : int
-        Describe...
-
-    x_lo : float
-        Describe...
-
-    x_hi : float
-        Describe...
-
-    adjusted_x_boundaries : tuple
-        Describe...
-
-    t_lo : float
-        Describe...
-
-    t_hi : float
-        Describe...
-
-    T : float
-        Describe...
-
-    tau_lo : float
-        Describe...
-
-    tau_hi : float
-        Describe...
+        n in the PDE system.
 
     nu : float
-        Describe...
+        nu in the PDE system.
+
+    dim_in : int
+        The dimension of the input x.
+
+    zeta_map : numpy.ndarray
+        Numpy array of size `n` such that
+        $$
+        \\text{zeta_map}[i] = \\zeta^i.
+        $$
+        If coordinate -1 is involved,
+        put them first in `zeta_map`.
+
+    deriv_condition_deriv_map : numpy.ndarray
+        Numpy array of size `m x d_in` such that
+        $$
+        \\text{deriv_condition_deriv_map}[i] = \\alpha_{deriv}^i.
+        $$
+
+    deriv_condition_zeta_map : numpy.ndarray
+        Numpy array of size `m` such that
+        $$
+        \\text{deriv_condition_zeta_map}[i] = \\zeta_{deriv}^i.
+        $$
+
+    dim_out : int
+        The dimension of the PDE system.
+
+    nprime : int
+        The number of -1 in `zeta_map`.
+        Note that we assume that for all i < `nprime`,
+        zeta_map[i] = -1.
+
+    exact_p_fun : function
+        The function `exact_p_fun(x)`
+        written in PyTorch framework
+        that takes x tensor of size `d_in x batch_size`
+        and outputs tensor of size `batch_size`.
+        The function should satisfy
+        $$
+        \\text{exact_p_fun}(x) = u_{-1}(T, x).
+        $$
+        If `exact_p_fun` is not passed to Net,
+        Net will use neural network approximation to solve
+        the Poisson equation at terminal time.
+
+    train_for_p : bool
+        Whether or not to use neural network approximation to solve
+        the Poisson equation at terminal time.
+
+    patches : int
+        Split the solver into `patches` steps, i.e.
+        $$
+        [(patches - 1) \\frac{T}{patches}, T], ..., [0, \\frac{T}{patches}].
+        $$
 
     delta_t : float
-        Describe...
+        The quantity `T/patches`.
 
-    outlier_percentile : float
-        Describe...
+    code : numpy.ndarray
+        Net trains the network based on the `code = [c0, c1, ..., ck]`
+        and the `coordinate = [i0, i1, ..., ik]` (see `coordinate` below),
+        i.e. match c0(u_{i0})(t, x), ..., ck(u_{ik})(t, x).
+        See also the deep branching paper for more details about the code.
 
-    outlier_multiplier : float
-        Describe...
+    coordinate : numpy.ndarray
+        See `code` above.
 
-    exponential_lambda : float
-        Describe...
+    fdb_lookup : dict
+        Store the Faa di Bruno output as dictionary,
+        to be used in `gen_sample_batch` and `helper_negative_code_on_f`.
+
+    fdb_runtime : float
+        Calculate the runtime used in generating Faa di Bruno output.
+
+    mechanism_tot_len : int
+        The total length of mechanism when the `fdb_lookup` is initialized.
+
+    u_layer : torch.nn.modules.container.ModuleList
+        The layer functions for the approximation of PDE system u.
+
+    u_bn_layer : torch.nn.modules.container.ModuleList
+        The batch normalization functions
+        for the approximation of PDE system u.
+
+    p_layer : torch.nn.modules.container.ModuleList
+        The layer functions
+        for the approximation of u_{-1} at terminal time.
+
+    p_bn_layer : torch.nn.modules.container.ModuleList
+        The batch normalization functions
+        for the approximation of u_{-1} at terminal time.
+
+    lr : float
+        The initial learning rate for training the neural network.
+
+    lr_milestones : list
+        Current lr will be multiplied by `lr_gamma` below
+        when epoch is in `lr_milestones`,
+        see torch.optim.lr_scheduler.MultiStepLR
+        for more details.
+
+    lr_gamma : float
+        See `lr_milestones` above.
+
+    weight_decay : float
+        Weight decay for the Adam optimizer,
+        see torch.optim.Adam for more details.
+
+    save_for_best_model : bool
+        Whether or not to save for the best model
+        based on the training loss
+        when epoch > lr_milestones[-1].
+
+    save_data : bool
+        Whether or not to save the data
+        generated by `gen_sample` and neural network output.
+
+    loss : torch.nn.modules.loss
+        The loss function to evaluate the neural network output,
+        currently we use `MSELoss`.
+
+    activation : torch.nn.modules.activation
+        The activation function for the neural network.
+
+    batch_normalization : bool
+        Whether or not to use batch normalization.
 
     epochs : int
-        Describe...
+        The number of epochs for training the neural network
 
-    antithetic : bool
-        Describe...
+    nb_states : int
+        The number of samples (batch size) that `gen_sample` generates.
 
-    device : torch.device
-        Describe...
+    nb_states_per_batch : int
+        Due to memory limit,
+        we process only `nb_states_per_batch` each time
+        until `nb_states` of samples are generated.
 
-    verbose : bool
-        Describe...
+    nb_path_per_state : int
+        The number of Monte Carlo path for each sample.
+
+    x_lo : float
+        We fit the neural network
+        inside the hypercube [x_lo, x_hi]^{d_in},
+        unless otherwise stated,
+        see `adjusted_x_boundaries` below.
+
+    x_hi : float
+        See `x_lo` above.
+
+    adjusted_x_boundaries : tuple
+        When `overtrain_rate` > 0,
+        we widen [x_lo, x_hi] accordingly
+        so that the neural network fit better
+        on the boundary of [x_lo, x_hi]^{d_in}.
+
+    t_lo : float
+        We fit the neural network
+        inside the time horizon [t_lo, t_hi],
+        unless otherwise stated,
+        see `fix_t_dim` below.
+
+    t_hi : float
+        See `t_lo` above.
+
+    T : float
+        The terminal time of the problem.
 
     fix_all_dim_except_first : bool
-        Describe...
+        In the case of d_in > 1,
+        whether or not to generate sample on
+        $$
+        [x_{lo}, x_{hi}]
+        \\times \\{ \\frac{x_{lo} + x_{hi}}{2} \\}^{d_{in} - 1}
+        $$
+        instead of
+        $$
+        [x_{lo}, x_{hi}]^{d_{in}}.
+        $$
 
     fix_t_dim : bool
-        Describe...
+        Whether or not to generate
+        [t_lo, t_lo] instead of [t_lo, t_hi].
 
     t_boundaries : torch.Tensor
-        Describe...
+        The usual boundaries [t_lo, t_hi]
+        with batches taken into account,
+        to be used in `bisect_left`.
 
     adjusted_t_boundaries : list
-        Describe...
+        The boundaries for t,
+        with both `fix_t_dim` and `patches` taken into account,
+        used for sample generation in `gen_sample`.
+
+    tau_lo : float
+        The lower limit of time integration
+        when we inverse the Laplacian,
+        see the deep branching paper for more details.
+
+    tau_hi : float
+        The upper limit of time integration
+        when we inverse the Laplacian,
+        see the deep branching paper for more details.
+
+    outlier_percentile : float
+        The parameter used to discard outliers
+        for the Monte Carlo samples. <br />
+        Let (lo, hi) be
+        $$
+        (\\text{outlier_percentile},
+        100 - \\text{outlier_percentile})
+        $$
+        percentile of the Monte Carlo samples.
+        We set the boundary as
+        $$
+        [\\text{lo - outlier_multiplier} \\times \\text{(hi-lo)},
+        \\text{hi + outlier_multiplier} \\times \\text{(hi-lo)}].
+        $$
+        Samples out of this boundary are considered as outlier and removed.
+
+    outlier_multiplier : float
+        See `outlier_percentile` above.
+
+    exponential_lambda : float
+        The parameter used for the generation of random tree time,
+        see the deep branching paper for more details.
+
+    antithetic : bool
+        Whether or not to use antithetic variates.
+
+    device : torch.device
+        The device used by Net, either cpu or cuda.
+
+    verbose : bool
+        If `verbose=True`, more information will be printed.
+        Otherwise, the information is saved in run.log file.
 
     working_dir : str
-        Describe...
-
-
-    Methods
-    -------
-    forward(x, patch=None, p_or_u="u")
-        Describe
-
-    log_config()
-        Describe
-
-    bisect_left(val)
-        Describe
-
-    pretty_print(tensor)
-        Describe
-
-    error_calculation(exact_u_fun, exact_p_fun, nb_pts_time=11, nb_pts_spatial=2*126+1, error_multiplier=1)
-        Describe
-
-    nth_derivatives(order, y, x)
-        Describe
-
-    adjusted_phi(x, T, patch, coordinate)
-        Describe
-
-    print_msg(msg)
-        Describe
-
-    code_to_function(code, x, T, patch, coordinate)
-        Describe
-
-    gen_bm(dt, nb_states, var=None)
-        Describe
-
-    helper_negative_code_on_f(t, T, x, mask, H, code, patch, coordinate)
-        Describe
-
-    gen_sample_batch(t, T, x, mask, H, code, patch, coordinate)
-        Describe
-
-    compare_with_exact(exact_fun)
-        Describe
-
-    log_plot_save(patch, epoch, loss, x, y, debug_mode=False, p_or_u="u")
-        Describe
-
-    gen_sample(patch, t=None)
-        Describe
-
-    calculate_p_from_u(x, patch)
-        Describe
-
-    gen_sample_for_p(patch, gen_y=True, overtrain_rate=.5)
-        Describe
-
-    train_and_eval(debug_mode=False, return_dict=False, reuse_x=None, reuse_y=None)
-        Describe
+        The directory that saves all the logs and plots.
     """
     def __init__(
         self,
@@ -309,139 +384,154 @@ class Net(torch.nn.Module):
         Parameters
         ----------
         problem_name : str
-            Describe
+            The name of the problem that will be used for naming
+            the directory of logs and plots.
 
         f_fun : function
-            Describe
+            The f function in the PDE written in PyTorch framework.
 
         deriv_map : numpy.ndarray
-            Describe
+            Numpy array of size `n x d_in` such that
+            $$
+            \\text{deriv_map}[i] = \\alpha^i.
+            $$
 
         zeta_map : numpy.ndarray, optional
-            Describe
+            Default to be zeros array of size `n`.
 
         deriv_condition_deriv_map : numpy.ndarray, optional
-            Describe
+            Default to be `None`
+            so that no deriv condition is required.
 
         deriv_condition_zeta_map : numpy.ndarray, optional
-            Describe
+            Default to be `None`
+            so that no deriv condition is required.
 
         dim_out : int, optional
-            Describe
+            Default to be the maximum value in `zeta_map`.
 
         phi_fun : function, optional
-            Describe
+            Default to be identitiy function.
 
         exact_p_fun : function, optional
-            Describe
+            Default to be `None`,
+            so that Net will use neural network approximation to solve
+            the Poisson equation at terminal time when `train_for_p = True`.
 
         phi0 : float, optional
-            Describe
+            Default to be `0`.
 
         conditional_probability_to_survive : function, optional
-            Describe
+            Default to always output `1`,
+            which is the case when the domain is the whole space.
 
         is_x_inside : function, optional
-            Describe
+            Default to always output `True`,
+            which is the case when the domain is the whole space.
 
         x_lo : float, optional
-            Describe
+            Default to be `-10`.
 
         x_hi : float, optional
-            Describe
+            Default to be `10`.
 
         t_lo : float, optional
-            Describe
+            Default to be `0`.
 
         T : float, optional
-            Describe
+            Default to be `1`.
 
         nu : float, optional
-            Describe
+            Default to be `1`.
 
         branch_exponential_lambda : float, optional
-            Describe
+            Default to be `-log(.95)/T`.
 
         neurons : int, optional
-            Describe
+            The number of neurons of the neural networks,
+            default to be `50`.
 
         layers : int, optional
-            Describe
+            The number of layers of the neural networks,
+            default to be `6`.
 
         branch_lr : float, optional
-            Describe
+            Initial learning rate, default to be `1e-3`.
 
         lr_milestones : tuple, optional
-            Describe
+            Default to be `(1000, 2000)`.
 
         lr_gamma : float, optional
-            Describe
+            Default to be `0.8`.
 
         weight_decay : float, optional
-            Describe
+            Default to be `0`.
 
         branch_nb_path_per_state : int, optional
-            Describe
+            Default to be `10000`.
 
         branch_nb_states : int, optional
-            Describe
+            Default to be `1000`.
 
         branch_nb_states_per_batch : int, optional
-            Describe
+            default to be `100`.
 
         epochs : int, optional
-            Describe
+            Default to be `5000`.
 
         batch_normalization : bool, optional
-            Describe
+            Default to be `True`.
 
         antithetic : bool, optional
-            Describe
+            Default to be `True`.
 
         overtrain_rate : float, optional
-            Describe
+            Default to be `.1`.
 
         device : str, optional
-            Describe
+            Default to be cpu.
 
         branch_activation : str, optional
-            Describe
+            Default to be softplus function.
 
         verbose : bool, optional
-            Describe
+            Default to be `False`.
 
         fix_all_dim_except_first : bool, optional
-            Describe
+            Default to be `True`.
 
         fix_t_dim : bool, optional
-            Describe
+            Default to be `True`.
 
         branch_patches : int, optional
-            Describe
+            Default to be `1`.
 
         outlier_percentile : float, optional
-            Describe
+            Default to be `1`.
 
         outlier_multiplier : float, optional
-            Describe
+            Default to be `1000`.
 
         code : numpy.ndarray, optional
-            Describe
+            Default to be the identity code of size `d_out`.
 
         coordinate : numpy.ndarray, optional
-            Describe
+            Default to be `[0, 1, ..., d_out-1]`.
 
         train_for_p : bool, optional
-            Describe
+            Default to be `True` if `nprime > 0` and `exact_p_fun = None`,
+            `False` otherwise.
 
         save_for_best_model : bool, optional
-            Describe
+            Default to be `True`.
 
         save_data : bool, optional
-            Describe
+            Default to be `False`.
 
         continue_from_checkpoint : str, optional
-            Describe
+            If a directory is passed as `continue_from_checkpoint`,
+            we load the model from the directory
+            and set `train_for_p = False`.
         """
         super(Net, self).__init__()
         self.problem_name = problem_name
@@ -606,18 +696,23 @@ class Net(torch.nn.Module):
 
     def forward(self, x, patch=None, p_or_u="u"):
         """
-        Describe
+        Apply the neural network function on the input `x`.
 
         Parameters
         ----------
         x : torch.Tensor
-            Describe
+            Tensor of size `batch_size x (d_in + 1)` for u network;
+            tensor of size `batch_size x d_in` for p network,
 
         patch : int, optional
-            Describe
+            The current patch index.
+            When `patch` is not specified,
+            we use `bisect_left` on the first dimension of `x`
+            to determine the correct `patch`.
 
         p_or_u : str, optional
-            Describe
+            To call u network or p network,
+            default to be "u".
         """
         if self.exact_p_fun is not None and p_or_u == "p":
             return self.exact_p_fun(x.T)
@@ -670,8 +765,9 @@ class Net(torch.nn.Module):
 
     def log_config(self):
         """
-        Set up configuration for log files and mkdir
+        Set up configuration for log files and mkdir.
         """
+        logging.info(f"Logs are saved in {self.working_dir}")
         os.makedirs(self.working_dir)
         os.mkdir(f"{self.working_dir}/plot")
         os.mkdir(f"{self.working_dir}/data")
@@ -696,7 +792,7 @@ class Net(torch.nn.Module):
         Parameters
         ----------
         val : torch.Tensor
-            Describe
+            Tensor representing the current time.
         """
         idx = (
             torch.max(self.t_boundaries <= (val + 1e-8).reshape(-1, 1), dim=1)[
@@ -714,15 +810,15 @@ class Net(torch.nn.Module):
         return idx
 
     @staticmethod
-    def pretty_print(tensor):
+    def latex_print(tensor):
         """
-        Describe
-
+        Print the tensor in the latex format,
+        to be used in `error_calculation`.
 
         Parameters
         ----------
         tensor : torch.Tensor
-            Describe
+            Tensor to be printed in latex format.
         """
         mess = ""
         for i in tensor[:-1]:
@@ -732,24 +828,36 @@ class Net(torch.nn.Module):
 
     def error_calculation(self, exact_u_fun, exact_p_fun, nb_pts_time=11, nb_pts_spatial=2*126+1, error_multiplier=1):
         """
-        Describe
+        The calculation of error according to the metrics
+        by Lejay and Gonzalez and Angeli et al.
 
         Parameters
         ----------
         exact_u_fun : function
-            Describe
+            The u function `exact_u_fun(t, x, coordinate)`
+            in closed-form written in PyTorch framework
+            that takes t tensor of size `batch_size`,
+            x tensor of size `d_in x batch_size`,
+            and int as input,
+            and outputs tensor of size `batch_size`.
 
         exact_p_fun : function
-            Describe
+            The p function `exact_p_fun(tx)`
+            in closed-form written in PyTorch framework
+            that takes tx tensor of size `(d_in + 1) x batch_size` as input,
+            and outputs tensor of size `batch_size`.
 
         nb_pts_time : int, optional
-            Describe
+            The number of points in [0, T],
+            default to be `11`.
 
         nb_pts_spatial : int, optional
-            Describe
+            The number of points in [x_lo, x_hi],
+            default to be `2*126+1`.
 
         error_multiplier : float, optional
-            Describe
+            Multiplier for the error metric of Lejay,
+            default to be `1`.
         """
         x = np.linspace(self.x_lo, self.x_hi, nb_pts_spatial)
         t = np.linspace(self.t_lo, self.t_hi, nb_pts_time)
@@ -773,9 +881,9 @@ class Net(torch.nn.Module):
         error.append(overall_error)
         for i in range(self.dim_in):
             logging.info(f"$\\hat{{e}}_{i}(t_k)$")
-            self.pretty_print(error[i].max(dim=1)[0])
+            self.latex_print(error[i].max(dim=1)[0])
         logging.info("$\\hat{e}(t_k)$")
-        self.pretty_print(error[-1].max(dim=1)[0])
+        self.latex_print(error[-1].max(dim=1)[0])
         logging.info("\\hline")
 
         # erru
@@ -785,7 +893,7 @@ class Net(torch.nn.Module):
             denominator += exact_u_fun(arr.T, i).reshape(nb_pts_time, -1) ** 2
             numerator += (nn[:, i] - exact_u_fun(arr.T, i)).reshape(nb_pts_time, -1) ** 2
         logging.info("erru($t_k$)")
-        self.pretty_print((numerator.mean(dim=-1)/denominator.mean(dim=-1)).sqrt())
+        self.latex_print((numerator.mean(dim=-1)/denominator.mean(dim=-1)).sqrt())
 
         del nn
         torch.cuda.empty_cache()
@@ -817,7 +925,7 @@ class Net(torch.nn.Module):
             denominator += exact.reshape(nb_pts_time, -1, self.dim_in) ** 2
             numerator += (exact - grad[:, :, i]).reshape(nb_pts_time, -1, self.dim_in) ** 2
         logging.info("errgu($t_k$)")
-        self.pretty_print((numerator.mean(dim=(1, 2))/denominator.mean(dim=(1, 2))).sqrt())
+        self.latex_print((numerator.mean(dim=(1, 2))/denominator.mean(dim=(1, 2))).sqrt())
 
         # errdivu
         logging.info("\nThe absolute divergence of u (errdivu) is calculated as follows.")
@@ -826,7 +934,7 @@ class Net(torch.nn.Module):
             numerator += (grad[:, i, i]).reshape(nb_pts_time, -1)
         numerator = numerator**2
         logging.info("errdivu($t_k$)")
-        self.pretty_print(
+        self.latex_print(
                 ((self.x_hi - self.x_lo)**self.dim_in * numerator.mean(dim=-1)).sqrt()
         )
 
@@ -866,13 +974,13 @@ class Net(torch.nn.Module):
         Parameters
         ----------
         order : numpy.ndarray
-            Describe
+            Numpy array of size `d`.
 
         y : torch.Tensor
-            Describe
+            Tensor of size `batch_size`.
 
         x : torch.Tensor
-            Describe
+            Tensor of size `d x batch_size`.
         """
         for cur_dim, cur_order in enumerate(order):
             for _ in range(int(cur_order)):
@@ -896,16 +1004,17 @@ class Net(torch.nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Describe
+            Tensor of size `d_in x batch_size`.
 
         T : torch.Tensor
-            Describe
+            Tensor of size `batch_size` that represents
+            the terminal time of the current patch.
 
         patch : int
-            Describe
+            The current patch index.
 
         coordinate : numpy.ndarray
-            Describe
+            The current coordinate of the system.
         """
         if patch == 0:
             return self.phi_fun(x, coordinate)
@@ -920,12 +1029,13 @@ class Net(torch.nn.Module):
 
     def print_msg(self, msg):
         """
-        Describe
+        To log as info when `verbose = True`
+        and to log as debug otherwise.
 
         Parameters
         ----------
         msg : str
-            Describe
+            Message to be logged.
         """
         if self.verbose:
             logging.info(msg)
@@ -934,32 +1044,42 @@ class Net(torch.nn.Module):
 
     def code_to_function(self, code, x, T, patch, coordinate):
         """
-        Calculate the functional of tree based on code and x
+        Calculate the functional of tree based on code, x, and coordinate.
 
-        There are two ways of representing the code
-        1. negative code of size d
-            (neg_num_1, ..., neg_num_d) -> d/dx1^{-neg_num_1 - 1} ... d/dxd^{-neg_num_d - 1} phi(x1, ..., xd)
-        2. positive code of size n
-            (pos_num_1, ..., pos_num_n) -> d/dy1^{pos_num_1 - 1} ... d/dyd^{-pos_num_1 - 1} phi(y1, ..., yn)
-                y_i is the derivatives of phi wrt x with order self.deriv_map[i-1]
+        There are two ways of representing the code <br />
+        1. negative code of size `d`
+            $$
+            (i_0, \\ldots, i_{d-1}) \\rightarrow
+            \\partial_{x_0}^{-i_0 - 1} \\dots
+            \\partial_{x_{d-1}}^{-i_{d-1} - 1}
+            \\phi_{coordinate}(x_0, ..., x_{d-1}).
+            $$
+        2. positive code of size `n`
+            $$
+            (i_0, \\ldots, i_{n-1}) \\rightarrow
+            \\partial_{y_0}^{i_0 - 1} \\dots
+            \\partial_{y_{n-1}}^{i_{n-1} - 1}
+            f_{coordinate}
+            ((\\partial_{\\alpha^j} u_{\\zeta^j}(t, x))_{0 \\le j < n}).
+            $$
 
         Parameters
         ----------
         code : numpy.ndarray
-            Describe
+            Code to be applied on `f_fun` and `phi_fun`.
 
         x : torch.Tensor
-            Describe
+            Tensor of size `d_in x batch_size`.
 
         T : torch.Tensor
-            Describe
+            Tensor of size `batch_size` that represents
+            the terminal time of the current patch.
 
         patch : int, optional
-            Describe
+            The current patch index.
 
         coordinate : numpy.ndarray
-            Describe
-
+            The current coordinate of the system.
         """
         x = x.detach().clone().requires_grad_(True)
         fun_val = torch.zeros_like(x[0])
@@ -996,22 +1116,22 @@ class Net(torch.nn.Module):
 
     def gen_bm(self, dt, nb_states, var=None):
         """
-        Generate brownian motion sqrt{dt} x Gaussian
+        Generate Brownian motion var x sqrt{dt} x Gaussian.
 
         When self.antithetic=true, we generate
         dw = sqrt{dt} x Gaussian of size nb_states//2
-        and return (dw, -dw)
+        and return (dw, -dw).
 
         Parameters
         ----------
         dt : torch.Tensor
-            Describe
+            Time increment of the Brownian motion.
 
         nb_states : int
-            Describe
+            Number of states for Brownian motion generation.
 
         var : float, optional
-            Describe
+            Default to be `nu`.
         """
         var = self.nu if var is None else var
         dt = dt.clip(min=0.0)  # so that we can safely take square root of dt
@@ -1031,34 +1151,39 @@ class Net(torch.nn.Module):
 
     def helper_negative_code_on_f(self, t, T, x, mask, H, code, patch, coordinate):
         """
-        Describe
+        Helper function to deal with coordinate -2,
+        which corresponds to
+        $$
+        \\partial_t u_{-1} + \\frac{\\nu}{2} * \\Delta u_{-1}.
+        $$
 
 
         Parameters
         ----------
         t : torch.Tensor
-            Describe
+            Current time.
 
         T : torch.Tensor
-            Describe
+            Terminal time.
 
         x : torch.Tensor
-            Describe
+            Value of Brownian motion at time t.
 
         mask : torch.Tensor
-            Describe
+            mask[idx]=1 means the state at index idx is still alive
+            mask[idx]=0 means the state at index idx is dead.
 
         H : torch.Tensor
-            Describe
+            Cummulative value of the product of functional H.
 
         code : numpy.ndarray
-            Describe
+            Determine the operation to be taken on the functions f and phi.
 
-        patch : int, optional
-            Describe
+        patch : int
+            The current patch index.
 
         coordinate : numpy.ndarray
-            Describe
+            The current coordinate of the system.
         """
         ans = torch.zeros_like(t)
         order = tuple(-code - 1)
@@ -1103,34 +1228,34 @@ class Net(torch.nn.Module):
 
     def gen_sample_batch(self, t, T, x, mask, H, code, patch, coordinate):
         """
-        Recursive function to calculate E[ H(t, x, code) ]
+        Recursive function to calculate E[ H(t, x, code) ].
 
         Parameters
         ----------
         t : torch.Tensor
-            Current time
+            Current time.
 
         T : torch.Tensor
-            Terminal time
+            Terminal time.
 
         x : torch.Tensor
-            Value of brownian motion at time t
+            Value of Brownian motion at time t.
 
         mask : torch.Tensor
             mask[idx]=1 means the state at index idx is still alive
-            mask[idx]=0 means the state at index idx is dead
+            mask[idx]=0 means the state at index idx is dead.
 
         H : torch.Tensor
-            Cummulative value of the product of functional H
+            Cummulative value of the product of functional H.
 
         code : numpy.ndarray
-            Determine the operation to be taken on the functions f and phi
+            Determine the operation to be taken on the functions f and phi.
 
         patch : int
-            Describe
+            The current patch index.
 
         coordinate : numpy.ndarray
-            Describe
+            The current coordinate of the system.
         """
         # return zero tensor when no operation is needed
         ans = torch.zeros_like(t)
@@ -1566,12 +1691,19 @@ class Net(torch.nn.Module):
 
     def compare_with_exact(self, exact_fun):
         """
-        Describe
+        Plot the comparison among
+        exact u solution, terminal condition,
+        and the neural network approximation.
 
         Parameters
         ----------
         exact_fun : function
-            Describe
+            The exact u function `exact_example(t, x, T, coordinate)`
+            that takes t array of size `batch_size`,
+            x array of d_in x size `batch_size`,
+            T array of size `batch_size`,
+            and `int` as input,
+            and output array of size `batch_size`.
         """
         nb_points = 100
         grid = np.linspace(self.x_lo, self.x_hi, nb_points)
@@ -1615,31 +1747,34 @@ class Net(torch.nn.Module):
 
     def log_plot_save(self, patch, epoch, loss, x, y, debug_mode=False, p_or_u="u"):
         """
-        Describe
+        Log, plot, and save data in the current `epoch`.
 
 
         Parameters
         ----------
         patch : int
-            Describe
+            The current patch index.
 
         epoch : int
-            Describe
+            The current epoch index.
 
         loss : torch.Tensor
-            Describe
+            The current training loss.
 
         x : torch.Tensor
-            Describe
+            The generated MC samples.
 
         y : torch.Tensor
-            Describe
+            The generated MC samples.
 
         debug_mode : bool, optional
-            Describe
+            If `debug_mode = True`, we show the plot;
+            otherwise the plot is saved in the directory `working_dir`.
+            Default to be False.
 
         p_or_u : str, optional
-            Describe
+            The operation on "p" or "u",
+            default to be "u".
         """
         # loss info
         self.print_msg(f"Patch {patch:2.0f}: epoch {epoch:4.0f} with loss {loss.detach():.2E}")
@@ -1719,12 +1854,13 @@ class Net(torch.nn.Module):
 
     def gen_sample(self, patch):
         """
-        Generate sample based on the (t, x) boundary and the function gen_sample_batch
+        Generate samples for u based on `adjusted_t_boundaries`,
+        `adjusted_x_boundaries` and the function `gen_sample_batch`.
 
         Parameters
         ----------
         patch : int
-            Describe
+            The current patch index.
         """
         nb_states = self.nb_states
         states_per_batch = min(nb_states, self.nb_states_per_batch)
@@ -1786,17 +1922,17 @@ class Net(torch.nn.Module):
             torch.cat(yy),
         )
 
-    def calculate_p_from_u(self, x, patch):
+    def gen_sample_for_p_batch(self, x, patch):
         """
-        Describe
+        Inverse the Laplacian using Monte Carlo method.
 
         Parameters
         ----------
         x : torch.Tensor
-            Describe
+            Tensor of size `d_in x batch_size`.
 
         patch : int
-            Describe
+            The current patch index.
         """
         x = x.detach().clone().requires_grad_(True)
         nb_mc = self.nb_path_per_state
@@ -1835,27 +1971,29 @@ class Net(torch.nn.Module):
         ans *= ((self.tau_hi - self.tau_lo) / (2 * tau[:, :, 0]))
         return ans.mean(dim=0, keepdim=True).detach()
 
-    def gen_sample_for_p(self, patch, gen_y=True, overtrain_rate=.5):
+    def gen_sample_for_p(self, patch, overtrain_rate=.5):
         """
-        Describe
+        Generate samples for p at terminal time based on
+        the function `gen_sample_for_p_batch`.
 
         Parameters
         ----------
         patch : int
-            Describe
-
-        gen_y : bool, optional
-            Describe
+            The current patch index.
 
         overtrain_rate : float, optional
-            Describe
+            Generate samples on
+            the widened domain
+            $$
+            [\\text{x_lo - overtrain_rate} \\times \\text{(x_hi-x_lo)},
+            \\text{x_hi + overtrain_rate} \\times \\text{(x_hi-x_lo)}].
+            $$
         """
         self.nb_path_per_state *= 1000
         self.nb_states_per_batch //= 1000
         states_per_batch = min(self.nb_states, self.nb_states_per_batch)
         batches = math.ceil(self.nb_states / states_per_batch)
         xx, yy = [], []
-        # widen the domain from [x_lo, x_hi] to [x_lo - .5*(x_hi-x_lo), x_hi + .5*(x_hi-x_lo)]
         x_lo, x_hi = self.x_lo, self.x_hi
         x_lo, x_hi = x_lo - overtrain_rate * (x_hi - x_lo), x_hi + overtrain_rate * (x_hi - x_lo)
         start = time.time()
@@ -1867,9 +2005,8 @@ class Net(torch.nn.Module):
             x = (x_lo + (x_hi - x_lo) * unif).T
             if self.dim_in > 1 and self.fix_all_dim_except_first:
                 x[1:, :] = (x_hi + x_lo) / 2
-            if gen_y:
-                y = self.calculate_p_from_u(x.T, patch=patch)
-                yy.append(y)
+            y = self.gen_sample_for_p_batch(x.T, patch=patch)
+            yy.append(y)
             xx.append(x)
             if batch_now % 1000 == 0 or batch_now == batches - 1:
                 logging.debug(f"Generated {batch_now + 1} out of {batches} batches with {time.time() - start} seconds.")
@@ -1883,20 +2020,28 @@ class Net(torch.nn.Module):
 
     def train_and_eval(self, debug_mode=False, return_dict=False, reuse_x=None, reuse_y=None):
         """
-        Generate sample and evaluate (plot) NN approximation when debug_mode=True
+        Train the neural network using the Monte Carlo samples generated by
+        `gen_sample` and `gen_sample_for_p` and log the training information.
 
         Parameters
         ----------
         debug_mode : bool, optional
-            Describe
+            If `debug_mode = True`, we show the plot;
+            otherwise the plot is saved in the directory `working_dir`.
+            Default to be False.
 
         return_dict : bool, optional
-            Describe
+            Whether or not to return the dictionary
+            containing the information of
+            best training loss and total runtime.
 
         reuse_x : torch.Tensor, optional
-            Describe
+            If a tensor is passed as `reuse_x`,
+            we do not generate the Monte Carlo samples and use `x = reuse_x`.
 
         reuse_y : torch.Tensor, optional
+            If a tensor is passed as `reuse_y`,
+            we do not generate the Monte Carlo samples and use `y = reuse_y`.
             Describe
         """
         output_dict = {}
