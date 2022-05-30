@@ -1912,7 +1912,7 @@ class Net(torch.nn.Module):
                 )
                 lo, hi = lo - self.outlier_multiplier * (hi - lo), hi + self.outlier_multiplier * (hi - lo)
                 mask = torch.logical_or(
-                    torch.logical_and(lo <= yy_tmp, yy_tmp <= hi), yy_tmp.isnan()
+                    torch.logical_and(lo <= yy_tmp, yy_tmp <= hi), ~yy_tmp.isnan()
                 )
                 yyy.append((yy_tmp.nan_to_num() * mask).sum(dim=1) / mask.sum(dim=1))
             yy.append(torch.stack(yyy, dim=-1))
@@ -1969,7 +1969,11 @@ class Net(torch.nn.Module):
         elif self.dim_in == 2:
             ans *= -torch.log((y**2).sum(dim=-1).sqrt())
         ans *= ((self.tau_hi - self.tau_lo) / (2 * tau[:, :, 0]))
-        return ans.mean(dim=0, keepdim=True).detach()
+
+        mask = ~ans.isnan()
+        return (
+            ((ans.nan_to_num() * mask).sum(dim=0, keepdim=True) / mask.sum(dim=0, keepdim=True)).detach()
+        )
 
     def gen_sample_for_p(self, patch, overtrain_rate=.5):
         """
