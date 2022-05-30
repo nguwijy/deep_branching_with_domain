@@ -1,0 +1,111 @@
+2022-05-30 16:20:10,400 | root |  DEBUG: Current configuration: {'training': True, '_parameters': OrderedDict(), '_buffers': OrderedDict(), '_non_persistent_buffers_set': set(), '_backward_hooks': OrderedDict(), '_is_full_backward_hook': None, '_forward_hooks': OrderedDict(), '_forward_pre_hooks': OrderedDict(), '_state_dict_hooks': OrderedDict(), '_load_state_dict_pre_hooks': OrderedDict(), '_modules': OrderedDict([('u_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=3, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=2, bias=True)
+  )
+)), ('u_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(3, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('p_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+)), ('p_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('loss', MSELoss()), ('activation', Softplus(beta=1, threshold=20))]), 'problem_name': 'navier_stokes_2d_with_boundary', 'f_fun': <function f_example at 0x7f5157f6f820>, 'phi_fun': <function phi_example at 0x7f5157f6f8b0>, 'phi0': 0, 'conditional_probability_to_survive': functools.partial(<function conditional_probability_to_survive at 0x7f5157f4cf70>, lower_bound=(-100, 0), upper_bound=(100, 1)), 'is_x_inside': functools.partial(<function is_x_inside at 0x7f5157f6f040>, lower_bound=(-100, 0), upper_bound=(100, 1)), 'deriv_map': array([[1, 0],
+       [0, 1],
+       [0, 0],
+       [0, 0],
+       [1, 0],
+       [0, 1],
+       [1, 0],
+       [0, 1]]), 'n': 8, 'dim_in': 2, 'zeta_map': array([-1, -1,  0,  1,  0,  0,  1,  1]), 'deriv_condition_deriv_map': array([[1, 0],
+       [0, 1]]), 'deriv_condition_zeta_map': array([0, 1]), 'dim_out': 2, 'nprime': 2, 'exact_p_fun': None, 'train_for_p': True, 'patches': 1, 'code': array([[-1, -1],
+       [-1, -1]]), 'coordinate': array([0, 1]), 'fdb_lookup': {(1, 0): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 1), l_and_k={(1, 0): [0, 0, 0, 0, 0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 1, 0), l_and_k={(1, 0): [0, 0, 0, 0, 0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 1, 0, 0), l_and_k={(1, 0): [0, 0, 0, 0, 0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 1, 0, 0, 0), l_and_k={(1, 0): [0, 0, 0, 0, 1, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 1, 0, 0, 0, 0), l_and_k={(1, 0): [0, 0, 0, 1, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 1, 0, 0, 0, 0, 0), l_and_k={(1, 0): [0, 0, 1, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0, 0, 0, 0, 0), l_and_k={(1, 0): [0, 1, 0, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0, 0, 0, 0, 0), l_and_k={(1, 0): [1, 0, 0, 0, 0, 0, 0, 0]})], (0, 1): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 1), l_and_k={(0, 1): [0, 0, 0, 0, 0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 1, 0), l_and_k={(0, 1): [0, 0, 0, 0, 0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 1, 0, 0), l_and_k={(0, 1): [0, 0, 0, 0, 0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 1, 0, 0, 0), l_and_k={(0, 1): [0, 0, 0, 0, 1, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 1, 0, 0, 0, 0), l_and_k={(0, 1): [0, 0, 0, 1, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 1, 0, 0, 0, 0, 0), l_and_k={(0, 1): [0, 0, 1, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0, 0, 0, 0, 0), l_and_k={(0, 1): [0, 1, 0, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0, 0, 0, 0, 0), l_and_k={(0, 1): [1, 0, 0, 0, 0, 0, 0, 0]})], (0, 0): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 0), l_and_k={})]}, 'fdb_runtime': 0.02289605140686035, 'mechanism_tot_len': 178, 'lr': 0.001, 'lr_milestones': [1000, 2000], 'lr_gamma': 0.8, 'weight_decay': 0, 'save_for_best_model': True, 'save_data': False, 'batch_normalization': True, 'nb_states': 10000, 'nb_states_per_batch': 1000, 'nb_path_per_state': 1000, 'x_lo': 0, 'x_hi': 1, 'adjusted_x_boundaries': (0.0, 1.0), 't_lo': 0.0, 't_hi': 1, 'T': 1, 'tau_lo': 1e-05, 'tau_hi': 10, 'nu': 0.2, 'delta_t': 1.0, 'outlier_percentile': 1, 'outlier_multiplier': 10, 'exponential_lambda': 0.05129329438755058, 'epochs': 10000, 'antithetic': True, 'device': device(type='cuda'), 'verbose': True, 'fix_all_dim_except_first': False, 'fix_t_dim': True, 't_boundaries': tensor([1., 0.], device='cuda:0'), 'adjusted_t_boundaries': [(tensor(0., device='cuda:0'), tensor(0., device='cuda:0'))], 'working_dir': 'logs/20220530-162010-navier_stokes_2d_with_boundary-T1-nu0.2'}
+2022-05-30 16:20:10,415 | root |  DEBUG: Generated 1 out of 10000 batches with 0.015073060989379883 seconds.
+2022-05-30 16:20:21,684 | root |  DEBUG: Generated 1001 out of 10000 batches with 11.268309831619263 seconds.
+2022-05-30 16:20:32,868 | root |  DEBUG: Generated 2001 out of 10000 batches with 11.18386173248291 seconds.
+2022-05-30 16:20:44,048 | root |  DEBUG: Generated 3001 out of 10000 batches with 11.179600954055786 seconds.
+2022-05-30 16:20:55,347 | root |  DEBUG: Generated 4001 out of 10000 batches with 11.298247575759888 seconds.
+2022-05-30 16:21:06,814 | root |  DEBUG: Generated 5001 out of 10000 batches with 11.46509861946106 seconds.
+2022-05-30 16:21:18,608 | root |  DEBUG: Generated 6001 out of 10000 batches with 11.79253101348877 seconds.
+2022-05-30 16:21:31,602 | root |  DEBUG: Generated 7001 out of 10000 batches with 12.992791414260864 seconds.
+2022-05-30 16:21:43,928 | root |  DEBUG: Generated 8001 out of 10000 batches with 12.325275897979736 seconds.
+2022-05-30 16:21:56,243 | root |  DEBUG: Generated 9001 out of 10000 batches with 12.313715934753418 seconds.
+2022-05-30 16:22:09,528 | root |  DEBUG: Generated 10000 out of 10000 batches with 13.285168170928955 seconds.
+2022-05-30 16:22:09,567 | root |  INFO: Patch 0: generation of p samples take 119.1671450138092 seconds.
+2022-05-30 16:22:09,652 | root |  INFO: Patch  0: epoch    0 with loss 5.51E+00
+2022-05-30 16:22:39,175 | root |  INFO: Patch  0: epoch  500 with loss 1.21E-02
+2022-05-30 16:23:08,193 | root |  INFO: Patch  0: epoch 1000 with loss 4.48E-02
+2022-05-30 16:23:34,517 | root |  INFO: Patch  0: epoch 1500 with loss 4.48E-02
+2022-05-30 16:24:01,439 | root |  INFO: Patch  0: epoch 2000 with loss 6.08E-03
+2022-05-30 16:24:29,735 | root |  INFO: Patch  0: epoch 2500 with loss 3.59E-03
+2022-05-30 16:24:58,234 | root |  INFO: Patch  0: epoch 3000 with loss 3.00E-03
+2022-05-30 16:25:27,311 | root |  INFO: Patch  0: epoch 3500 with loss 2.57E-03
+2022-05-30 16:25:55,076 | root |  INFO: Patch  0: epoch 4000 with loss 6.49E-03
+2022-05-30 16:26:23,626 | root |  INFO: Patch  0: epoch 4500 with loss 4.68E-03
+2022-05-30 16:26:51,619 | root |  INFO: Patch  0: epoch 5000 with loss 3.92E-02
+2022-05-30 16:27:18,322 | root |  INFO: Patch  0: epoch 5500 with loss 5.85E-03
+2022-05-30 16:27:45,442 | root |  INFO: Patch  0: epoch 6000 with loss 6.60E-03
+2022-05-30 16:28:11,953 | root |  INFO: Patch  0: epoch 6500 with loss 1.37E-02
+2022-05-30 16:28:39,147 | root |  INFO: Patch  0: epoch 7000 with loss 2.24E-02
+2022-05-30 16:29:06,315 | root |  INFO: Patch  0: epoch 7500 with loss 1.07E-01
+2022-05-30 16:29:33,520 | root |  INFO: Patch  0: epoch 8000 with loss 3.38E-03
+2022-05-30 16:30:01,237 | root |  INFO: Patch  0: epoch 8500 with loss 2.39E-03
+2022-05-30 16:30:28,758 | root |  INFO: Patch  0: epoch 9000 with loss 2.45E-03
+2022-05-30 16:31:00,192 | root |  INFO: Patch  0: epoch 9500 with loss 3.54E-03
+2022-05-30 16:31:28,902 | root |  INFO: Patch  0: epoch 9999 with loss 1.50E-03
+2022-05-30 16:31:28,928 | root |  INFO: Patch0: pre-training of p with 10000 epochs takes  559 seconds.
+2022-05-30 16:40:01,236 | root |  INFO: Patch 0: generation of u samples take 512.3067095279694 seconds.
+2022-05-30 16:40:01,265 | root |  INFO: Patch  0: epoch    0 with loss 7.17E+00
+2022-05-30 16:40:14,328 | root |  INFO: Patch  0: epoch  500 with loss 9.22E-03
+2022-05-30 16:40:27,665 | root |  INFO: Patch  0: epoch 1000 with loss 3.10E-03
+2022-05-30 16:40:40,791 | root |  INFO: Patch  0: epoch 1500 with loss 1.11E-03
+2022-05-30 16:40:53,884 | root |  INFO: Patch  0: epoch 2000 with loss 1.50E-02
+2022-05-30 16:41:07,368 | root |  INFO: Patch  0: epoch 2500 with loss 4.29E-02
+2022-05-30 16:41:20,459 | root |  INFO: Patch  0: epoch 3000 with loss 4.77E-03
+2022-05-30 16:41:33,604 | root |  INFO: Patch  0: epoch 3500 with loss 1.08E-03
+2022-05-30 16:41:46,647 | root |  INFO: Patch  0: epoch 4000 with loss 1.34E-03
+2022-05-30 16:41:59,699 | root |  INFO: Patch  0: epoch 4500 with loss 1.61E-03
+2022-05-30 16:42:12,741 | root |  INFO: Patch  0: epoch 5000 with loss 1.76E-02
+2022-05-30 16:42:25,776 | root |  INFO: Patch  0: epoch 5500 with loss 1.72E-03
+2022-05-30 16:42:38,804 | root |  INFO: Patch  0: epoch 6000 with loss 1.92E-03
+2022-05-30 16:42:51,989 | root |  INFO: Patch  0: epoch 6500 with loss 6.90E-03
+2022-05-30 16:43:05,043 | root |  INFO: Patch  0: epoch 7000 with loss 9.73E-04
+2022-05-30 16:43:18,118 | root |  INFO: Patch  0: epoch 7500 with loss 1.53E-03
+2022-05-30 16:43:31,143 | root |  INFO: Patch  0: epoch 8000 with loss 8.16E-04
+2022-05-30 16:43:44,800 | root |  INFO: Patch  0: epoch 8500 with loss 4.97E-04
+2022-05-30 16:43:58,092 | root |  INFO: Patch  0: epoch 9000 with loss 1.49E-02
+2022-05-30 16:44:11,403 | root |  INFO: Patch  0: epoch 9500 with loss 8.17E-04
+2022-05-30 16:44:24,466 | root |  INFO: Patch  0: epoch 9999 with loss 2.88E-03
+2022-05-30 16:44:24,494 | root |  INFO: Patch 0: training of u with 10000 epochs take 263.2570376396179 seconds.
