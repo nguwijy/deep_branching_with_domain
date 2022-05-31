@@ -1911,9 +1911,7 @@ class Net(torch.nn.Module):
                     yy_tmp.nanquantile(1 - self.outlier_percentile/100, dim=1, keepdim=True)
                 )
                 lo, hi = lo - self.outlier_multiplier * (hi - lo), hi + self.outlier_multiplier * (hi - lo)
-                mask = torch.logical_or(
-                    torch.logical_and(lo <= yy_tmp, yy_tmp <= hi), ~yy_tmp.isnan()
-                )
+                mask = torch.logical_and(lo <= yy_tmp, yy_tmp <= hi)
                 yyy.append((yy_tmp.nan_to_num() * mask).sum(dim=1) / mask.sum(dim=1))
             yy.append(torch.stack(yyy, dim=-1))
 
