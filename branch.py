@@ -8,6 +8,7 @@ import numpy as np
 from fdb import fdb_nd
 from scipy.stats import norm
 import logging
+from functools import partial
 
 torch.manual_seed(0)  # set seed for reproducibility
 
@@ -657,7 +658,7 @@ class Net(torch.nn.Module):
         self.t_lo = t_lo
         self.t_hi = T
         self.T = T
-        self.tau_lo, self.tau_hi = 1e-5, 10  # for negative coordinate
+        self.tau_lo, self.tau_hi = 1e-5, 100  # for negative coordinate
         self.nu = nu
         self.delta_t = (T - t_lo) / branch_patches
         self.outlier_percentile = outlier_percentile
@@ -1265,12 +1266,20 @@ class Net(torch.nn.Module):
         nb_states, _ = t.shape
         # for the p coordinate
         if coordinate < 0:
-            unif = (
-                torch.rand(nb_states * self.nb_path_per_state, device=self.device)
-                     .reshape(nb_states, self.nb_path_per_state)
-            )
-            tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
+            # unif = (
+            #     torch.rand(nb_states * self.nb_path_per_state, device=self.device)
+            #          .reshape(nb_states, self.nb_path_per_state)
+            # )
+            # tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
+            tau = Exponential(
+                self.exponential_lambda
+                * torch.ones(nb_states, self.nb_path_per_state, device=self.device)
+            ).sample()
             dw = self.gen_bm(tau, nb_states, var=1)
+            x_is_inside = self.is_x_inside(x + dw)
+            survive_prob = self.conditional_probability_to_survive(T - t, x, x + dw).clip(0, 1)
+            mask = mask.bool() * x_is_inside * (tau < self.tau_hi)
+            H = H * survive_prob
             unif = torch.rand(nb_states, self.nb_path_per_state, device=self.device)
             order = -code - 1
             L = [fdb for fdb in fdb_nd(2, order) if max(fdb.lamb) < 2]
@@ -1289,14 +1298,15 @@ class Net(torch.nn.Module):
                                         H * fdb.coeff
                                         * len(L) * self.dim_in ** 2
                                         * self.dim_in ** 2
-                                        * (dw ** 2).sum(dim=0)
-                                        * (self.tau_hi - self.tau_lo)
-                                        / (2 * tau)
+                                        # * (dw ** 2).sum(dim=0)
+                                        # * (self.tau_hi - self.tau_lo)
+                                        # / (2 * tau)
+                                        / self.exponential_lambda / torch.exp(-self.exponential_lambda * tau)
                                 )
-                                if self.dim_in > 2:
-                                    A = A / (self.dim_in - 2)
-                                elif self.dim_in == 2:
-                                    A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
+                                # if self.dim_in > 2:
+                                #     A = A / (self.dim_in - 2)
+                                # elif self.dim_in == 2:
+                                #     A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
                                 code_increment = np.zeros_like(code)
                                 code_increment[j] += 1
                                 if fdb.lamb[0] == 0:
@@ -1361,14 +1371,15 @@ class Net(torch.nn.Module):
                                             H * fdb.coeff
                                             * len(L) * self.dim_in ** 2 * (self.dim_in + 2)
                                             * self.dim_in ** 2
-                                            * (dw ** 2).sum(dim=0)
-                                            * (self.tau_hi - self.tau_lo)
-                                            / (2 * tau)
+                                            # * (dw ** 2).sum(dim=0)
+                                            # * (self.tau_hi - self.tau_lo)
+                                            # / (2 * tau)
+                                            / self.exponential_lambda / torch.exp(-self.exponential_lambda * tau)
                                     )
-                                    if self.dim_in > 2:
-                                        A = A / (self.dim_in - 2)
-                                    elif self.dim_in == 2:
-                                        A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
+                                    # if self.dim_in > 2:
+                                    #     A = A / (self.dim_in - 2)
+                                    # elif self.dim_in == 2:
+                                    #     A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
                                     code_increment = np.zeros_like(code)
                                     if k < self.dim_in:
                                         A = self.nu * A
@@ -1937,12 +1948,21 @@ class Net(torch.nn.Module):
         x = x.detach().clone().requires_grad_(True)
         nb_mc = self.nb_path_per_state
         x = x.repeat(nb_mc, 1, 1)
-        unif = (
-            torch.rand(nb_mc * x.shape[1], device=self.device)
-                 .reshape(nb_mc, -1, 1)
-        )
-        tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
+        # unif = (
+        #     torch.rand(nb_mc * x.shape[1], device=self.device)
+        #          .reshape(nb_mc, -1, 1)
+        # )
+        # tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
+        tau = Exponential(
+            self.exponential_lambda
+            * torch.ones(nb_mc, x.shape[1], 1, device=self.device)
+        ).sample()
         y = self.gen_bm(tau.transpose(0, -1), x.shape[1], var=1).transpose(0, -1)
+        survive_prob = (
+                self.is_x_inside((x + y).reshape(-1, self.dim_in).T)
+                * self.is_x_inside(x.reshape(-1, self.dim_in).T)
+                * (tau < self.tau_hi).squeeze(dim=-1).reshape(-1)
+        )
         x = x + y
         x = x.reshape(-1, self.dim_in).T
         order = np.array([0] * self.dim_in)
@@ -1962,13 +1982,15 @@ class Net(torch.nn.Module):
                 )
                 order[j] -= 1
                 ans += tmp
+        ans *= survive_prob
         ans = ans.reshape(nb_mc, -1)
-        ans *= (y**2).sum(dim=-1)
-        if self.dim_in > 2:
-            ans /= (self.dim_in - 2)
-        elif self.dim_in == 2:
-            ans *= -torch.log((y**2).sum(dim=-1).sqrt())
-        ans *= ((self.tau_hi - self.tau_lo) / (2 * tau[:, :, 0]))
+        # ans *= (y**2).sum(dim=-1)
+        # if self.dim_in > 2:
+        #     ans /= (self.dim_in - 2)
+        # elif self.dim_in == 2:
+        #     ans *= -torch.log((y**2).sum(dim=-1).sqrt())
+        # ans *= ((self.tau_hi - self.tau_lo) / (2 * tau[:, :, 0]))
+        ans /= (self.exponential_lambda / torch.exp(-self.exponential_lambda * tau[:, :, 0]))
 
         mask = ~ans.isnan()
         return (
