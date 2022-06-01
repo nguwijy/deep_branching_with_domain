@@ -364,6 +364,7 @@ class Net(torch.nn.Module):
         batch_normalization=True,
         antithetic=True,
         overtrain_rate=.1,
+        overtrain_rate_for_p=.5,
         device="cpu",
         branch_activation="softplus",
         verbose=False,
@@ -375,6 +376,7 @@ class Net(torch.nn.Module):
         code=None,
         coordinate=None,
         train_for_p=None,
+        train_for_u=True,
         save_for_best_model=True,
         save_data=False,
         continue_from_checkpoint=None,
@@ -550,6 +552,7 @@ class Net(torch.nn.Module):
         self.nprime = sum(self.zeta_map == -1)
         self.exact_p_fun = exact_p_fun
         self.train_for_p = train_for_p if train_for_p is not None else (self.nprime > 0) and self.exact_p_fun is None
+        self.train_for_u = train_for_u
 
         # patching is used for calculating the target expected value of the tree in branch_patches steps
         #
@@ -655,6 +658,7 @@ class Net(torch.nn.Module):
             x_lo - overtrain_rate * (x_hi - x_lo),
             x_hi + overtrain_rate * (x_hi - x_lo),
         )
+        self.overtrain_rate_for_p = overtrain_rate_for_p
         self.t_lo = t_lo
         self.t_hi = T
         self.T = T
@@ -1694,7 +1698,14 @@ class Net(torch.nn.Module):
 
         return ans
 
-    def compare_with_exact(self, exact_fun, return_error=False, nb_points=100, show_plot=True):
+    def compare_with_exact(
+            self,
+            exact_fun,
+            return_error=False,
+            nb_points=100,
+            show_plot=True,
+            p_or_u="u",
+    ):
         """
         Plot the comparison among
         exact u solution, terminal condition,
@@ -1718,18 +1729,25 @@ class Net(torch.nn.Module):
         ), axis=0)
         grid_d_dim_with_t = np.concatenate((self.t_lo * np.ones((1, nb_points)), grid_d_dim), axis=0)
 
+        nn_input = grid_d_dim_with_t if p_or_u == "u" else grid_d_dim_with_t[1:]
         nn = (
             self(torch.tensor(
-                grid_d_dim_with_t.T, device=self.device, dtype=torch.get_default_dtype()
-            ), patch=self.patches-1)
+                nn_input.T, device=self.device, dtype=torch.get_default_dtype()
+            ), patch=self.patches-1, p_or_u=p_or_u)
             .detach()
             .cpu()
             .numpy()
         )
         error = []
-        for i in range(self.dim_out):
+        for_range = self.dim_out if p_or_u == "u" else 1
+        for i in range(for_range):
             f = plt.figure()
-            true = exact_fun(self.t_lo, grid_d_dim, self.T, i)
+            true = exact_fun(
+                self.t_lo if p_or_u == "u" else self.T,
+                grid_d_dim,
+                self.T,
+                i
+            )
             terminal = exact_fun(self.T, grid_d_dim, self.T, i)
             error.append(np.abs(true - nn[:, i]).mean())
             plt.plot(grid, nn[:, i], label="NN")
@@ -1737,7 +1755,7 @@ class Net(torch.nn.Module):
             plt.plot(grid, terminal, label="Terminal solution")
             plt.legend()
             f.savefig(
-                f"{self.working_dir}/plot/u{i}_comparison_with_exact.png", bbox_inches="tight"
+                f"{self.working_dir}/plot/{p_or_u}{i}_comparison_with_exact.png", bbox_inches="tight"
             )
             if show_plot:
                 plt.show()
@@ -1993,7 +2011,7 @@ class Net(torch.nn.Module):
             ((ans.nan_to_num() * mask).sum(dim=0, keepdim=True) / mask.sum(dim=0, keepdim=True)).detach()
         )
 
-    def gen_sample_for_p(self, patch, overtrain_rate=.5):
+    def gen_sample_for_p(self, patch):
         """
         Generate samples for p at terminal time based on
         the function `gen_sample_for_p_batch`.
@@ -2017,7 +2035,7 @@ class Net(torch.nn.Module):
         batches = math.ceil(self.nb_states / states_per_batch)
         xx, yy = [], []
         x_lo, x_hi = self.x_lo, self.x_hi
-        x_lo, x_hi = x_lo - overtrain_rate * (x_hi - x_lo), x_hi + overtrain_rate * (x_hi - x_lo)
+        x_lo, x_hi = x_lo - self.overtrain_rate_for_p * (x_hi - x_lo), x_hi + self.overtrain_rate_for_p * (x_hi - x_lo)
         start = time.time()
         for batch_now in range(batches):
             unif = (
@@ -2144,67 +2162,68 @@ class Net(torch.nn.Module):
                     f"Patch{p}: pre-training of p with {self.epochs} epochs takes {time.time() - start:4.0f} seconds."
                 )
 
-            # initialize optimizer for u
-            optimizer = torch.optim.Adam(
-                (val for key, val in self.named_parameters() if f'layer.{p}' in key),
-                lr=self.lr, weight_decay=self.weight_decay
-            )
-            scheduler = torch.optim.lr_scheduler.MultiStepLR(
-                optimizer,
-                milestones=self.lr_milestones,
-                gamma=self.lr_gamma,
-            )
+            if self.train_for_u:
+                # initialize optimizer for u
+                optimizer = torch.optim.Adam(
+                    (val for key, val in self.named_parameters() if f'layer.{p}' in key),
+                    lr=self.lr, weight_decay=self.weight_decay
+                )
+                scheduler = torch.optim.lr_scheduler.MultiStepLR(
+                    optimizer,
+                    milestones=self.lr_milestones,
+                    gamma=self.lr_gamma,
+                )
 
-            start = time.time()
-            if reuse_x is None:
-                x, y = self.gen_sample(patch=p)
-            else:
-                x, y = reuse_x, reuse_y
-            self.print_msg(
-                f"Patch {p}: generation of u samples take {time.time() - start} seconds."
-            )
+                start = time.time()
+                if reuse_x is None:
+                    x, y = self.gen_sample(patch=p)
+                else:
+                    x, y = reuse_x, reuse_y
+                self.print_msg(
+                    f"Patch {p}: generation of u samples take {time.time() - start} seconds."
+                )
 
-            best_loss = float('inf')
-            start = time.time()
-            # loop through epochs
-            for epoch in range(self.epochs):
-                # clear gradients and evaluate training loss
-                optimizer.zero_grad()
-                self.train()
-                loss = self.loss(self(x, patch=p), y)
-                self.eval()
+                best_loss = float('inf')
+                start = time.time()
+                # loop through epochs
+                for epoch in range(self.epochs):
+                    # clear gradients and evaluate training loss
+                    optimizer.zero_grad()
+                    self.train()
+                    loss = self.loss(self(x, patch=p), y)
+                    self.eval()
 
-                # divergence free condition
-                if self.deriv_condition_zeta_map is not None:
-                    grad = 0
-                    xx = x.T.detach().clone().requires_grad_(True)
-                    for (idx, c) in zip(self.deriv_condition_zeta_map, self.deriv_condition_deriv_map):
-                        # additional t coordinate
-                        grad += self.nth_derivatives(
-                            np.insert(c, 0, 0), self(xx.T, patch=p)[:, idx], xx
-                        )
-                    loss += self.loss(grad, torch.zeros_like(grad))
+                    # divergence free condition
+                    if self.deriv_condition_zeta_map is not None:
+                        grad = 0
+                        xx = x.T.detach().clone().requires_grad_(True)
+                        for (idx, c) in zip(self.deriv_condition_zeta_map, self.deriv_condition_deriv_map):
+                            # additional t coordinate
+                            grad += self.nth_derivatives(
+                                np.insert(c, 0, 0), self(xx.T, patch=p)[:, idx], xx
+                            )
+                        loss += self.loss(grad, torch.zeros_like(grad))
 
-                # update model weights and schedule
-                loss.backward()
-                optimizer.step()
-                scheduler.step()
+                    # update model weights and schedule
+                    loss.backward()
+                    optimizer.step()
+                    scheduler.step()
 
-                # save the best model when NN enters stabilising zone
-                if epoch > self.lr_milestones[-1] and loss.item() < best_loss:
-                    best_loss = loss.item()
-                    if self.save_for_best_model:
-                        torch.save(self.state_dict(), f"{self.working_dir}/checkpoint.pt")
+                    # save the best model when NN enters stabilising zone
+                    if epoch > self.lr_milestones[-1] and loss.item() < best_loss:
+                        best_loss = loss.item()
+                        if self.save_for_best_model:
+                            torch.save(self.state_dict(), f"{self.working_dir}/checkpoint.pt")
 
-                # print loss information and plot every 500 epochs
-                if epoch % 500 == 0 or epoch + 1 == self.epochs:
-                    self.log_plot_save(patch=p, epoch=epoch, loss=loss, x=x, y=y, debug_mode=debug_mode, p_or_u="u")
+                    # print loss information and plot every 500 epochs
+                    if epoch % 500 == 0 or epoch + 1 == self.epochs:
+                        self.log_plot_save(patch=p, epoch=epoch, loss=loss, x=x, y=y, debug_mode=debug_mode, p_or_u="u")
 
-            if self.save_for_best_model:
-                self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
-            self.print_msg(
-                f"Patch {p}: training of u with {self.epochs} epochs take {time.time() - start} seconds."
-            )
+                if self.save_for_best_model:
+                    self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
+                self.print_msg(
+                    f"Patch {p}: training of u with {self.epochs} epochs take {time.time() - start} seconds."
+                )
             output_dict[f"patch_{p}"] = (time.time() - start, best_loss)
         if return_dict:
             return output_dict
