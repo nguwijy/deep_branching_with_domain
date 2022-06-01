@@ -344,7 +344,9 @@ class Net(torch.nn.Module):
         exact_p_fun=None,
         phi0=0,
         conditional_probability_to_survive=(lambda t, x, y: torch.ones_like(x[0])),
+        conditional_probability_to_survive_for_p=(lambda t, x, y: torch.ones_like(x[0])),
         is_x_inside=(lambda x: torch.ones_like(x[0]).bool()),
+        is_x_inside_for_p=(lambda x: torch.ones_like(x[0]).bool()),
         x_lo=-10.0,
         x_hi=10.0,
         t_lo=0.0,
@@ -545,6 +547,8 @@ class Net(torch.nn.Module):
         self.phi0 = phi0
         self.conditional_probability_to_survive = conditional_probability_to_survive
         self.is_x_inside = is_x_inside
+        self.conditional_probability_to_survive_for_p = conditional_probability_to_survive_for_p
+        self.is_x_inside_for_p = is_x_inside_for_p
         self.deriv_map = deriv_map
         self.n, self.dim_in = deriv_map.shape
         self.zeta_map = zeta_map if zeta_map is not None else np.zeros(self.n, dtype=int)
@@ -1974,13 +1978,13 @@ class Net(torch.nn.Module):
         )
         tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
         y = self.gen_bm(tau.transpose(0, -1), x.shape[1], var=1).transpose(0, -1)
-        survive_prob = self.conditional_probability_to_survive(
+        survive_prob = self.conditional_probability_to_survive_for_p(
             tau.reshape(-1, 1).T,
             x.reshape(-1, self.dim_in).T,
             (x + y).reshape(-1, self.dim_in).T
         ).clip(0, 1)
         survive_prob *= (
-                self.is_x_inside((x + y).reshape(-1, self.dim_in).T)
+                self.is_x_inside_for_p((x + y).reshape(-1, self.dim_in).T)
                 * (tau < self.tau_hi).squeeze(dim=-1).reshape(-1)
         )
         x = x + y
