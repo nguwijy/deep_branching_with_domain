@@ -378,6 +378,7 @@ class Net(torch.nn.Module):
         save_for_best_model=True,
         save_data=False,
         continue_from_checkpoint=None,
+        save_as_tmp=False,
         **kwargs,
     ):
         """
@@ -691,7 +692,10 @@ class Net(torch.nn.Module):
             self.eval()
 
         timestr = time.strftime("%Y%m%d-%H%M%S")  # current time stamp
-        self.working_dir = f"logs/{timestr}-{problem_name}-T{self.T}-nu{self.nu}"
+        self.working_dir = (
+            "logs/tmp" if save_as_tmp
+            else f"logs/{timestr}-{problem_name}-T{self.T}-nu{self.nu}"
+        )
         self.log_config()
 
     def forward(self, x, patch=None, p_or_u="u"):
@@ -767,9 +771,10 @@ class Net(torch.nn.Module):
         """
         Set up configuration for log files and mkdir.
         """
-        os.makedirs(self.working_dir)
-        os.mkdir(f"{self.working_dir}/plot")
-        os.mkdir(f"{self.working_dir}/data")
+        if not os.path.isdir(self.working_dir):
+            os.makedirs(self.working_dir)
+            os.mkdir(f"{self.working_dir}/plot")
+            os.mkdir(f"{self.working_dir}/data")
         formatter = "%(asctime)s | %(name)s |  %(levelname)s: %(message)s"
         logging.getLogger().handlers = []  # clear previous loggers if any
         logging.basicConfig(
