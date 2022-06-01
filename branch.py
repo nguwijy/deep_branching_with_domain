@@ -1304,6 +1304,7 @@ class Net(torch.nn.Module):
                                         # * self.dim_in ** 2
                                         # * (dw ** 2).sum(dim=0)
                                         * (self.tau_hi - self.tau_lo)
+                                        / 2
                                         # / (2 * tau)
                                 )
                                 # if self.dim_in > 2:
@@ -1376,6 +1377,7 @@ class Net(torch.nn.Module):
                                             # * self.dim_in ** 2
                                             # * (dw ** 2).sum(dim=0)
                                             * (self.tau_hi - self.tau_lo)
+                                            / 2
                                             # / (2 * tau)
                                     )
                                     # if self.dim_in > 2:
@@ -2008,7 +2010,7 @@ class Net(torch.nn.Module):
         # elif self.dim_in == 2:
         #     ans *= -torch.log((y**2).sum(dim=-1).sqrt())
         # ans *= ((self.tau_hi - self.tau_lo) / (2 * tau[:, :, 0]))
-        ans *= (self.tau_hi - self.tau_lo)
+        ans *= ((self.tau_hi - self.tau_lo) / 2)
 
         mask = ~ans.isnan()
         return (
