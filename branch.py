@@ -790,7 +790,7 @@ class Net(torch.nn.Module):
         console = logging.StreamHandler()
         console.setLevel(logging.INFO)
         logging.getLogger().addHandler(console)
-        logging.info(f"Logs are saved in {self.working_dir}")
+        logging.info(f"Logs are saved in {os.path.abspath(self.working_dir)}")
         logging.debug(f"Current configuration: {self.__dict__}")
 
     def bisect_left(self, val):
