@@ -363,6 +363,8 @@ class Net(torch.nn.Module):
         epochs=5000,
         batch_normalization=True,
         antithetic=True,
+        div_condition_coeff=1.,
+        poisson_coeff=1.,
         overtrain_rate=.1,
         overtrain_rate_for_p=.5,
         device="cpu",
@@ -674,6 +676,8 @@ class Net(torch.nn.Module):
         )
         self.epochs = epochs
         self.antithetic = antithetic
+        self.div_condition_coeff = div_condition_coeff
+        self.poisson_coeff = poisson_coeff
         self.device = device
         self.verbose = verbose
         self.fix_all_dim_except_first = fix_all_dim_except_first
@@ -2132,14 +2136,13 @@ class Net(torch.nn.Module):
                             poisson_rhs -= tmp
                     poisson_rhs = poisson_rhs.detach()
                     poisson_lhs = 0
-                    xx = x.T.detach().clone().requires_grad_(True)
                     for i in range(self.dim_in):
                         order[i] += 2
                         poisson_lhs += self.nth_derivatives(
                             order, self(xx.T, p_or_u="p", patch=p), xx
                         )
                         order[i] -= 2
-                    loss += self.loss(poisson_lhs, poisson_rhs)
+                    loss += self.poisson_coeff * self.loss(poisson_lhs, poisson_rhs)
 
                     # update model weights and schedule
                     loss.backward()
@@ -2202,7 +2205,7 @@ class Net(torch.nn.Module):
                             grad += self.nth_derivatives(
                                 np.insert(c, 0, 0), self(xx.T, patch=p)[:, idx], xx
                             )
-                        loss += self.loss(grad, torch.zeros_like(grad))
+                        loss += self.div_condition_coeff * self.loss(grad, torch.zeros_like(grad))
 
                     # update model weights and schedule
                     loss.backward()
