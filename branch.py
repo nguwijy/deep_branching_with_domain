@@ -1689,7 +1689,7 @@ class Net(torch.nn.Module):
 
         return ans
 
-    def compare_with_exact(self, exact_fun):
+    def compare_with_exact(self, exact_fun, return_error=False, nb_points=100, show_plot=True):
         """
         Plot the comparison among
         exact u solution, terminal condition,
@@ -1705,7 +1705,6 @@ class Net(torch.nn.Module):
             and `int` as input,
             and output array of size `batch_size`.
         """
-        nb_points = 100
         grid = np.linspace(self.x_lo, self.x_hi, nb_points)
         x_mid = (self.x_lo + self.x_hi) / 2
         grid_d_dim = np.concatenate((
@@ -1722,10 +1721,12 @@ class Net(torch.nn.Module):
             .cpu()
             .numpy()
         )
+        error = []
         for i in range(self.dim_out):
             f = plt.figure()
             true = exact_fun(self.t_lo, grid_d_dim, self.T, i)
             terminal = exact_fun(self.T, grid_d_dim, self.T, i)
+            error.append(np.abs(true - nn[:, i]).mean())
             plt.plot(grid, nn[:, i], label="NN")
             plt.plot(grid, true, label="True solution")
             plt.plot(grid, terminal, label="Terminal solution")
@@ -1733,7 +1734,8 @@ class Net(torch.nn.Module):
             f.savefig(
                 f"{self.working_dir}/plot/u{i}_comparison_with_exact.png", bbox_inches="tight"
             )
-            plt.show()
+            if show_plot:
+                plt.show()
             plt.close()
 
             data = np.stack((grid, true, terminal, nn[:, i])).T
@@ -1744,6 +1746,8 @@ class Net(torch.nn.Module):
                 header="x,true,terminal,branch",
                 comments=""
             )
+        if return_error:
+            return np.array(error)
 
     def log_plot_save(self, patch, epoch, loss, x, y, debug_mode=False, p_or_u="u"):
         """
