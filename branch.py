@@ -1289,14 +1289,14 @@ class Net(torch.nn.Module):
                                         H * fdb.coeff
                                         * len(L) * self.dim_in ** 2
                                         # * self.dim_in ** 2
-                                        * (dw ** 2).sum(dim=0)
+                                        # * (dw ** 2).sum(dim=0)
                                         * (self.tau_hi - self.tau_lo)
-                                        / (2 * tau)
+                                        # / (2 * tau)
                                 )
-                                if self.dim_in > 2:
-                                    A = A / (self.dim_in - 2)
-                                elif self.dim_in == 2:
-                                    A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
+                                # if self.dim_in > 2:
+                                #     A = A / (self.dim_in - 2)
+                                # elif self.dim_in == 2:
+                                #     A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
                                 code_increment = np.zeros_like(code)
                                 code_increment[j] += 1
                                 if fdb.lamb[0] == 0:
@@ -1361,14 +1361,14 @@ class Net(torch.nn.Module):
                                             H * fdb.coeff
                                             * len(L) * self.dim_in ** 2 * (self.dim_in + 2)
                                             # * self.dim_in ** 2
-                                            * (dw ** 2).sum(dim=0)
+                                            # * (dw ** 2).sum(dim=0)
                                             * (self.tau_hi - self.tau_lo)
-                                            / (2 * tau)
+                                            # / (2 * tau)
                                     )
-                                    if self.dim_in > 2:
-                                        A = A / (self.dim_in - 2)
-                                    elif self.dim_in == 2:
-                                        A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
+                                    # if self.dim_in > 2:
+                                    #     A = A / (self.dim_in - 2)
+                                    # elif self.dim_in == 2:
+                                    #     A = -A * torch.log((dw ** 2).sum(dim=0).sqrt())
                                     code_increment = np.zeros_like(code)
                                     if k < self.dim_in:
                                         A = self.nu * A
@@ -1941,6 +1941,15 @@ class Net(torch.nn.Module):
         )
         tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
         y = self.gen_bm(tau.transpose(0, -1), x.shape[1], var=1).transpose(0, -1)
+        survive_prob = self.conditional_probability_to_survive(
+            tau.reshape(-1, 1).T,
+            x.reshape(-1, self.dim_in).T,
+            (x + y).reshape(-1, self.dim_in).T
+        ).clip(0, 1)
+        survive_prob *= (
+                self.is_x_inside((x + y).reshape(-1, self.dim_in).T)
+                * (tau < self.tau_hi).squeeze(dim=-1).reshape(-1)
+        )
         x = x + y
         x = x.reshape(-1, self.dim_in).T
         order = np.array([0] * self.dim_in)
@@ -1960,13 +1969,15 @@ class Net(torch.nn.Module):
                 )
                 order[j] -= 1
                 ans += tmp
+        ans *= survive_prob
         ans = ans.reshape(nb_mc, -1)
-        ans *= (y**2).sum(dim=-1)
-        if self.dim_in > 2:
-            ans /= (self.dim_in - 2)
-        elif self.dim_in == 2:
-            ans *= -torch.log((y**2).sum(dim=-1).sqrt())
-        ans *= ((self.tau_hi - self.tau_lo) / (2 * tau[:, :, 0]))
+        # ans *= (y**2).sum(dim=-1)
+        # if self.dim_in > 2:
+        #     ans /= (self.dim_in - 2)
+        # elif self.dim_in == 2:
+        #     ans *= -torch.log((y**2).sum(dim=-1).sqrt())
+        # ans *= ((self.tau_hi - self.tau_lo) / (2 * tau[:, :, 0]))
+        ans *= (self.tau_hi - self.tau_lo)
 
         mask = ~ans.isnan()
         return (
