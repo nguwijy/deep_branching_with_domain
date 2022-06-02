@@ -1988,7 +1988,7 @@ class Net(torch.nn.Module):
         tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
         y = self.gen_bm(tau.transpose(0, -1), x.shape[1], var=1).transpose(0, -1)
         survive_prob = self.conditional_probability_to_survive_for_p(
-            tau.reshape(-1, 1).T,
+            tau.reshape(-1),
             x.reshape(-1, self.dim_in).T,
             (x + y).reshape(-1, self.dim_in).T
         ).clip(0, 1)
