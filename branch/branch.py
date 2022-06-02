@@ -1782,7 +1782,7 @@ class Net(torch.nn.Module):
 
             data = np.stack((grid, true, terminal, nn[:, i])).T
             np.savetxt(
-                f"{self.working_dir_full_path}/data/plt_{self.problem_name}_dim_{self.dim_in}.csv",
+                f"{self.working_dir_full_path}/data/{p_or_u}{i}_comparison_with_exact.csv",
                 data,
                 delimiter=",",
                 header="x,true,terminal,branch",
