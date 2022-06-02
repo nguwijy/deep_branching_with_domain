@@ -20,7 +20,8 @@ config = {
     "branch_lr" : 1e-2,
     "branch_activation" : "tanh",
     "save_for_best_model" : False,
-    "verbose": False,
+    "verbose" : False,
+    "save_as_tmp" : True,
     # the model learns quicker without derivatives constraint
     # otherwise we need epochs=10000
     "div_condition_coeff" : 0,
@@ -133,7 +134,7 @@ class TestBranch(unittest.TestCase):
         config["neurons"] = 100
         config["layers"] = 2
         config["outlier_multiplier"] = 10
-        config["continue_from_checkpoint"] = "../logs/20220521-212107-taylor_green_2d-T0.25-nu2"
+        config["continue_from_checkpoint"] = "logs/20220601-222808-taylor_green_2d-T0.25-nu2"
         self.run_test()
         config["continue_from_checkpoint"] = None
 
