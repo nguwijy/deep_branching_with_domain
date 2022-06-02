@@ -1,9 +1,15 @@
+import os
+import sys
 import unittest
 import math
 import torch
 import numpy as np
-from branch import Net
 from functools import partial
+# add parent directory to system so that we can import the modules correctly
+test_dir = os.path.split(os.path.dirname(__file__))[0]
+if test_dir not in sys.path:
+    sys.path.append(test_dir)
+from branch.branch import Net
 
 torch.manual_seed(0)  # set seed for reproducibility
 

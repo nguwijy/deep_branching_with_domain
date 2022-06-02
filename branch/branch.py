@@ -5,8 +5,7 @@ import torch
 from torch.distributions.exponential import Exponential
 import matplotlib.pyplot as plt
 import numpy as np
-from fdb import fdb_nd
-from scipy.stats import norm
+from .fdb import fdb_nd
 import logging
 
 torch.manual_seed(0)  # set seed for reproducibility
@@ -699,7 +698,13 @@ class Net(torch.nn.Module):
                 (lo, hi) for lo, hi in zip(self.t_boundaries[1:], self.t_boundaries[:-1])
             ]
         if continue_from_checkpoint is not None:
-            self.load_state_dict(torch.load(f"{continue_from_checkpoint}/checkpoint.pt"))
+            continue_from_checkpoint_full_path = os.path.join(
+                os.path.split(os.path.dirname(__file__))[0],
+                continue_from_checkpoint,
+            )
+            self.load_state_dict(torch.load(
+                f"{continue_from_checkpoint_full_path}/checkpoint.pt")
+            )
             self.train_for_p = False
             self.eval()
 
@@ -707,6 +712,10 @@ class Net(torch.nn.Module):
         self.working_dir = (
             "logs/tmp" if save_as_tmp
             else f"logs/{timestr}-{problem_name}-T{self.T}-nu{self.nu}"
+        )
+        self.working_dir_full_path = os.path.join(
+            os.path.split(os.path.dirname(__file__))[0],
+            self.working_dir,
         )
         self.log_config()
 
@@ -783,14 +792,14 @@ class Net(torch.nn.Module):
         """
         Set up configuration for log files and mkdir.
         """
-        if not os.path.isdir(self.working_dir):
-            os.makedirs(self.working_dir)
-            os.mkdir(f"{self.working_dir}/plot")
-            os.mkdir(f"{self.working_dir}/data")
+        if not os.path.isdir(self.working_dir_full_path):
+            os.makedirs(self.working_dir_full_path)
+            os.mkdir(f"{self.working_dir_full_path}/plot")
+            os.mkdir(f"{self.working_dir_full_path}/data")
         formatter = "%(asctime)s | %(name)s |  %(levelname)s: %(message)s"
         logging.getLogger().handlers = []  # clear previous loggers if any
         logging.basicConfig(
-            filename=f"{self.working_dir}/run.log",
+            filename=f"{self.working_dir_full_path}/run.log",
             filemode="w",
             level=logging.DEBUG,
             format=formatter,
@@ -798,7 +807,7 @@ class Net(torch.nn.Module):
         console = logging.StreamHandler()
         console.setLevel(logging.INFO)
         logging.getLogger().addHandler(console)
-        logging.info(f"Logs are saved in {os.path.abspath(self.working_dir)}")
+        logging.info(f"Logs are saved in {os.path.abspath(self.working_dir_full_path)}")
         logging.debug(f"Current configuration: {self.__dict__}")
 
     def bisect_left(self, val):
@@ -1765,7 +1774,7 @@ class Net(torch.nn.Module):
             plt.plot(grid, terminal, label="Terminal solution")
             plt.legend()
             f.savefig(
-                f"{self.working_dir}/plot/{p_or_u}{i}_comparison_with_exact.png", bbox_inches="tight"
+                f"{self.working_dir_full_path}/plot/{p_or_u}{i}_comparison_with_exact.png", bbox_inches="tight"
             )
             if show_plot:
                 plt.show()
@@ -1773,7 +1782,7 @@ class Net(torch.nn.Module):
 
             data = np.stack((grid, true, terminal, nn[:, i])).T
             np.savetxt(
-                f"{self.working_dir}/data/plt_{self.problem_name}_dim_{self.dim_in}.csv",
+                f"{self.working_dir_full_path}/data/plt_{self.problem_name}_dim_{self.dim_in}.csv",
                 data,
                 delimiter=",",
                 header="x,true,terminal,branch",
@@ -1819,7 +1828,7 @@ class Net(torch.nn.Module):
         # if we do not always save for the best model, save it every 500 epochs
         if not self.save_for_best_model:
             torch.save(
-                self.state_dict(), f"{self.working_dir}/checkpoint.pt"
+                self.state_dict(), f"{self.working_dir_full_path}/checkpoint.pt"
             )
 
         first_state_idx = 1 if p_or_u == "u" else 0
@@ -1858,7 +1867,7 @@ class Net(torch.nn.Module):
                 plt.title(f"Epoch {epoch:4.0f} and patch {patch:2.0f}")
                 plt.legend()
                 f.savefig(
-                    f"{self.working_dir}/plot/{p_or_u}{i}_patch_{patch:02}_epoch_{epoch:04}.png", bbox_inches="tight"
+                    f"{self.working_dir_full_path}/plot/{p_or_u}{i}_patch_{patch:02}_epoch_{epoch:04}.png", bbox_inches="tight"
                 )
                 if debug_mode:
                     plt.show()
@@ -1874,7 +1883,7 @@ class Net(torch.nn.Module):
             if epoch == 0:
                 data = np.concatenate((x.detach().cpu().numpy(), y.cpu().numpy()), axis=-1)
                 np.savetxt(
-                    f"{self.working_dir}/data/mc_samples_{p_or_u}_patch_{patch:02}.csv",
+                    f"{self.working_dir_full_path}/data/mc_samples_{p_or_u}_patch_{patch:02}.csv",
                     data,
                     delimiter=",",
                     header=header,
@@ -1882,7 +1891,7 @@ class Net(torch.nn.Module):
                 )
             data = np.concatenate((grid_nd.T, nn), axis=-1)
             np.savetxt(
-                f"{self.working_dir}/data/nn_patch_{p_or_u}_{patch:02}_epoch_{epoch:04}.csv",
+                f"{self.working_dir_full_path}/data/nn_patch_{p_or_u}_{patch:02}_epoch_{epoch:04}.csv",
                 data,
                 delimiter=",",
                 header=header,
@@ -2159,14 +2168,14 @@ class Net(torch.nn.Module):
                         # save the best model when NN enters stabilising zone
                         best_loss = loss.item()
                         if self.save_for_best_model:
-                            torch.save(self.state_dict(), f"{self.working_dir}/checkpoint.pt")
+                            torch.save(self.state_dict(), f"{self.working_dir_full_path}/checkpoint.pt")
 
                     # print loss information and plot every 500 epochs
                     if epoch % 500 == 0 or epoch + 1 == self.epochs:
                         self.log_plot_save(patch=p, epoch=epoch, loss=loss, x=x, y=y, debug_mode=debug_mode, p_or_u="p")
 
                 if self.save_for_best_model:
-                    self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
+                    self.load_state_dict(torch.load(f"{self.working_dir_full_path}/checkpoint.pt"))
                 self.print_msg(
                     f"Patch{p}: pre-training of p with {self.epochs} epochs takes {time.time() - start:4.0f} seconds."
                 )
@@ -2222,100 +2231,17 @@ class Net(torch.nn.Module):
                     if epoch > self.lr_milestones[-1] and loss.item() < best_loss:
                         best_loss = loss.item()
                         if self.save_for_best_model:
-                            torch.save(self.state_dict(), f"{self.working_dir}/checkpoint.pt")
+                            torch.save(self.state_dict(), f"{self.working_dir_full_path}/checkpoint.pt")
 
                     # print loss information and plot every 500 epochs
                     if epoch % 500 == 0 or epoch + 1 == self.epochs:
                         self.log_plot_save(patch=p, epoch=epoch, loss=loss, x=x, y=y, debug_mode=debug_mode, p_or_u="u")
 
                 if self.save_for_best_model:
-                    self.load_state_dict(torch.load(f"{self.working_dir}/checkpoint.pt"))
+                    self.load_state_dict(torch.load(f"{self.working_dir_full_path}/checkpoint.pt"))
                 self.print_msg(
                     f"Patch {p}: training of u with {self.epochs} epochs take {time.time() - start} seconds."
                 )
             output_dict[f"patch_{p}"] = (time.time() - start, best_loss)
         if return_dict:
             return output_dict
-
-
-if __name__ == "__main__":
-    # configurations
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    lower_bound, upper_bound = -2, 2
-    nu = 1
-    y, eps = 0, 1
-    a, b = y - eps, y + eps
-
-    # function definition
-    deriv_map = np.array([0]).reshape(-1, 1)
-    def f_example(y, coodinate=0):
-        """
-        idx 0 -> no deriv
-        """
-        return torch.zeros_like(y[0])
-
-    def phi_example(x, coodinate=0):
-        return torch.logical_and(x[0] <= b, x[0] >= a).float()
-
-    def exact_example(t, x, T, coordinate=0, with_bound=True, k_arr=range(-5, 5)):
-        if t == T:
-            return np.logical_and(x[0] <= b, x[0] >= a)
-        else:
-            normal_std = math.sqrt(nu * (T - t))
-            if not with_bound:
-                # without bound
-                return norm.cdf((b - x[0]) / normal_std) - norm.cdf((a - x[0]) / normal_std)
-            else:
-                # with bound
-                ans = 0
-                for k in k_arr:
-                    mu = x[0] - 2 * k * (upper_bound - lower_bound)
-                    ans += (norm.cdf((b - mu) / normal_std) - norm.cdf((a - mu) / normal_std))
-                    mu = 2 * lower_bound - 2 * k * (upper_bound - lower_bound) - x[0]
-                    ans -= (norm.cdf((b - mu) / normal_std) - norm.cdf((a - mu) / normal_std))
-                return ans
-
-    def conditional_probability_to_survive(t, x, y, k_arr=range(-5, 5)):
-        ans = 0
-        for k in k_arr:
-            ans += (
-                torch.exp(((y - x) ** 2 - (y - x + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t))
-                - torch.exp(
-                    ((y - x) ** 2 - (y + x - 2 * lower_bound + 2 * k * (upper_bound - lower_bound)) ** 2) / (2 * t)
-                )
-            )
-        return ans.prod(dim=0)
-
-    def is_x_inside(x):
-        return torch.logical_and(lower_bound <= x, x <= upper_bound).all(dim=0)
-
-    problem_name = "heat_equation"
-    t_lo, x_lo, x_hi, n = 0., lower_bound, upper_bound, 0
-    grid = np.linspace(x_lo, x_hi, 100)
-    grid_d_dim = np.expand_dims(grid, axis=0)
-    grid_d_dim_with_t = np.concatenate((t_lo * np.ones((1, 100)), grid_d_dim), axis=0)
-
-    patches = 5
-    T = patches * 1.0
-    true = exact_example(t_lo, grid_d_dim, T)
-    true_with_bound = exact_example(t_lo, grid_d_dim, T, with_bound=True)
-    terminal = exact_example(T, grid_d_dim, T)
-    model = Net(
-        problem_name=problem_name,
-        f_fun=f_example,
-        deriv_map=deriv_map,
-        phi_fun=phi_example,
-        conditional_probability_to_survive=conditional_probability_to_survive,
-        is_x_inside=is_x_inside,
-        device=device,
-        x_lo=x_lo,
-        x_hi=x_hi,
-        T=T,
-        verbose=True,
-        nu=nu,
-        branch_patches=patches,
-        overtrain_rate=0.,
-    )
-    model.train_and_eval(debug_mode=True)
-    model.compare_with_exact(exact_fun=exact_example)

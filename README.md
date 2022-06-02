@@ -19,11 +19,11 @@ and the derivatives condition \
 
 ## Using deep branching solver
 There are two ways to utilize the deep branching solver:
-1. Edit the templates inside the `__main__` environment
-    in `branch.py`, then run `python branch.py` from your terminal.
+1. Edit the templates of `main.py`, then run `python main.py` from your terminal.
 2. Write your own code and import the solver to your code
-    via `from branch import Net`,
+    via `from branch.branch import Net`,
     see the notebooks for more details.
+    This requires the parent directory to be in your system path.
 
 It is highly recommended to read the documentation
 via `help(Net)` or [this html page](https://rawcdn.githack.com/nguwijy/deep_branching_with_domain/main/doc/branch.html).
