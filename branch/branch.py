@@ -1140,7 +1140,7 @@ class Net(torch.nn.Module):
 
         return fun_val.detach()
 
-    def gen_bm(self, dt, nb_states, var=None):
+    def gen_bm(self, x, dt, nb_states, var=None):
         """
         Generate Brownian motion var x sqrt{dt} x Gaussian.
 
@@ -1173,7 +1173,7 @@ class Net(torch.nn.Module):
             dw = torch.sqrt(var * dt) * torch.randn(
                 self.dim_in, nb_states, self.nb_path_per_state, device=self.device
             )
-        return dw
+        return x + dw
 
     def helper_negative_code_on_f(self, t, T, x, mask, H, code, patch, coordinate):
         """
@@ -1296,7 +1296,7 @@ class Net(torch.nn.Module):
                      .reshape(nb_states, self.nb_path_per_state)
             )
             tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
-            dw = self.gen_bm(tau, nb_states, var=1)
+            next_x = self.gen_bm(x, tau, nb_states, var=1)
             unif = torch.rand(nb_states, self.nb_path_per_state, device=self.device)
             order = -code - 1
             L = [fdb for fdb in fdb_nd(2, order) if max(fdb.lamb) < 2]
@@ -1330,7 +1330,7 @@ class Net(torch.nn.Module):
                                     A = A * self.gen_sample_batch(
                                         t,
                                         T,
-                                        x + dw,
+                                        next_x,
                                         mask_tmp,
                                         torch.ones_like(t),
                                         -code_increment - 1,
@@ -1343,7 +1343,7 @@ class Net(torch.nn.Module):
                                     A = A * self.gen_sample_batch(
                                         t,
                                         T,
-                                        x + dw,
+                                        next_x,
                                         mask_tmp,
                                         torch.ones_like(t),
                                         -code_increment - 1,
@@ -1356,7 +1356,7 @@ class Net(torch.nn.Module):
                                         A = A * self.gen_sample_batch(
                                             t,
                                             T,
-                                            x + dw,
+                                            next_x,
                                             mask_tmp,
                                             torch.ones_like(t),
                                             -code_increment - ll - 1,
@@ -1369,7 +1369,7 @@ class Net(torch.nn.Module):
                                         A = A * self.gen_sample_batch(
                                             t,
                                             T,
-                                            x + dw,
+                                            next_x,
                                             mask_tmp,
                                             torch.ones_like(t),
                                             -code_increment - ll - 1,
@@ -1409,7 +1409,7 @@ class Net(torch.nn.Module):
                                         A = A * self.gen_sample_batch(
                                             t,
                                             T,
-                                            x + dw,
+                                            next_x,
                                             mask_tmp,
                                             torch.ones_like(t),
                                             -code_increment - 1,
@@ -1423,7 +1423,7 @@ class Net(torch.nn.Module):
                                             A = A * self.gen_sample_batch(
                                                 t,
                                                 T,
-                                                x + dw,
+                                                next_x,
                                                 mask_tmp,
                                                 torch.ones_like(t),
                                                 -code_increment - 1,
@@ -1434,7 +1434,7 @@ class Net(torch.nn.Module):
                                             A = A * self.helper_negative_code_on_f(
                                                 t,
                                                 T,
-                                                x + dw,
+                                                next_x,
                                                 mask_tmp,
                                                 -torch.ones_like(t),
                                                 -code_increment - 1,
@@ -1448,7 +1448,7 @@ class Net(torch.nn.Module):
                                                 A = A * self.gen_sample_batch(
                                                     t,
                                                     T,
-                                                    x + dw,
+                                                    next_x,
                                                     mask_tmp,
                                                     torch.ones_like(t),
                                                     -code_increment - ll - 1,
@@ -1460,7 +1460,7 @@ class Net(torch.nn.Module):
                                                 A = A * self.helper_negative_code_on_f(
                                                     t,
                                                     T,
-                                                    x + dw,
+                                                    next_x,
                                                     mask_tmp,
                                                     -torch.ones_like(t),
                                                     -code_increment - ll - 1,
@@ -1473,7 +1473,7 @@ class Net(torch.nn.Module):
                                             A = A * self.gen_sample_batch(
                                                 t,
                                                 T,
-                                                x + dw,
+                                                next_x,
                                                 mask_tmp,
                                                 torch.ones_like(t),
                                                 -code_increment - ll - 1,
@@ -1488,9 +1488,9 @@ class Net(torch.nn.Module):
             self.exponential_lambda
             * torch.ones(nb_states, self.nb_path_per_state, device=self.device)
         ).sample()
-        dw = self.gen_bm(T - t, nb_states)
-        x_is_inside = self.is_x_inside(x + dw)
-        survive_prob = self.conditional_probability_to_survive(self.nu * (T - t), x, x + dw).clip(0, 1)
+        next_x = self.gen_bm(x, T - t, nb_states)
+        x_is_inside = self.is_x_inside(next_x)
+        survive_prob = self.conditional_probability_to_survive(self.nu * (T - t), x, next_x).clip(0, 1)
 
         ############################### for t + tau >= T
         mask_now = mask.bool() * (t + tau >= T)
@@ -1500,16 +1500,16 @@ class Net(torch.nn.Module):
                     / torch.exp(-self.exponential_lambda * (T - t)[mask_now])
                     * (
                         x_is_inside[mask_now] * survive_prob[mask_now]
-                            * self.code_to_function(code, (x + dw)[:, mask_now], T[mask_now], patch, coordinate)
+                            * self.code_to_function(code, next_x[:, mask_now], T[mask_now], patch, coordinate)
                         + (1 - x_is_inside[mask_now] * survive_prob[mask_now]) * self.phi0
                     )
             )
             ans[mask_now] = tmp
 
         ############################### for t + tau < T
-        dw = self.gen_bm(tau, nb_states)
-        x_is_inside = self.is_x_inside(x + dw)
-        survive_prob = self.conditional_probability_to_survive(self.nu * tau, x, x + dw).clip(0, 1)
+        next_x = self.gen_bm(x, tau, nb_states)
+        x_is_inside = self.is_x_inside(next_x)
+        survive_prob = self.conditional_probability_to_survive(self.nu * tau, x, next_x).clip(0, 1)
         mask_now = mask.bool() * (t + tau < T) * x_is_inside
         H = H * survive_prob
 
@@ -1525,7 +1525,7 @@ class Net(torch.nn.Module):
             tmp = self.gen_sample_batch(
                 t + tau,
                 T,
-                x + dw,
+                next_x,
                 mask_now,
                 H / self.exponential_lambda / torch.exp(-self.exponential_lambda * tau),
                 np.array([1] * self.n),
@@ -1553,7 +1553,7 @@ class Net(torch.nn.Module):
                     A = fdb.coeff * self.gen_sample_batch(
                         t + tau,
                         T,
-                        x + dw,
+                        next_x,
                         mask_tmp,
                         len(L)
                         * H
@@ -1570,7 +1570,7 @@ class Net(torch.nn.Module):
                                 A = A * self.gen_sample_batch(
                                     t + tau,
                                     T,
-                                    x + dw,
+                                    next_x,
                                     mask_tmp,
                                     torch.ones_like(t),
                                     -self.deriv_map[q] - ll - 1,
@@ -1596,7 +1596,7 @@ class Net(torch.nn.Module):
                             A = self.gen_sample_batch(
                                 t + tau,
                                 T,
-                                x + dw,
+                                next_x,
                                 mask_tmp,
                                 torch.ones_like(t),
                                 -self.deriv_map[i] - code_increment - 1,
@@ -1606,7 +1606,7 @@ class Net(torch.nn.Module):
                             B = self.gen_sample_batch(
                                 t + tau,
                                 T,
-                                x + dw,
+                                next_x,
                                 mask_tmp,
                                 torch.ones_like(t),
                                 -self.deriv_map[j] - code_increment - 1,
@@ -1620,7 +1620,7 @@ class Net(torch.nn.Module):
                             tmp = self.gen_sample_batch(
                                 t + tau,
                                 T,
-                                x + dw,
+                                next_x,
                                 mask_tmp,
                                 -self.nu/2
                                 * self.mechanism_tot_len
@@ -1644,7 +1644,7 @@ class Net(torch.nn.Module):
                         A = fdb.coeff * self.gen_sample_batch(
                             t + tau,
                             T,
-                            x + dw,
+                            next_x,
                             mask_tmp,
                             torch.ones_like(t),
                             np.array(fdb.lamb) + 1,
@@ -1657,7 +1657,7 @@ class Net(torch.nn.Module):
                                     A = A * self.gen_sample_batch(
                                         t + tau,
                                         T,
-                                        x + dw,
+                                        next_x,
                                         mask_tmp,
                                         torch.ones_like(t),
                                         -self.deriv_map[q] - ll - 1,
@@ -1669,7 +1669,7 @@ class Net(torch.nn.Module):
                         tmp = self.gen_sample_batch(
                             t + tau,
                             T,
-                            x + dw,
+                            next_x,
                             mask_tmp,
                             self.mechanism_tot_len
                             * A
@@ -1692,7 +1692,7 @@ class Net(torch.nn.Module):
                     A = -self.gen_sample_batch(
                         t + tau,
                         T,
-                        x + dw,
+                        next_x,
                         mask_tmp,
                         self.mechanism_tot_len
                         * H
@@ -1705,7 +1705,7 @@ class Net(torch.nn.Module):
                     A = A * self.gen_sample_batch(
                         t + tau,
                         T,
-                        x + dw,
+                        next_x,
                         mask_tmp,
                         torch.ones_like(t),
                         -self.deriv_map[k] - 1,
@@ -1986,18 +1986,17 @@ class Net(torch.nn.Module):
                  .reshape(nb_mc, -1, 1)
         )
         tau = self.tau_lo + (self.tau_hi - self.tau_lo) * unif
-        y = self.gen_bm(tau.transpose(0, -1), x.shape[1], var=1).transpose(0, -1)
+        next_x = self.gen_bm(x.transpose(0, -1), tau.transpose(0, -1), x.shape[1], var=1).transpose(0, -1)
         survive_prob = self.conditional_probability_to_survive_for_p(
             tau.reshape(-1),
             x.reshape(-1, self.dim_in).T,
-            (x + y).reshape(-1, self.dim_in).T
+            next_x.reshape(-1, self.dim_in).T
         ).clip(0, 1)
         survive_prob *= (
-                self.is_x_inside_for_p((x + y).reshape(-1, self.dim_in).T)
+                self.is_x_inside_for_p(next_x.reshape(-1, self.dim_in).T)
                 * (tau < self.tau_hi).squeeze(dim=-1).reshape(-1)
         )
-        x = x + y
-        x = x.reshape(-1, self.dim_in).T
+        x = next_x.reshape(-1, self.dim_in).T
         order = np.array([0] * self.dim_in)
         ans = 0
         for i in range(self.dim_in):
