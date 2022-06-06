@@ -2140,32 +2140,33 @@ class Net(torch.nn.Module):
                     loss = self.loss(self(x, p_or_u="p", patch=p), y)
                     self.eval()
 
-                    # use loss related to poisson equation to train
-                    poisson_rhs = 0
-                    order = np.array([0] * self.dim_in)
-                    xx = x.T.detach().clone().requires_grad_(True)
-                    for i in range(self.dim_in):
-                        for j in range(self.dim_in):
-                            order[i] += 1
-                            tmp = self.nth_derivatives(
-                                order, self.phi_fun(xx, j), xx
+                    if self.poisson_coeff > 0:
+                        # use loss related to poisson equation to train
+                        poisson_rhs = 0
+                        order = np.array([0] * self.dim_in)
+                        xx = x.T.detach().clone().requires_grad_(True)
+                        for i in range(self.dim_in):
+                            for j in range(self.dim_in):
+                                order[i] += 1
+                                tmp = self.nth_derivatives(
+                                    order, self.phi_fun(xx, j), xx
+                                )
+                                order[i] -= 1
+                                order[j] += 1
+                                tmp *= self.nth_derivatives(
+                                    order, self.phi_fun(xx, i), xx
+                                )
+                                order[j] -= 1
+                                poisson_rhs -= tmp
+                        poisson_rhs = poisson_rhs.detach()
+                        poisson_lhs = 0
+                        for i in range(self.dim_in):
+                            order[i] += 2
+                            poisson_lhs += self.nth_derivatives(
+                                order, self(xx.T, p_or_u="p", patch=p), xx
                             )
-                            order[i] -= 1
-                            order[j] += 1
-                            tmp *= self.nth_derivatives(
-                                order, self.phi_fun(xx, i), xx
-                            )
-                            order[j] -= 1
-                            poisson_rhs -= tmp
-                    poisson_rhs = poisson_rhs.detach()
-                    poisson_lhs = 0
-                    for i in range(self.dim_in):
-                        order[i] += 2
-                        poisson_lhs += self.nth_derivatives(
-                            order, self(xx.T, p_or_u="p", patch=p), xx
-                        )
-                        order[i] -= 2
-                    loss += self.poisson_coeff * self.loss(poisson_lhs, poisson_rhs)
+                            order[i] -= 2
+                        loss += self.poisson_coeff * self.loss(poisson_lhs, poisson_rhs)
 
                     # update model weights and schedule
                     loss.backward()
@@ -2220,7 +2221,7 @@ class Net(torch.nn.Module):
                     self.eval()
 
                     # divergence free condition
-                    if self.deriv_condition_zeta_map is not None:
+                    if self.div_condition_coeff > 0 and self.deriv_condition_zeta_map is not None:
                         grad = 0
                         xx = x.T.detach().clone().requires_grad_(True)
                         for (idx, c) in zip(self.deriv_condition_zeta_map, self.deriv_condition_deriv_map):
