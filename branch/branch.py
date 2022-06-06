@@ -1856,6 +1856,9 @@ class Net(torch.nn.Module):
                 ), patch=patch, p_or_u=p_or_u,
             ).detach().cpu()
         )
+        nn_mc = (
+            self(x, patch=patch, p_or_u=p_or_u).detach().cpu()
+        )
 
         # plots only in 1d or fix_all_dim_except_first
         if (self.fix_t_dim or p_or_u == "p") and (self.dim_in == 1 or self.fix_all_dim_except_first):
@@ -1878,17 +1881,22 @@ class Net(torch.nn.Module):
             header = (
                     ("t," if p_or_u == "u" else "")
                     + "".join([f"x{i}," for i in range(self.dim_in)])
-                    + "".join([f"y{i}," for i in range(self.dim_out)])
+                    + "".join([f"mc{i}," for i in range(self.dim_out)])
+                    + "".join([f"nn{i}," for i in range(self.dim_out)])
             )[:-1]
-            if epoch == 0:
-                data = np.concatenate((x.detach().cpu().numpy(), y.cpu().numpy()), axis=-1)
-                np.savetxt(
-                    f"{self.working_dir_full_path}/data/mc_samples_{p_or_u}_patch_{patch:02}.csv",
-                    data,
-                    delimiter=",",
-                    header=header,
-                    comments="",
-                )
+            data = np.concatenate((x.detach().cpu().numpy(), y.cpu().numpy(), nn_mc.numpy()), axis=-1)
+            np.savetxt(
+                f"{self.working_dir_full_path}/data/mc_samples_{p_or_u}_patch_{patch:02}_epoch_{epoch:04}.csv",
+                data,
+                delimiter=",",
+                header=header,
+                comments="",
+            )
+            header = (
+                ("t," if p_or_u == "u" else "")
+                + "".join([f"x{i}," for i in range(self.dim_in)])
+                + "".join([f"nn{i}," for i in range(self.dim_out)])
+            )[:-1]
             data = np.concatenate((grid_nd.T, nn), axis=-1)
             np.savetxt(
                 f"{self.working_dir_full_path}/data/nn_patch_{p_or_u}_{patch:02}_epoch_{epoch:04}.csv",
@@ -1994,6 +2002,7 @@ class Net(torch.nn.Module):
         ).clip(0, 1)
         survive_prob *= (
                 self.is_x_inside_for_p(next_x.reshape(-1, self.dim_in).T)
+                * self.is_x_inside_for_p(x.reshape(-1, self.dim_in).T)
                 * (tau < self.tau_hi).squeeze(dim=-1).reshape(-1)
         )
         x = next_x.reshape(-1, self.dim_in).T
