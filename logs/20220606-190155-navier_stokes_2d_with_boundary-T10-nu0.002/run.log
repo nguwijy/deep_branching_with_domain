@@ -1,0 +1,227 @@
+2022-06-06 19:01:55,960 | root |  INFO: Logs are saved in /home/nguwijy/repo/deep_branching_with_domain/logs/20220606-190155-navier_stokes_2d_with_boundary-T10-nu0.002
+2022-06-06 19:01:55,964 | root |  DEBUG: Current configuration: {'training': True, '_parameters': OrderedDict(), '_buffers': OrderedDict(), '_non_persistent_buffers_set': set(), '_backward_hooks': OrderedDict(), '_is_full_backward_hook': None, '_forward_hooks': OrderedDict(), '_forward_pre_hooks': OrderedDict(), '_state_dict_hooks': OrderedDict(), '_load_state_dict_pre_hooks': OrderedDict(), '_modules': OrderedDict([('u_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=3, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=2, bias=True)
+  )
+)), ('u_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(3, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('p_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=2, out_features=50, bias=True)
+    (1): Linear(in_features=50, out_features=50, bias=True)
+    (2): Linear(in_features=50, out_features=50, bias=True)
+    (3): Linear(in_features=50, out_features=50, bias=True)
+    (4): Linear(in_features=50, out_features=50, bias=True)
+    (5): Linear(in_features=50, out_features=50, bias=True)
+    (6): Linear(in_features=50, out_features=50, bias=True)
+    (7): Linear(in_features=50, out_features=1, bias=True)
+  )
+)), ('p_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (4): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (7): BatchNorm1d(50, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('loss', MSELoss()), ('activation', Softplus(beta=1, threshold=20))]), 'problem_name': 'navier_stokes_2d_with_boundary', 'f_fun': <function f_example at 0x7f17607b0b80>, 'phi_fun': <function phi_example at 0x7f17607b0c10>, 'phi0': 0, 'conditional_probability_to_survive': functools.partial(<function conditional_probability_to_survive at 0x7f17607b0430>, lower_bound=(-100, -1), upper_bound=(100, 1)), 'is_x_inside': functools.partial(<function is_x_inside at 0x7f17607b04c0>, lower_bound=(-100, -1), upper_bound=(100, 1)), 'conditional_probability_to_survive_for_p': functools.partial(<function conditional_probability_to_survive at 0x7f17607b0430>, lower_bound=(-100, -1), upper_bound=(100, 1)), 'is_x_inside_for_p': functools.partial(<function is_x_inside at 0x7f17607b04c0>, lower_bound=(-100, -1), upper_bound=(100, 1)), 'deriv_map': array([[1, 0],
+       [0, 1],
+       [0, 0],
+       [0, 0],
+       [1, 0],
+       [0, 1],
+       [1, 0],
+       [0, 1]]), 'n': 8, 'dim_in': 2, 'zeta_map': array([-1, -1,  0,  1,  0,  0,  1,  1]), 'deriv_condition_deriv_map': array([[1, 0],
+       [0, 1]]), 'deriv_condition_zeta_map': array([0, 1]), 'dim_out': 2, 'nprime': 2, 'exact_p_fun': None, 'train_for_p': True, 'train_for_u': False, 'patches': 1, 'code': array([[-1, -1],
+       [-1, -1]]), 'coordinate': array([0, 1]), 'fdb_lookup': {(1, 0): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 1), l_and_k={(1, 0): [0, 0, 0, 0, 0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 1, 0), l_and_k={(1, 0): [0, 0, 0, 0, 0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 1, 0, 0), l_and_k={(1, 0): [0, 0, 0, 0, 0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 1, 0, 0, 0), l_and_k={(1, 0): [0, 0, 0, 0, 1, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 1, 0, 0, 0, 0), l_and_k={(1, 0): [0, 0, 0, 1, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 1, 0, 0, 0, 0, 0), l_and_k={(1, 0): [0, 0, 1, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0, 0, 0, 0, 0), l_and_k={(1, 0): [0, 1, 0, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0, 0, 0, 0, 0), l_and_k={(1, 0): [1, 0, 0, 0, 0, 0, 0, 0]})], (0, 1): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 1), l_and_k={(0, 1): [0, 0, 0, 0, 0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 1, 0), l_and_k={(0, 1): [0, 0, 0, 0, 0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 1, 0, 0), l_and_k={(0, 1): [0, 0, 0, 0, 0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 1, 0, 0, 0), l_and_k={(0, 1): [0, 0, 0, 0, 1, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 1, 0, 0, 0, 0), l_and_k={(0, 1): [0, 0, 0, 1, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 1, 0, 0, 0, 0, 0), l_and_k={(0, 1): [0, 0, 1, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0, 0, 0, 0, 0), l_and_k={(0, 1): [0, 1, 0, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0, 0, 0, 0, 0), l_and_k={(0, 1): [1, 0, 0, 0, 0, 0, 0, 0]})], (0, 0): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 0), l_and_k={})]}, 'fdb_runtime': 0.022426366806030273, 'mechanism_tot_len': 178, 'lr': 0.001, 'lr_milestones': [1000, 2000], 'lr_gamma': 0.8, 'weight_decay': 0, 'save_for_best_model': True, 'save_data': False, 'batch_normalization': True, 'nb_states': 100000, 'nb_states_per_batch': 1000, 'nb_path_per_state': 1000, 'x_lo': -1, 'x_hi': 1, 'adjusted_x_boundaries': (-1.0, 1.0), 'overtrain_rate_for_p': 0.5, 't_lo': 0.0, 't_hi': 10, 'T': 10, 'tau_lo': 1e-05, 'tau_hi': 10, 'nu': 0.002, 'delta_t': 10.0, 'outlier_percentile': 1, 'outlier_multiplier': 10, 'exponential_lambda': 0.005129329438755058, 'epochs': 10000, 'antithetic': True, 'div_condition_coeff': 0.0, 'poisson_coeff': 0.0, 'device': device(type='cuda'), 'verbose': True, 'fix_all_dim_except_first': False, 'fix_t_dim': False, 't_boundaries': tensor([10.,  0.], device='cuda:0'), 'adjusted_t_boundaries': [(tensor(0., device='cuda:0'), tensor(10., device='cuda:0'))], 'working_dir': 'logs/20220606-190155-navier_stokes_2d_with_boundary-T10-nu0.002', 'working_dir_full_path': '/home/nguwijy/repo/deep_branching_with_domain/logs/20220606-190155-navier_stokes_2d_with_boundary-T10-nu0.002'}
+2022-06-06 19:01:55,986 | root |  DEBUG: Generated 1 out of 100000 batches with 0.0214688777923584 seconds.
+2022-06-06 19:02:15,409 | root |  DEBUG: Generated 1001 out of 100000 batches with 19.422793865203857 seconds.
+2022-06-06 19:02:34,941 | root |  DEBUG: Generated 2001 out of 100000 batches with 19.531090021133423 seconds.
+2022-06-06 19:02:54,528 | root |  DEBUG: Generated 3001 out of 100000 batches with 19.585201501846313 seconds.
+2022-06-06 19:03:14,119 | root |  DEBUG: Generated 4001 out of 100000 batches with 19.590022802352905 seconds.
+2022-06-06 19:03:33,762 | root |  DEBUG: Generated 5001 out of 100000 batches with 19.639015913009644 seconds.
+2022-06-06 19:03:52,765 | root |  DEBUG: Generated 6001 out of 100000 batches with 18.998709440231323 seconds.
+2022-06-06 19:04:11,681 | root |  DEBUG: Generated 7001 out of 100000 batches with 18.902928829193115 seconds.
+2022-06-06 19:04:30,576 | root |  DEBUG: Generated 8001 out of 100000 batches with 18.89150381088257 seconds.
+2022-06-06 19:04:49,493 | root |  DEBUG: Generated 9001 out of 100000 batches with 18.90947675704956 seconds.
+2022-06-06 19:05:08,399 | root |  DEBUG: Generated 10001 out of 100000 batches with 18.89761257171631 seconds.
+2022-06-06 19:05:27,269 | root |  DEBUG: Generated 11001 out of 100000 batches with 18.862582206726074 seconds.
+2022-06-06 19:05:46,118 | root |  DEBUG: Generated 12001 out of 100000 batches with 18.84835457801819 seconds.
+2022-06-06 19:06:05,754 | root |  DEBUG: Generated 13001 out of 100000 batches with 19.61290979385376 seconds.
+2022-06-06 19:06:25,680 | root |  DEBUG: Generated 14001 out of 100000 batches with 19.909770011901855 seconds.
+2022-06-06 19:06:45,718 | root |  DEBUG: Generated 15001 out of 100000 batches with 20.034292936325073 seconds.
+2022-06-06 19:07:05,437 | root |  DEBUG: Generated 16001 out of 100000 batches with 19.71050477027893 seconds.
+2022-06-06 19:07:24,854 | root |  DEBUG: Generated 17001 out of 100000 batches with 19.39393663406372 seconds.
+2022-06-06 19:07:44,770 | root |  DEBUG: Generated 18001 out of 100000 batches with 19.89186978340149 seconds.
+2022-06-06 19:08:04,264 | root |  DEBUG: Generated 19001 out of 100000 batches with 19.48343849182129 seconds.
+2022-06-06 19:08:23,132 | root |  DEBUG: Generated 20001 out of 100000 batches with 18.84453320503235 seconds.
+2022-06-06 19:08:42,054 | root |  DEBUG: Generated 21001 out of 100000 batches with 18.9155056476593 seconds.
+2022-06-06 19:09:01,010 | root |  DEBUG: Generated 22001 out of 100000 batches with 18.93229842185974 seconds.
+2022-06-06 19:09:20,073 | root |  DEBUG: Generated 23001 out of 100000 batches with 19.03905963897705 seconds.
+2022-06-06 19:09:38,864 | root |  DEBUG: Generated 24001 out of 100000 batches with 18.77112627029419 seconds.
+2022-06-06 19:09:57,654 | root |  DEBUG: Generated 25001 out of 100000 batches with 18.766180276870728 seconds.
+2022-06-06 19:10:16,445 | root |  DEBUG: Generated 26001 out of 100000 batches with 18.76722002029419 seconds.
+2022-06-06 19:10:35,237 | root |  DEBUG: Generated 27001 out of 100000 batches with 18.76744294166565 seconds.
+2022-06-06 19:10:54,056 | root |  DEBUG: Generated 28001 out of 100000 batches with 18.795028686523438 seconds.
+2022-06-06 19:11:12,939 | root |  DEBUG: Generated 29001 out of 100000 batches with 18.8582444190979 seconds.
+2022-06-06 19:11:31,728 | root |  DEBUG: Generated 30001 out of 100000 batches with 18.767409086227417 seconds.
+2022-06-06 19:11:50,542 | root |  DEBUG: Generated 31001 out of 100000 batches with 18.789379596710205 seconds.
+2022-06-06 19:12:09,466 | root |  DEBUG: Generated 32001 out of 100000 batches with 18.89913010597229 seconds.
+2022-06-06 19:12:28,435 | root |  DEBUG: Generated 33001 out of 100000 batches with 18.960925817489624 seconds.
+2022-06-06 19:12:47,306 | root |  DEBUG: Generated 34001 out of 100000 batches with 18.845754623413086 seconds.
+2022-06-06 19:13:06,209 | root |  DEBUG: Generated 35001 out of 100000 batches with 18.87753415107727 seconds.
+2022-06-06 19:13:25,219 | root |  DEBUG: Generated 36001 out of 100000 batches with 18.985288381576538 seconds.
+2022-06-06 19:13:44,161 | root |  DEBUG: Generated 37001 out of 100000 batches with 18.93217182159424 seconds.
+2022-06-06 19:14:03,028 | root |  DEBUG: Generated 38001 out of 100000 batches with 18.84255838394165 seconds.
+2022-06-06 19:14:21,882 | root |  DEBUG: Generated 39001 out of 100000 batches with 18.8300039768219 seconds.
+2022-06-06 19:14:40,770 | root |  DEBUG: Generated 40001 out of 100000 batches with 18.86268162727356 seconds.
+2022-06-06 19:14:59,781 | root |  DEBUG: Generated 41001 out of 100000 batches with 18.985466480255127 seconds.
+2022-06-06 19:15:18,632 | root |  DEBUG: Generated 42001 out of 100000 batches with 18.82799243927002 seconds.
+2022-06-06 19:15:37,484 | root |  DEBUG: Generated 43001 out of 100000 batches with 18.826939344406128 seconds.
+2022-06-06 19:15:56,325 | root |  DEBUG: Generated 44001 out of 100000 batches with 18.816309690475464 seconds.
+2022-06-06 19:16:15,994 | root |  DEBUG: Generated 45001 out of 100000 batches with 19.643481492996216 seconds.
+2022-06-06 19:16:35,970 | root |  DEBUG: Generated 46001 out of 100000 batches with 19.95151376724243 seconds.
+2022-06-06 19:16:55,846 | root |  DEBUG: Generated 47001 out of 100000 batches with 19.85288715362549 seconds.
+2022-06-06 19:17:15,730 | root |  DEBUG: Generated 48001 out of 100000 batches with 19.859429359436035 seconds.
+2022-06-06 19:17:35,617 | root |  DEBUG: Generated 49001 out of 100000 batches with 19.861955404281616 seconds.
+2022-06-06 19:17:55,568 | root |  DEBUG: Generated 50001 out of 100000 batches with 19.92552137374878 seconds.
+2022-06-06 19:18:15,568 | root |  DEBUG: Generated 51001 out of 100000 batches with 19.975149869918823 seconds.
+2022-06-06 19:18:35,393 | root |  DEBUG: Generated 52001 out of 100000 batches with 19.81856894493103 seconds.
+2022-06-06 19:18:55,272 | root |  DEBUG: Generated 53001 out of 100000 batches with 19.85370922088623 seconds.
+2022-06-06 19:19:15,475 | root |  DEBUG: Generated 54001 out of 100000 batches with 20.177692413330078 seconds.
+2022-06-06 19:19:35,364 | root |  DEBUG: Generated 55001 out of 100000 batches with 19.864781379699707 seconds.
+2022-06-06 19:19:55,256 | root |  DEBUG: Generated 56001 out of 100000 batches with 19.86614727973938 seconds.
+2022-06-06 19:20:15,170 | root |  DEBUG: Generated 57001 out of 100000 batches with 19.889469861984253 seconds.
+2022-06-06 19:20:35,162 | root |  DEBUG: Generated 58001 out of 100000 batches with 19.966773748397827 seconds.
+2022-06-06 19:20:55,026 | root |  DEBUG: Generated 59001 out of 100000 batches with 19.841346740722656 seconds.
+2022-06-06 19:21:14,949 | root |  DEBUG: Generated 60001 out of 100000 batches with 19.898034811019897 seconds.
+2022-06-06 19:21:34,880 | root |  DEBUG: Generated 61001 out of 100000 batches with 19.905998945236206 seconds.
+2022-06-06 19:21:54,760 | root |  DEBUG: Generated 62001 out of 100000 batches with 19.854820489883423 seconds.
+2022-06-06 19:22:14,695 | root |  DEBUG: Generated 63001 out of 100000 batches with 19.910049200057983 seconds.
+2022-06-06 19:22:34,742 | root |  DEBUG: Generated 64001 out of 100000 batches with 20.021149158477783 seconds.
+2022-06-06 19:22:54,077 | root |  DEBUG: Generated 65001 out of 100000 batches with 19.309984922409058 seconds.
+2022-06-06 19:23:13,100 | root |  DEBUG: Generated 66001 out of 100000 batches with 19.00416898727417 seconds.
+2022-06-06 19:23:32,051 | root |  DEBUG: Generated 67001 out of 100000 batches with 18.925676107406616 seconds.
+2022-06-06 19:23:50,996 | root |  DEBUG: Generated 68001 out of 100000 batches with 18.920226573944092 seconds.
+2022-06-06 19:24:09,989 | root |  DEBUG: Generated 69001 out of 100000 batches with 18.967824935913086 seconds.
+2022-06-06 19:24:29,082 | root |  DEBUG: Generated 70001 out of 100000 batches with 19.067721366882324 seconds.
+2022-06-06 19:24:48,256 | root |  DEBUG: Generated 71001 out of 100000 batches with 19.148207187652588 seconds.
+2022-06-06 19:25:07,447 | root |  DEBUG: Generated 72001 out of 100000 batches with 19.16572880744934 seconds.
+2022-06-06 19:25:26,778 | root |  DEBUG: Generated 73001 out of 100000 batches with 19.306380033493042 seconds.
+2022-06-06 19:25:45,917 | root |  DEBUG: Generated 74001 out of 100000 batches with 19.120404481887817 seconds.
+2022-06-06 19:26:05,080 | root |  DEBUG: Generated 75001 out of 100000 batches with 19.138418436050415 seconds.
+2022-06-06 19:26:24,293 | root |  DEBUG: Generated 76001 out of 100000 batches with 19.18804121017456 seconds.
+2022-06-06 19:26:43,421 | root |  DEBUG: Generated 77001 out of 100000 batches with 19.10147452354431 seconds.
+2022-06-06 19:27:02,374 | root |  DEBUG: Generated 78001 out of 100000 batches with 18.928054571151733 seconds.
+2022-06-06 19:27:21,301 | root |  DEBUG: Generated 79001 out of 100000 batches with 18.90177583694458 seconds.
+2022-06-06 19:27:40,383 | root |  DEBUG: Generated 80001 out of 100000 batches with 19.055004358291626 seconds.
+2022-06-06 19:27:59,525 | root |  DEBUG: Generated 81001 out of 100000 batches with 19.11630654335022 seconds.
+2022-06-06 19:28:18,607 | root |  DEBUG: Generated 82001 out of 100000 batches with 19.056704998016357 seconds.
+2022-06-06 19:28:38,167 | root |  DEBUG: Generated 83001 out of 100000 batches with 19.543816566467285 seconds.
+2022-06-06 19:28:58,087 | root |  DEBUG: Generated 84001 out of 100000 batches with 19.89374303817749 seconds.
+2022-06-06 19:29:18,020 | root |  DEBUG: Generated 85001 out of 100000 batches with 19.908294916152954 seconds.
+2022-06-06 19:29:37,946 | root |  DEBUG: Generated 86001 out of 100000 batches with 19.900349617004395 seconds.
+2022-06-06 19:29:57,980 | root |  DEBUG: Generated 87001 out of 100000 batches with 20.00876545906067 seconds.
+2022-06-06 19:30:17,120 | root |  DEBUG: Generated 88001 out of 100000 batches with 19.114104747772217 seconds.
+2022-06-06 19:30:36,260 | root |  DEBUG: Generated 89001 out of 100000 batches with 19.11416220664978 seconds.
+2022-06-06 19:30:55,498 | root |  DEBUG: Generated 90001 out of 100000 batches with 19.212804079055786 seconds.
+2022-06-06 19:31:14,726 | root |  DEBUG: Generated 91001 out of 100000 batches with 19.225565433502197 seconds.
+2022-06-06 19:31:34,032 | root |  DEBUG: Generated 92001 out of 100000 batches with 19.300957441329956 seconds.
+2022-06-06 19:31:53,307 | root |  DEBUG: Generated 93001 out of 100000 batches with 19.262524127960205 seconds.
+2022-06-06 19:32:12,608 | root |  DEBUG: Generated 94001 out of 100000 batches with 19.291159868240356 seconds.
+2022-06-06 19:32:31,930 | root |  DEBUG: Generated 95001 out of 100000 batches with 19.311947345733643 seconds.
+2022-06-06 19:32:51,851 | root |  DEBUG: Generated 96001 out of 100000 batches with 19.90875482559204 seconds.
+2022-06-06 19:33:12,099 | root |  DEBUG: Generated 97001 out of 100000 batches with 20.246882438659668 seconds.
+2022-06-06 19:33:32,271 | root |  DEBUG: Generated 98001 out of 100000 batches with 20.16703224182129 seconds.
+2022-06-06 19:33:52,556 | root |  DEBUG: Generated 99001 out of 100000 batches with 20.275641202926636 seconds.
+2022-06-06 19:34:12,212 | root |  DEBUG: Generated 100000 out of 100000 batches with 19.650843858718872 seconds.
+2022-06-06 19:34:12,760 | root |  INFO: Patch 0: generation of p samples take 1936.7950427532196 seconds.
+2022-06-06 19:34:12,770 | root |  INFO: Patch  0: epoch    0 with loss 1.78E+00
+2022-06-06 19:34:16,221 | root |  INFO: Patch  0: epoch  500 with loss 9.04E-04
+2022-06-06 19:34:19,669 | root |  INFO: Patch  0: epoch 1000 with loss 6.89E-04
+2022-06-06 19:34:23,117 | root |  INFO: Patch  0: epoch 1500 with loss 5.40E-04
+2022-06-06 19:34:26,567 | root |  INFO: Patch  0: epoch 2000 with loss 3.86E-04
+2022-06-06 19:34:37,053 | root |  INFO: Patch  0: epoch 2500 with loss 2.88E-04
+2022-06-06 19:34:46,355 | root |  INFO: Patch  0: epoch 3000 with loss 2.03E-04
+2022-06-06 19:34:53,607 | root |  INFO: Patch  0: epoch 3500 with loss 1.39E-04
+2022-06-06 19:34:58,709 | root |  INFO: Patch  0: epoch 4000 with loss 1.01E-04
+2022-06-06 19:35:05,671 | root |  INFO: Patch  0: epoch 4500 with loss 6.08E-05
+2022-06-06 19:35:11,539 | root |  INFO: Patch  0: epoch 5000 with loss 4.11E-05
+2022-06-06 19:35:16,421 | root |  INFO: Patch  0: epoch 5500 with loss 2.67E-05
+2022-06-06 19:35:22,529 | root |  INFO: Patch  0: epoch 6000 with loss 3.46E-05
+2022-06-06 19:35:28,703 | root |  INFO: Patch  0: epoch 6500 with loss 2.26E-04
+2022-06-06 19:35:34,057 | root |  INFO: Patch  0: epoch 7000 with loss 1.34E-05
+2022-06-06 19:35:38,642 | root |  INFO: Patch  0: epoch 7500 with loss 7.29E-05
+2022-06-06 19:35:43,651 | root |  INFO: Patch  0: epoch 8000 with loss 6.55E-05
+2022-06-06 19:35:49,671 | root |  INFO: Patch  0: epoch 8500 with loss 4.65E-06
+2022-06-06 19:35:57,231 | root |  INFO: Patch  0: epoch 9000 with loss 4.55E-06
+2022-06-06 19:36:02,463 | root |  INFO: Patch  0: epoch 9500 with loss 4.17E-06
+2022-06-06 19:36:08,198 | root |  INFO: Patch  0: epoch 9999 with loss 7.36E-06
+2022-06-06 19:36:08,228 | root |  INFO: Patch0: pre-training of p with 10000 epochs takes  115 seconds.
+2022-06-06 19:36:08,283 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172254ecd0>
+2022-06-06 19:36:08,412 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f17228e2430>
+2022-06-06 20:30:59,766 | root |  INFO: Patch 0: generation of u samples take 3291.24472284317 seconds.
+2022-06-06 20:30:59,780 | root |  INFO: Patch  0: epoch    0 with loss 5.37E+00
+2022-06-06 20:31:04,683 | root |  INFO: Patch  0: epoch  500 with loss 3.20E-02
+2022-06-06 20:31:09,590 | root |  INFO: Patch  0: epoch 1000 with loss 2.81E-02
+2022-06-06 20:31:14,468 | root |  INFO: Patch  0: epoch 1500 with loss 2.71E-02
+2022-06-06 20:31:19,404 | root |  INFO: Patch  0: epoch 2000 with loss 2.66E-02
+2022-06-06 20:31:31,863 | root |  INFO: Patch  0: epoch 2500 with loss 2.62E-02
+2022-06-06 20:31:40,752 | root |  INFO: Patch  0: epoch 3000 with loss 2.60E-02
+2022-06-06 20:31:49,677 | root |  INFO: Patch  0: epoch 3500 with loss 2.58E-02
+2022-06-06 20:31:56,985 | root |  INFO: Patch  0: epoch 4000 with loss 2.56E-02
+2022-06-06 20:32:03,955 | root |  INFO: Patch  0: epoch 4500 with loss 2.57E-02
+2022-06-06 20:32:10,940 | root |  INFO: Patch  0: epoch 5000 with loss 2.54E-02
+2022-06-06 20:32:17,826 | root |  INFO: Patch  0: epoch 5500 with loss 2.53E-02
+2022-06-06 20:32:25,258 | root |  INFO: Patch  0: epoch 6000 with loss 2.53E-02
+2022-06-06 20:32:32,837 | root |  INFO: Patch  0: epoch 6500 with loss 2.52E-02
+2022-06-06 20:32:39,822 | root |  INFO: Patch  0: epoch 7000 with loss 2.52E-02
+2022-06-06 20:32:45,917 | root |  INFO: Patch  0: epoch 7500 with loss 2.51E-02
+2022-06-06 20:32:51,816 | root |  INFO: Patch  0: epoch 8000 with loss 2.62E-02
+2022-06-06 20:32:57,948 | root |  INFO: Patch  0: epoch 8500 with loss 2.52E-02
+2022-06-06 20:33:03,540 | root |  INFO: Patch  0: epoch 9000 with loss 2.53E-02
+2022-06-06 20:33:09,183 | root |  INFO: Patch  0: epoch 9500 with loss 2.54E-02
+2022-06-06 20:33:14,448 | root |  INFO: Patch  0: epoch 9999 with loss 2.50E-02
+2022-06-06 20:33:14,479 | root |  INFO: Patch 0: training of u with 10000 epochs take 134.71170854568481 seconds.
+2022-06-06 20:33:14,544 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f1740112460>
+2022-06-06 20:33:15,140 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172dc7e880>
+2022-06-06 20:33:15,507 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f174008b610>
+2022-06-06 20:33:15,869 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f17227e2d00>
+2022-06-06 20:33:16,227 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172277d280>
+2022-06-06 20:33:16,666 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172f46d7f0>
+2022-06-06 20:33:17,027 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172c1bc400>
+2022-06-06 20:33:17,386 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172294ad90>
+2022-06-06 20:33:17,750 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d597a60>
+2022-06-06 20:33:18,189 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172c0605b0>
+2022-06-06 20:33:18,549 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172f490430>
+2022-06-06 20:33:18,911 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172f37c3a0>
+2022-06-06 20:33:19,268 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d1f9d30>
+2022-06-06 20:33:19,627 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d009a30>
+2022-06-06 20:33:20,080 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f171be04520>
+2022-06-06 20:33:20,437 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d689430>
+2022-06-06 20:33:20,793 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172dc1d460>
+2022-06-06 20:33:21,150 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f17225971c0>
+2022-06-06 20:33:21,505 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172da1dc10>
+2022-06-06 20:33:21,861 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d4a0970>
+2022-06-06 20:33:22,320 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d114460>
+2022-06-06 20:33:22,823 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d3bc280>
+2022-06-06 20:33:23,181 | matplotlib.colorbar |  DEBUG: locator: <matplotlib.ticker.AutoLocator object at 0x7f172d51c7f0>
