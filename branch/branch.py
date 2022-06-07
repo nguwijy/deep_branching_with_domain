@@ -1166,7 +1166,12 @@ class Net(torch.nn.Module):
 
         x_now = x
         is_x_inside = self.is_x_inside(x_now)
+        delta_dt = self.delta_t / self.bm_discretization_steps * torch.ones_like(dt)
         for _ in range(self.bm_discretization_steps):
+            if (dt <= 0).all():
+                break
+            dt_now = torch.minimum(dt, delta_dt)
+            dt = dt - dt_now
             if self.antithetic:
                 # antithetic variates
                 dw = torch.randn(
@@ -1178,11 +1183,11 @@ class Net(torch.nn.Module):
                 dw = torch.randn(
                     self.dim_in, nb_states, self.nb_path_per_state, device=self.device
                 )
-            x_next = x_now + dw * torch.sqrt(var * dt / self.bm_discretization_steps)
-            is_x_inside = is_x_inside * self.is_x_inside(x_next)
+            is_x_inside = is_x_inside * self.is_x_inside(x_now)
+            x_next = x_now + dw * torch.sqrt(var * dt_now)
             x_now = x_next.where(is_x_inside, x_now)
             
-        return x_next
+        return x_now
 
     def helper_negative_code_on_f(self, t, T, x, mask, H, code, patch, coordinate):
         """
