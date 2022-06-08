@@ -17,6 +17,11 @@ the Poisson equation \
 and the derivatives condition \
 <img src="https://latex.codecogs.com/svg.image?&space;&space;&space;&space;\sum\limits_{i&space;=&space;0}^{m&space;-&space;1}&space;&space;&space;&space;\partial_{\alpha_{deriv}^i}&space;u_{\zeta_{deriv}^i}(t,&space;x)&space;=&space;0,&space;&space;&space;&space;\quad&space;(t,&space;x)&space;\in&space;[t_{lo},&space;T]&space;\times&space;\Omega,&space;&space;&space;&space;\quad&space;\Omega&space;\subset&space;\mathbb{R}^{d_{in}}." />
 
+## Quick Start
+* <a href="https://nbviewer.org/github/nguwijy/deep_branching_with_domain/blob/main/notebooks/index.ipynb"><img src="https://raw.githubusercontent.com/jupyter/design/master/logos/Badges/nbviewer_badge.svg" alt="Render nbviewer" /></a>
+
+* [github.com's notebook viewer](https://github.com/nguwijy/deep_branching_with_domain/blob/main/notebooks/index.ipynb) also works but it's not ideal: it's slower, the math equations are not always displayed correctly, and large notebooks often fail to open.
+
 ## Using deep branching solver
 There are two ways to utilize the deep branching solver:
 1. Edit the templates of `main.py`, then run `python main.py` from your terminal.
