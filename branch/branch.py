@@ -352,6 +352,7 @@ class Net(torch.nn.Module):
         T=1.0,
         nu=1.0,
         branch_exponential_lambda=None,
+        bm_discretization_steps=1,
         neurons=50,
         layers=6,
         branch_lr=1e-3,
@@ -677,6 +678,7 @@ class Net(torch.nn.Module):
             branch_exponential_lambda if branch_exponential_lambda is not None
             else -math.log(.95)/self.delta_t
         )
+        self.bm_discretization_steps = bm_discretization_steps
         self.epochs = epochs
         self.antithetic = antithetic
         self.div_condition_coeff = div_condition_coeff
@@ -1162,18 +1164,30 @@ class Net(torch.nn.Module):
         var = self.nu if var is None else var
         dt = dt.clip(min=0.0)  # so that we can safely take square root of dt
 
-        if self.antithetic:
-            # antithetic variates
-            dw = torch.sqrt(var * dt) * torch.randn(
-                self.dim_in, nb_states, self.nb_path_per_state // 2, device=self.device
-            ).repeat(1, 1, 2)
-            dw[:, :, : (self.nb_path_per_state // 2)] *= -1
-        else:
-            # usual generation
-            dw = torch.sqrt(var * dt) * torch.randn(
-                self.dim_in, nb_states, self.nb_path_per_state, device=self.device
-            )
-        return x + dw
+        x_now = x
+        is_x_inside = self.is_x_inside(x_now)
+        delta_dt = self.delta_t / self.bm_discretization_steps * torch.ones_like(dt)
+        for _ in range(self.bm_discretization_steps):
+            if (dt <= 0).all():
+                break
+            dt_now = torch.minimum(dt, delta_dt)
+            dt = dt - dt_now
+            if self.antithetic:
+                # antithetic variates
+                dw = torch.randn(
+                    self.dim_in, nb_states, self.nb_path_per_state // 2, device=self.device
+                ).repeat(1, 1, 2)
+                dw[:, :, : (self.nb_path_per_state // 2)] *= -1
+            else:
+                # usual generation
+                dw = torch.randn(
+                    self.dim_in, nb_states, self.nb_path_per_state, device=self.device
+                )
+            is_x_inside = is_x_inside * self.is_x_inside(x_now)
+            x_next = x_now + dw * torch.sqrt(var * dt_now)
+            x_now = x_next.where(is_x_inside, x_now)
+            
+        return x_now
 
     def helper_negative_code_on_f(self, t, T, x, mask, H, code, patch, coordinate):
         """
