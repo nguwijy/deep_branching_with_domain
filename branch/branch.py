@@ -1161,12 +1161,17 @@ class Net(torch.nn.Module):
         var : float, optional
             Default to be `nu`.
         """
-        var = self.nu if var is None else var
         dt = dt.clip(min=0.0)  # so that we can safely take square root of dt
+        if var is not None:
+            # simulate BM for p, max T = self.tau_hi
+            delta_dt = self.tau_hi / self.bm_discretization_steps * torch.ones_like(dt)
+        else:
+            # simulate BM for u, max T = self.delta_t
+            delta_dt = self.delta_t / self.bm_discretization_steps * torch.ones_like(dt)
+        var = self.nu if var is None else var
 
         x_now = x
         is_x_inside = self.is_x_inside(x_now)
-        delta_dt = self.delta_t / self.bm_discretization_steps * torch.ones_like(dt)
         for _ in range(self.bm_discretization_steps):
             if (dt <= 0).all():
                 break
