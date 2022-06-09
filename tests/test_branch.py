@@ -120,6 +120,8 @@ class TestBranch(unittest.TestCase):
         config["neurons"] = 20
         config["layers"] = 5
         config["outlier_multiplier"] = 1000
+        config["continue_from_checkpoint"] = None
+        config["train_for_u"] = True
         self.run_test()
 
     def test_allen_cahn_5d(self):
@@ -130,6 +132,8 @@ class TestBranch(unittest.TestCase):
         config["neurons"] = 20
         config["layers"] = 5
         config["outlier_multiplier"] = 1000
+        config["continue_from_checkpoint"] = None
+        config["train_for_u"] = True
         self.run_test()
 
     def test_taylor_green_for_u(self):
@@ -141,8 +145,8 @@ class TestBranch(unittest.TestCase):
         config["layers"] = 2
         config["outlier_multiplier"] = 10
         config["continue_from_checkpoint"] = "logs/20220601-222808-taylor_green_2d-T0.25-nu2"
+        config["train_for_u"] = True
         self.run_test()
-        config["continue_from_checkpoint"] = None
 
     def test_taylor_green_for_p(self):
         self.update_with_name("taylor_green", p_or_u="p")
@@ -153,9 +157,9 @@ class TestBranch(unittest.TestCase):
         config["layers"] = 2
         config["outlier_multiplier"] = 10
         config["overtrain_rate_for_p"] = 0.
+        config["continue_from_checkpoint"] = None
         config["train_for_u"] = False
         self.run_test(p_or_u="p")
-        config["train_for_u"] = True
 
     @staticmethod
     def update_with_name(problem_name, p_or_u="u"):
