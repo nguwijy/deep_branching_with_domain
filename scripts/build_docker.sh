@@ -1,3 +1,6 @@
-docker pull nvcr.io/nvidia/pytorch:22.02-py3
 cd $(dirname "$0")
-docker build --rm -t nvidia-pytorch . -f Dockerfile
+cp ../requirements.txt ./
+sed -i "/ARG username=/c ARG username=$USER" Dockerfile
+sed -i "/ARG userid=/c ARG userid=$UID" Dockerfile
+docker build --rm -t nguwijy/deep_branching . -f Dockerfile
+rm requirements.txt
