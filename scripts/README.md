@@ -16,7 +16,7 @@ where you can start the jupyter server using:
 jupyter notebook
 ```
 If you do not have GPU in your machine,
-comment the line `--gpus all`
+remove the line `--gpus all`
 in `start_docker.sh` before running the script.
 
 ## build_docker.sh
