@@ -1808,6 +1808,7 @@ class Net(torch.nn.Module):
             plt.plot(grid, nn[:, i], label="NN")
             plt.plot(grid, true, label="True solution")
             plt.plot(grid, terminal, label="Terminal solution")
+            plt.title(f"Comparison with exact {p_or_u}{i} ")
             plt.legend()
             f.savefig(
                 f"{self.working_dir_full_path}/plot/{p_or_u}{i}_comparison_with_exact.png", bbox_inches="tight"
