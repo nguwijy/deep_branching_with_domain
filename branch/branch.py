@@ -747,9 +747,9 @@ class Net(torch.nn.Module):
             default to be "u".
         """
         if self.exact_p_fun is not None and p_or_u == "p":
-            return self.exact_p_fun(x.T)
+            return self.exact_p_fun(x.T).unsqueeze(dim=-1)
         if self.exact_p_fun_full is not None and p_or_u == "p":
-            return self.exact_p_fun_full(x.T, t=self.T)
+            return self.exact_p_fun_full(x.T, t=self.T).unsqueeze(dim=-1)
 
         layer = self.u_layer if p_or_u == "u" else self.p_layer
         bn_layer = self.u_bn_layer if p_or_u == "u" else self.p_bn_layer
