@@ -46,3 +46,10 @@ To use this, run:
 bash png_to_gif.sh /path/to/plot/directory
 ```
 The path to plot directory is usually stored inside the `logs` folder.
+
+## gen_doc.sh
+This script is to generate html documentation based on python docstring.
+To use this, run:
+```bash
+bash gen_doc.sh
+```
