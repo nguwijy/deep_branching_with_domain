@@ -341,6 +341,7 @@ class Net(torch.nn.Module):
         dim_out=None,
         phi_fun=(lambda x: x),
         exact_p_fun=None,
+        exact_p_fun_full=None,
         phi0=0,
         conditional_probability_to_survive=(lambda t, x, y: torch.ones_like(x[0])),
         conditional_probability_to_survive_for_p=(lambda t, x, y: torch.ones_like(x[0])),
@@ -557,7 +558,11 @@ class Net(torch.nn.Module):
         self.dim_out = dim_out if dim_out is not None else self.zeta_map.max() + 1
         self.nprime = sum(self.zeta_map == -1)
         self.exact_p_fun = exact_p_fun
-        self.train_for_p = train_for_p if train_for_p is not None else (self.nprime > 0) and self.exact_p_fun is None
+        self.exact_p_fun_full = exact_p_fun_full
+        self.train_for_p = (
+            train_for_p if train_for_p is not None
+            else (self.nprime > 0) and self.exact_p_fun is None and self.exact_p_fun_full is None
+        )
         self.train_for_u = train_for_u
 
         # patching is used for calculating the target expected value of the tree in branch_patches steps
@@ -708,7 +713,6 @@ class Net(torch.nn.Module):
                 f"{continue_from_checkpoint_full_path}/checkpoint.pt")
             )
             self.train_for_p = False
-            self.eval()
 
         timestr = time.strftime("%Y%m%d-%H%M%S")  # current time stamp
         self.working_dir = (
@@ -720,6 +724,7 @@ class Net(torch.nn.Module):
             self.working_dir,
         )
         self.log_config()
+        self.eval()
 
     def forward(self, x, patch=None, p_or_u="u"):
         """
@@ -743,6 +748,8 @@ class Net(torch.nn.Module):
         """
         if self.exact_p_fun is not None and p_or_u == "p":
             return self.exact_p_fun(x.T)
+        if self.exact_p_fun_full is not None and p_or_u == "p":
+            return self.exact_p_fun_full(x.T, t=self.T)
 
         layer = self.u_layer if p_or_u == "u" else self.p_layer
         bn_layer = self.u_bn_layer if p_or_u == "u" else self.p_bn_layer
@@ -1310,6 +1317,16 @@ class Net(torch.nn.Module):
         nb_states, _ = t.shape
         # for the p coordinate
         if coordinate < 0:
+            assert (code < 0).all(), "coordinate p should not have positive code"
+            if self.exact_p_fun_full is not None:
+                mask = mask.bool()
+                x = x[:, mask].detach().clone().requires_grad_(True)
+                tmp = self.nth_derivatives(
+                    -code - 1, self.exact_p_fun_full(x, t=t[mask]), x
+                ).detach()
+                ans[mask] = tmp
+                return ans
+
             unif = (
                 torch.rand(nb_states * self.nb_path_per_state, device=self.device)
                      .reshape(nb_states, self.nb_path_per_state)
