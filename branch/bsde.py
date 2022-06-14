@@ -23,6 +23,7 @@ class BSDENet(torch.nn.Module):
         t_lo=0.0,
         t_hi=1.0,
         T=1.0,
+        nu=1.0,
         neurons=20,
         layers=5,
         bsde_lr=1e-2,
@@ -156,6 +157,7 @@ class BSDENet(torch.nn.Module):
         self.t_lo = t_lo
         self.t_hi = t_hi
         self.T = T
+        self.nu = nu
         self.nb_time_intervals = bsde_nb_time_intervals
         self.delta_t = (T - t_lo) / bsde_nb_time_intervals
 
@@ -231,7 +233,7 @@ class BSDENet(torch.nn.Module):
 
         for _ in range(self.nb_time_intervals):
             dw.append(
-                math.sqrt(self.delta_t)
+                math.sqrt(self.nu * self.delta_t)
                 * torch.randn(self.nb_states * self.dim, device=self.device).reshape(
                     -1, self.dim
                 )
