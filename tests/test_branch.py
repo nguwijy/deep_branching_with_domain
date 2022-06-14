@@ -109,6 +109,15 @@ def exact_example(t, x, T, coordinate, problem_name, p_or_u):
                 * (np.cos(2 * x[0]) + np.cos(2 * x[1]))
             )
 
+def exact_p_example_full(x, t):
+    nu = config["nu"]
+    T = config["T"]
+    if not torch.is_tensor(t):
+        t = torch.tensor(t)
+    return (
+        -1/4 * torch.exp(-4 * nu * (T - t))
+        * (torch.cos(2 * x[0]) + torch.cos(2 * x[1]))
+    )
 
 class TestBranch(unittest.TestCase):
 
@@ -122,6 +131,7 @@ class TestBranch(unittest.TestCase):
         config["outlier_multiplier"] = 1000
         config["continue_from_checkpoint"] = None
         config["train_for_u"] = True
+        config["exact_p_fun"] = None
         self.run_test()
 
     def test_allen_cahn_5d(self):
@@ -134,6 +144,7 @@ class TestBranch(unittest.TestCase):
         config["outlier_multiplier"] = 1000
         config["continue_from_checkpoint"] = None
         config["train_for_u"] = True
+        config["exact_p_fun"] = None
         self.run_test()
 
     def test_taylor_green_for_u(self):
@@ -146,6 +157,7 @@ class TestBranch(unittest.TestCase):
         config["outlier_multiplier"] = 10
         config["continue_from_checkpoint"] = "logs/20220601-222808-taylor_green_2d-T0.25-nu2"
         config["train_for_u"] = True
+        config["exact_p_fun"] = None
         self.run_test()
 
     def test_taylor_green_for_p(self):
@@ -159,7 +171,37 @@ class TestBranch(unittest.TestCase):
         config["overtrain_rate_for_p"] = 0.
         config["continue_from_checkpoint"] = None
         config["train_for_u"] = False
+        config["exact_p_fun"] = None
         self.run_test(p_or_u="p")
+
+    def test_taylor_green_with_exact_p_fun(self):
+        self.update_with_name("taylor_green")
+        config["x_lo"] = 0
+        config["x_hi"] = math.pi
+        config["branch_nb_path_per_state"] = 1000
+        config["neurons"] = 100
+        config["layers"] = 2
+        config["outlier_multiplier"] = 10
+        config["continue_from_checkpoint"] = None
+        config["train_for_u"] = True
+        config["exact_p_fun"] = partial(
+            exact_p_example_full,
+            t=config["T"],
+        )
+        self.run_test()
+
+    def test_taylor_green_with_exact_p_fun_full(self):
+        self.update_with_name("taylor_green")
+        config["x_lo"] = 0
+        config["x_hi"] = math.pi
+        config["branch_nb_path_per_state"] = 1000
+        config["neurons"] = 100
+        config["layers"] = 2
+        config["outlier_multiplier"] = 10
+        config["continue_from_checkpoint"] = None
+        config["train_for_u"] = True
+        config["exact_p_fun_full"] = exact_p_example_full
+        self.run_test()
 
     @staticmethod
     def update_with_name(problem_name, p_or_u="u"):
