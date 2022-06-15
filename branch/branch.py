@@ -1943,7 +1943,7 @@ class Net(torch.nn.Module):
                 comments="",
             )
 
-    def gen_sample(self, patch):
+    def gen_sample(self, patch, tx=None):
         """
         Generate samples for u based on `adjusted_t_boundaries`,
         `adjusted_x_boundaries` and the function `gen_sample_batch`.
@@ -1955,7 +1955,7 @@ class Net(torch.nn.Module):
         """
         nb_states = self.nb_states
         states_per_batch = min(nb_states, self.nb_states_per_batch)
-        batches = math.ceil(nb_states / states_per_batch)
+        batches = math.ceil(nb_states / states_per_batch) if tx is None else 1
         t_lo, t_hi = self.adjusted_t_boundaries[patch]
         x_lo, x_hi = self.adjusted_x_boundaries
         xx, yy = [], []
@@ -1973,12 +1973,17 @@ class Net(torch.nn.Module):
                 .reshape(self.nb_path_per_state, -1)
                 .T.reshape(self.dim_in, states_per_batch, self.nb_path_per_state)
             )
-            x = x_lo + (x_hi - x_lo) * unif
-            # fix all dimensions (except the first) to be the middle value
-            if self.dim_in > 1 and self.fix_all_dim_except_first:
-                x[1:, :, :] = (x_hi + x_lo) / 2
+            if tx is None:
+                x = x_lo + (x_hi - x_lo) * unif
+                # fix all dimensions (except the first) to be the middle value
+                if self.dim_in > 1 and self.fix_all_dim_except_first:
+                    x[1:, :, :] = (x_hi + x_lo) / 2
+                xx.append(torch.cat((t[:, :1], x[:, :, 0].T), dim=-1).detach())
+            else:
+                t = tx[:, 0].unsqueeze(-1).repeat((1, self.nb_path_per_state))
+                x = tx[:, 1:].T.unsqueeze(-1).repeat((1, 1, self.nb_path_per_state))
+                xx.append(tx)
             T = (t_lo + self.delta_t) * torch.ones_like(t)
-            xx.append(torch.cat((t[:, :1], x[:, :, 0].T), dim=-1).detach())
             yyy = []
             for (idx, c) in zip(self.coordinate, self.code):
                 yy_tmp = self.gen_sample_batch(
