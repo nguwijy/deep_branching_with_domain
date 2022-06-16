@@ -7,4 +7,5 @@ docker run -p 8888:8888 \
     --rm -it \
     -v ${PWD}:/home/${username}/deep_branching_with_domain \
     --network host \
-    nguwijy/deep_branching
+    nguwijy/deep_branching \
+    bash -c "python -m pip install .; bash"
