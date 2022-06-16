@@ -10,7 +10,8 @@ __pycache__/
 .idea/
 
 # temporary log files
-logs/tmp/
+notebooks/logs/tmp/
+notebooks/logs/tmp/
 notebooks/deep_branching_logs/data/*csv
 notebooks/deep_branching_logs/plot/*pdf
 

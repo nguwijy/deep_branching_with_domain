@@ -706,7 +706,7 @@ class Net(torch.nn.Module):
             ]
         if continue_from_checkpoint is not None:
             continue_from_checkpoint_full_path = os.path.join(
-                os.path.split(os.path.dirname(__file__))[0],
+                os.getcwd(),
                 continue_from_checkpoint,
             )
             self.load_state_dict(torch.load(
@@ -720,7 +720,7 @@ class Net(torch.nn.Module):
             else f"logs/{timestr}-{problem_name}-T{self.T}-nu{self.nu}"
         )
         self.working_dir_full_path = os.path.join(
-            os.path.split(os.path.dirname(__file__))[0],
+            os.getcwd(),
             self.working_dir,
         )
         self.log_config()
