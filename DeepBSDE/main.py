@@ -17,33 +17,46 @@ class Dict2Class(object):
             setattr(self, key, my_dict[key])
 
 
-eqn_config = Dict2Class({
-    "_comment": "Allen-Cahn equation",
-    "eqn_name": "AllenCahn",
-    "total_time": 0.3,
-    "dim": 1,
-    "num_time_interval": 20,
-})
-net_config = Dict2Class({
-    "y_init_range": [-1, 0],
-    "num_hiddens": [110, 110],
-    "lr_values": [5e-4, 5e-4],
-    "lr_boundaries": [2000],
-    "num_iterations": 4000,
-    "batch_size": 64,
-    "valid_size": 256,
-    "logging_frequency": 100,
-    "dtype": "float64",
-    "verbose": True,
-})
-config = Dict2Class({
-    "eqn_config": eqn_config,
-    "net_config": net_config,
-})
+def main(
+    total_time=0.3,
+    dim=100,
+    num_time_interval=20,
+    y_init_range=[-1, 0],
+    num_hiddens=[110, 110],
+    lr_values=[5e-4, 5e-4],
+    lr_boundaries=[2000],
+    num_iterations= 4000,
+    batch_size= 64,
+    valid_size= 256,
+    logging_frequency=100,
+    dtype="float64",
+    verbose=True,
+):
 
+    eqn_config = Dict2Class({
+        "_comment": "Allen-Cahn equation",
+        "eqn_name": "AllenCahn",
+        "total_time": total_time,
+        "dim": dim,
+        "num_time_interval": num_time_interval,
+    })
+    net_config = Dict2Class({
+        "y_init_range": y_init_range,
+        "num_hiddens": num_hiddens,
+        "lr_values": lr_values,
+        "lr_boundaries": lr_boundaries,
+        "num_iterations": num_iterations,
+        "batch_size": batch_size,
+        "valid_size": valid_size,
+        "logging_frequency": logging_frequency,
+        "dtype": dtype,
+        "verbose": verbose,
+    })
+    config = Dict2Class({
+        "eqn_config": eqn_config,
+        "net_config": net_config,
+    })
 
-def main(total_time=0.3):
-    eqn_config.total_time = total_time
     bsde = AllenCahn(eqn_config)
     tf.keras.backend.set_floatx(net_config.dtype)
 
