@@ -20,6 +20,7 @@ class Dict2Class(object):
 def main(
     total_time=0.3,
     dim=100,
+    nu=1,
     num_time_interval=20,
     y_init_range=[-1, 0],
     num_hiddens=[110, 110],
@@ -38,6 +39,7 @@ def main(
         "eqn_name": "AllenCahn",
         "total_time": total_time,
         "dim": dim,
+        "nu": nu,
         "num_time_interval": num_time_interval,
     })
     net_config = Dict2Class({

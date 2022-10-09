@@ -5,6 +5,7 @@ pynverse~=0.1.4.4
 ray[tune]~=1.12.1
 scipy~=1.8.0
 sympy~=1.10.1
+tensorflow~=2.10.0
 
 # torch with cuda113
 --extra-index-url https://download.pytorch.org/whl/cu113
