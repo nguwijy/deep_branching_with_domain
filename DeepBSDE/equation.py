@@ -54,7 +54,7 @@ class AllenCahn(Equation):
     def __init__(self, eqn_config):
         super(AllenCahn, self).__init__(eqn_config)
         self.x_init = np.zeros(self.dim)
-        self.sigma = np.sqrt(self.nu)
+        self.sigma = np.sqrt(eqn_config.nu)
         self.y_init = -0.5 - 0.5 * np.tanh(.75 * self.total_time - np.sum(self.x_init) / (2 * np.sqrt(self.dim)))
 
     def sample(self, num_sample):
