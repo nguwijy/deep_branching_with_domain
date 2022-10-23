@@ -1760,6 +1760,7 @@ class Net(torch.nn.Module):
             nb_points=100,
             show_plot=True,
             p_or_u="u",
+            exclude_terminal=False,
     ):
         """
         Plot the comparison among
@@ -1807,8 +1808,11 @@ class Net(torch.nn.Module):
             error.append(np.abs(true - nn[:, i]).mean())
             plt.plot(grid, nn[:, i], label="NN")
             plt.plot(grid, true, label="True solution")
-            plt.plot(grid, terminal, label="Terminal solution")
+            if not exclude_terminal:
+                plt.plot(grid, terminal, label="Terminal solution")
             plt.title(f"Comparison with exact {p_or_u}{i} ")
+            plt.xlabel('x1')
+            plt.ylabel(f'u{i+1}')
             plt.legend()
             f.savefig(
                 f"{self.working_dir_full_path}/plot/{p_or_u}{i}_comparison_with_exact.png", bbox_inches="tight"
