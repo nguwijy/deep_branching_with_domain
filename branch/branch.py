@@ -1761,6 +1761,7 @@ class Net(torch.nn.Module):
             show_plot=True,
             p_or_u="u",
             exclude_terminal=False,
+            ylim=None,
     ):
         """
         Plot the comparison among
@@ -1813,6 +1814,8 @@ class Net(torch.nn.Module):
             plt.xlabel("$x_1$")
             plt.ylabel(f"$u_{i+1}$")
             plt.legend()
+            if ylim is not None:
+                plt.ylim(*ylim)
             f.savefig(
                 f"{self.working_dir_full_path}/plot/{p_or_u}{i}_comparison_with_exact.png", bbox_inches="tight"
             )
@@ -2299,3 +2302,13 @@ class Net(torch.nn.Module):
             output_dict[f"patch_{p}"] = (time.time() - start, best_loss)
         if return_dict:
             return output_dict
+
+
+
+
+def exact_example_p(t, x, T, coordinate, nu):
+    return (
+        -1/ 4
+        * np.exp(-2 * nu * (T - t))
+        * (np.cos(2 * x[0]) + np.cos(2 * x[1]))
+    )
