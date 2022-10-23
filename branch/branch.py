@@ -1814,7 +1814,8 @@ class Net(torch.nn.Module):
             plt.xlabel("$x_1$")
             plt.ylabel(f"$u_{i+1}$")
             plt.legend()
-            if ylim is not None:
+            if ylim is not None and i == 0:
+                # only change ylim for u0
                 plt.ylim(*ylim)
             f.savefig(
                 f"{self.working_dir_full_path}/plot/{p_or_u}{i}_comparison_with_exact.png", bbox_inches="tight"
