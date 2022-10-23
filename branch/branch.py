@@ -2303,13 +2303,3 @@ class Net(torch.nn.Module):
             output_dict[f"patch_{p}"] = (time.time() - start, best_loss)
         if return_dict:
             return output_dict
-
-
-
-
-def exact_example_p(t, x, T, coordinate, nu):
-    return (
-        -1/ 4
-        * np.exp(-2 * nu * (T - t))
-        * (np.cos(2 * x[0]) + np.cos(2 * x[1]))
-    )
