@@ -1,0 +1,86 @@
+2022-10-24 02:18:11,065 | root |  INFO: Logs are saved in /home/oem/deep_branching_with_domain/notebooks/logs/20221024-021811-taylor_green_2d-T1-nu0.2
+2022-10-24 02:18:11,067 | root |  DEBUG: Current configuration: {'training': True, '_parameters': OrderedDict(), '_buffers': OrderedDict(), '_non_persistent_buffers_set': set(), '_backward_hooks': OrderedDict(), '_is_full_backward_hook': None, '_forward_hooks': OrderedDict(), '_forward_pre_hooks': OrderedDict(), '_state_dict_hooks': OrderedDict(), '_load_state_dict_pre_hooks': OrderedDict(), '_modules': OrderedDict([('u_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=3, out_features=100, bias=True)
+    (1): Linear(in_features=100, out_features=100, bias=True)
+    (2): Linear(in_features=100, out_features=100, bias=True)
+    (3): Linear(in_features=100, out_features=2, bias=True)
+  )
+)), ('u_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(3, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('p_layer', ModuleList(
+  (0): ModuleList(
+    (0): Linear(in_features=2, out_features=100, bias=True)
+    (1): Linear(in_features=100, out_features=100, bias=True)
+    (2): Linear(in_features=100, out_features=100, bias=True)
+    (3): Linear(in_features=100, out_features=1, bias=True)
+  )
+)), ('p_bn_layer', ModuleList(
+  (0): ModuleList(
+    (0): BatchNorm1d(2, eps=0.5, momentum=0.1, affine=False, track_running_stats=True)
+    (1): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (3): BatchNorm1d(100, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  )
+)), ('loss', MSELoss()), ('activation', Tanh())]), 'problem_name': 'taylor_green_2d', 'f_fun': <function f_example at 0x7fcfc69ab280>, 'phi_fun': <function phi_example at 0x7fcfc69ab040>, 'phi0': 0, 'conditional_probability_to_survive': <function Net.<lambda> at 0x7fced177eca0>, 'is_x_inside': <function Net.<lambda> at 0x7fced177edc0>, 'conditional_probability_to_survive_for_p': <function Net.<lambda> at 0x7fced177ed30>, 'is_x_inside_for_p': <function Net.<lambda> at 0x7fced177ee50>, 'deriv_map': array([[1, 0],
+       [0, 1],
+       [0, 0],
+       [0, 0],
+       [1, 0],
+       [0, 1],
+       [1, 0],
+       [0, 1]]), 'n': 8, 'dim_in': 2, 'zeta_map': array([-1, -1,  0,  1,  0,  0,  1,  1]), 'deriv_condition_deriv_map': array([[1, 0],
+       [0, 1]]), 'deriv_condition_zeta_map': array([0, 1]), 'dim_out': 2, 'nprime': 2, 'exact_p_fun': None, 'exact_p_fun_full': None, 'train_for_p': False, 'train_for_u': True, 'patches': 1, 'code': array([[-1, -1],
+       [-1, -1]]), 'coordinate': array([0, 1]), 'fdb_lookup': {(1, 0): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 1), l_and_k={(1, 0): [0, 0, 0, 0, 0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 1, 0), l_and_k={(1, 0): [0, 0, 0, 0, 0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 1, 0, 0), l_and_k={(1, 0): [0, 0, 0, 0, 0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 1, 0, 0, 0), l_and_k={(1, 0): [0, 0, 0, 0, 1, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 1, 0, 0, 0, 0), l_and_k={(1, 0): [0, 0, 0, 1, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 1, 0, 0, 0, 0, 0), l_and_k={(1, 0): [0, 0, 1, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0, 0, 0, 0, 0), l_and_k={(1, 0): [0, 1, 0, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0, 0, 0, 0, 0), l_and_k={(1, 0): [1, 0, 0, 0, 0, 0, 0, 0]})], (0, 1): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 1), l_and_k={(0, 1): [0, 0, 0, 0, 0, 0, 0, 1]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 1, 0), l_and_k={(0, 1): [0, 0, 0, 0, 0, 0, 1, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 1, 0, 0), l_and_k={(0, 1): [0, 0, 0, 0, 0, 1, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 0, 1, 0, 0, 0), l_and_k={(0, 1): [0, 0, 0, 0, 1, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 0, 1, 0, 0, 0, 0), l_and_k={(0, 1): [0, 0, 0, 1, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 0, 1, 0, 0, 0, 0, 0), l_and_k={(0, 1): [0, 0, 1, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(0, 1, 0, 0, 0, 0, 0, 0), l_and_k={(0, 1): [0, 1, 0, 0, 0, 0, 0, 0]}), fdb(coeff=1, lamb=(1, 0, 0, 0, 0, 0, 0, 0), l_and_k={(0, 1): [1, 0, 0, 0, 0, 0, 0, 0]})], (0, 0): [fdb(coeff=1, lamb=(0, 0, 0, 0, 0, 0, 0, 0), l_and_k={})]}, 'fdb_runtime': 0.027524471282958984, 'mechanism_tot_len': 178, 'lr': 0.01, 'lr_milestones': [1000, 2000], 'lr_gamma': 0.1, 'weight_decay': 0, 'save_for_best_model': False, 'save_data': False, 'batch_normalization': True, 'nb_states': 100000, 'nb_states_per_batch': 1000, 'nb_path_per_state': 1000, 'x_lo': 0, 'x_hi': 12.566370614359172, 'adjusted_x_boundaries': (-1.2566370614359172, 13.82300767579509), 'overtrain_rate_for_p': 0.1, 't_lo': 0.0, 't_hi': 1, 'T': 1, 'tau_lo': 1e-05, 'tau_hi': 10, 'nu': 0.2, 'delta_t': 1.0, 'outlier_percentile': 1, 'outlier_multiplier': 10, 'exponential_lambda': 0.05129329438755058, 'bm_discretization_steps': 1, 'epochs': 10000, 'antithetic': True, 'div_condition_coeff': 1.0, 'poisson_coeff': 1.0, 'device': device(type='cuda'), 'verbose': True, 'fix_all_dim_except_first': False, 'fix_t_dim': False, 't_boundaries': tensor([1., 0.], device='cuda:0'), 'adjusted_t_boundaries': [(tensor(0., device='cuda:0'), tensor(1., device='cuda:0'))], 'working_dir': 'logs/20221024-021811-taylor_green_2d-T1-nu0.2', 'working_dir_full_path': '/home/oem/deep_branching_with_domain/notebooks/logs/20221024-021811-taylor_green_2d-T1-nu0.2'}
+2022-10-24 02:33:34,719 | root |  INFO: Patch 0: generation of u samples take 923.6519436836243 seconds.
+2022-10-24 02:33:34,777 | root |  INFO: Patch  0: epoch    0 with loss 2.62E-01
+2022-10-24 02:33:55,265 | root |  INFO: Patch  0: epoch  500 with loss 3.58E-03
+2022-10-24 02:34:15,727 | root |  INFO: Patch  0: epoch 1000 with loss 5.67E-04
+2022-10-24 02:34:36,205 | root |  INFO: Patch  0: epoch 1500 with loss 4.70E-04
+2022-10-24 02:34:56,672 | root |  INFO: Patch  0: epoch 2000 with loss 4.23E-04
+2022-10-24 02:35:17,164 | root |  INFO: Patch  0: epoch 2500 with loss 4.20E-04
+2022-10-24 02:35:37,651 | root |  INFO: Patch  0: epoch 3000 with loss 4.13E-04
+2022-10-24 02:35:58,144 | root |  INFO: Patch  0: epoch 3500 with loss 4.05E-04
+2022-10-24 02:36:18,638 | root |  INFO: Patch  0: epoch 4000 with loss 3.95E-04
+2022-10-24 02:36:39,138 | root |  INFO: Patch  0: epoch 4500 with loss 3.83E-04
+2022-10-24 02:36:59,639 | root |  INFO: Patch  0: epoch 5000 with loss 3.69E-04
+2022-10-24 02:37:20,135 | root |  INFO: Patch  0: epoch 5500 with loss 3.52E-04
+2022-10-24 02:37:40,626 | root |  INFO: Patch  0: epoch 6000 with loss 3.34E-04
+2022-10-24 02:38:01,128 | root |  INFO: Patch  0: epoch 6500 with loss 3.14E-04
+2022-10-24 02:38:21,632 | root |  INFO: Patch  0: epoch 7000 with loss 2.92E-04
+2022-10-24 02:38:42,164 | root |  INFO: Patch  0: epoch 7500 with loss 2.68E-04
+2022-10-24 02:39:02,684 | root |  INFO: Patch  0: epoch 8000 with loss 2.44E-04
+2022-10-24 02:39:23,194 | root |  INFO: Patch  0: epoch 8500 with loss 2.22E-04
+2022-10-24 02:39:43,701 | root |  INFO: Patch  0: epoch 9000 with loss 1.99E-04
+2022-10-24 02:40:04,214 | root |  INFO: Patch  0: epoch 9500 with loss 1.79E-04
+2022-10-24 02:40:24,691 | root |  INFO: Patch  0: epoch 9999 with loss 1.63E-04
+2022-10-24 02:40:24,705 | root |  INFO: Patch 0: training of u with 10000 epochs take 409.98464846611023 seconds.
+2022-10-24 02:40:24,945 | root |  INFO: The error as in Lejay is calculated as follows.
+2022-10-24 02:40:24,947 | root |  INFO: $\hat{e}_0(t_k)$
+2022-10-24 02:40:24,948 | root |  INFO: & 1.10E-03 & 7.48E-04 & 6.07E-04 & 5.44E-04 & 4.80E-04 & 4.24E-04 & 3.81E-04 & 3.23E-04 & 3.78E-04 & 5.17E-04 & --- \\
+2022-10-24 02:40:24,949 | root |  INFO: $\hat{e}_1(t_k)$
+2022-10-24 02:40:24,950 | root |  INFO: & 6.09E-04 & 4.54E-04 & 5.70E-04 & 5.84E-04 & 5.74E-04 & 6.25E-04 & 6.28E-04 & 6.03E-04 & 7.06E-04 & 9.14E-04 & --- \\
+2022-10-24 02:40:24,950 | root |  INFO: $\hat{e}(t_k)$
+2022-10-24 02:40:24,951 | root |  INFO: & 1.19E-03 & 1.02E-03 & 8.91E-04 & 8.52E-04 & 7.87E-04 & 7.53E-04 & 7.15E-04 & 7.04E-04 & 8.45E-04 & 1.10E-03 & --- \\
+2022-10-24 02:40:24,952 | root |  INFO: \hline
+2022-10-24 02:40:24,952 | root |  INFO: 
+The relative L2 error of u (erru) is calculated as follows.
+2022-10-24 02:40:24,955 | root |  INFO: erru($t_k$)
+2022-10-24 02:40:24,956 | root |  INFO: & 1.69E-02 & 1.39E-02 & 1.33E-02 & 1.33E-02 & 1.32E-02 & 1.29E-02 & 1.26E-02 & 1.26E-02 & 1.31E-02 & 1.47E-02 & --- \\
+2022-10-24 02:40:25,338 | root |  INFO: 
+The relative L2 error of gradient of u (errgu) is calculated as follows.
+2022-10-24 02:40:25,344 | root |  INFO: errgu($t_k$)
+2022-10-24 02:40:25,345 | root |  INFO: & 3.61E-02 & 3.19E-02 & 2.99E-02 & 2.92E-02 & 2.91E-02 & 2.93E-02 & 2.99E-02 & 3.10E-02 & 3.28E-02 & 3.60E-02 & --- \\
+2022-10-24 02:40:25,346 | root |  INFO: 
+The absolute divergence of u (errdivu) is calculated as follows.
+2022-10-24 02:40:25,347 | root |  INFO: errdivu($t_k$)
+2022-10-24 02:40:25,348 | root |  INFO: & 7.84E-02 & 5.75E-02 & 4.99E-02 & 4.88E-02 & 4.89E-02 & 4.86E-02 & 4.83E-02 & 4.89E-02 & 5.28E-02 & 6.64E-02 & --- \\
+2022-10-24 02:40:25,365 | root |  INFO: 
+The relative L2 error of p (errp) is calculated as follows.
+2022-10-24 02:40:25,368 | root |  INFO: errp($t_k$)
+2022-10-24 02:40:25,368 | root |  INFO: & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- & 8.62E-03 \\
