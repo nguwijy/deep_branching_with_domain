@@ -1,7 +1,9 @@
+import os
 import math
 import time
 import torch
 import torch.nn.functional as F
+import logging
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -16,6 +18,7 @@ class DGMNet(torch.nn.Module):
         self,
         dgm_f_fun,
         dgm_deriv_map,
+        problem_name="tmp",
         dgm_zeta_map=None,
         deriv_condition_deriv_map=None,
         deriv_condition_zeta_map=None,
@@ -37,11 +40,12 @@ class DGMNet(torch.nn.Module):
         dgm_activation="tanh",
         verbose=False,
         fix_all_dim_except_first=False,
+        save_as_tmp=False,
         **kwargs,
     ):
         super(DGMNet, self).__init__()
         self.f_fun = dgm_f_fun
-        self.n, self.dim = dgm_deriv_map.shape
+        self.n, self.dim_in = dgm_deriv_map.shape
         # add one more dimension of time to the left of deriv_map
         self.deriv_map = np.append(np.zeros((self.n, 1)), dgm_deriv_map, axis=-1)
         self.zeta_map = dgm_zeta_map if dgm_zeta_map is not None else np.zeros(self.n, dtype=int)
@@ -51,13 +55,13 @@ class DGMNet(torch.nn.Module):
         self.coordinate = np.array(range(self.dim_out))
         # add dt to the top of deriv_map
         self.deriv_map = np.append(
-            np.array([[1] + [0] * self.dim]), self.deriv_map, axis=0
+            np.array([[1] + [0] * self.dim_in]), self.deriv_map, axis=0
         )
         # the final deriv_map has the shape of (n + 1) x (dim + 1)
 
         self.phi_fun = phi_fun
         self.u_layer = torch.nn.ModuleList(
-            [torch.nn.Linear(self.dim + 1, neurons, device=device)]
+            [torch.nn.Linear(self.dim_in + 1, neurons, device=device)]
             + [torch.nn.Linear(neurons, neurons, device=device) for _ in range(layers)]
             + [torch.nn.Linear(neurons, self.dim_out, device=device)]
         )
@@ -65,7 +69,7 @@ class DGMNet(torch.nn.Module):
             [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers + 2)]
         )
         self.p_layer = torch.nn.ModuleList(
-            [torch.nn.Linear(self.dim + 1, neurons, device=device)]
+            [torch.nn.Linear(self.dim_in + 1, neurons, device=device)]
             + [torch.nn.Linear(neurons, neurons, device=device) for _ in range(layers)]
             + [torch.nn.Linear(neurons, 1, device=device)]
         )
@@ -96,7 +100,19 @@ class DGMNet(torch.nn.Module):
         self.verbose = verbose
         self.fix_all_dim_except_first = fix_all_dim_except_first
 
-    def forward(self, x, coordinate):
+        timestr = time.strftime("%Y%m%d-%H%M%S")  # current time stamp
+        self.working_dir = (
+            "logs/tmp" if save_as_tmp
+            else f"logs/{timestr}-{problem_name}"
+        )
+        self.working_dir_full_path = os.path.join(
+            os.getcwd(),
+            self.working_dir,
+        )
+        self.log_config()
+        self.eval()
+
+    def forward(self, x, coordinate=0, all_u=False):
         """
         self(x) evaluates the neural network approximation NN(x)
         """
@@ -121,7 +137,32 @@ class DGMNet(torch.nn.Module):
                 y = tmp + y
 
         y = layer[-1](y)
-        return y[:, coordinate]
+        if all_u:
+            return y
+        else:
+            return y[:, coordinate]
+
+    def log_config(self):
+        """
+        Set up configuration for log files and mkdir.
+        """
+        if not os.path.isdir(self.working_dir_full_path):
+            os.makedirs(self.working_dir_full_path)
+            os.mkdir(f"{self.working_dir_full_path}/plot")
+            os.mkdir(f"{self.working_dir_full_path}/data")
+        formatter = "%(asctime)s | %(name)s |  %(levelname)s: %(message)s"
+        logging.getLogger().handlers = []  # clear previous loggers if any
+        logging.basicConfig(
+            filename=f"{self.working_dir_full_path}/run.log",
+            filemode="w",
+            level=logging.DEBUG,
+            format=formatter,
+        )
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        logging.getLogger().addHandler(console)
+        logging.info(f"Logs are saved in {os.path.abspath(self.working_dir_full_path)}")
+        logging.debug(f"Current configuration: {self.__dict__}")
 
     @staticmethod
     def nth_derivatives(order, y, x):
@@ -166,35 +207,215 @@ class DGMNet(torch.nn.Module):
         # sample for intermediate value
         unif = torch.rand(self.nb_states, device=self.device)
         t = self.t_lo + (self.t_hi - self.t_lo) * unif
-        unif = torch.rand(self.nb_states * self.dim, device=self.device).reshape(
-            self.dim, -1
+        unif = torch.rand(self.nb_states * self.dim_in, device=self.device).reshape(
+            self.dim_in, -1
         )
         x = self.x_lo + (self.x_hi - self.x_lo) * unif
         tx = torch.cat((t.unsqueeze(0), x), dim=0)
 
         # sample for initial time, to be merged with intermediate value
         t = self.t_lo * torch.ones(self.nb_states, device=self.device)
-        unif = torch.rand(self.nb_states * self.dim, device=self.device).reshape(
-            self.dim, -1
+        unif = torch.rand(self.nb_states * self.dim_in, device=self.device).reshape(
+            self.dim_in, -1
         )
         x = self.x_lo + (self.x_hi - self.x_lo) * unif
         tx = torch.cat([tx, torch.cat((t.unsqueeze(0), x), dim=0)], dim=-1)
 
         # sample for terminal time
         t = self.t_hi * torch.ones(self.nb_states, device=self.device)
-        unif = torch.rand(self.nb_states * self.dim, device=self.device).reshape(
-            self.dim, -1
+        unif = torch.rand(self.nb_states * self.dim_in, device=self.device).reshape(
+            self.dim_in, -1
         )
         x = self.x_lo + (self.x_hi - self.x_lo) * unif
         tx_term = torch.cat((t.unsqueeze(0), x), dim=0)
 
         # fix all dimensions (except the first) to be the middle value
-        if self.dim > 1 and self.fix_all_dim_except_first:
+        if self.dim_in > 1 and self.fix_all_dim_except_first:
             x_mid = (self.x_hi + self.x_lo) / 2
             tx[2:, :] = x_mid
             tx_term[2:, :] = x_mid
 
         return tx, tx_term
+
+    @staticmethod
+    def latex_print(tensor):
+        mess = ""
+        for i in tensor[:-1]:
+            mess += f"& {i.item():.2E} "
+        mess += "& --- \\\\"
+        logging.info(mess)
+
+    def error_calculation(self, exact_u_fun, exact_p_fun, nb_pts_time=11, nb_pts_spatial=2*126+1, error_multiplier=1):
+        x = np.linspace(self.x_lo, self.x_hi, nb_pts_spatial)
+        t = np.linspace(self.t_lo, self.t_hi, nb_pts_time)
+        arr = np.array(np.meshgrid(*([x]*self.dim_in + [t]))).T.reshape(-1, self.dim_in + 1)
+        arr[:, [-1, 0]] = arr[:, [0, -1]]
+        arr = torch.tensor(arr, device=self.device, dtype=torch.get_default_dtype())
+        error = []
+        nn = []
+        cur, batch_size, last = 0, 100000, arr.shape[0]
+        while cur < last:
+            nn.append(self(arr[cur:min(cur+batch_size, last)], coordinate=0, all_u=True).detach())
+            cur += batch_size
+        nn = torch.cat(nn, dim=0)
+
+        # Lejay
+        logging.info("The error as in Lejay is calculated as follows.")
+        overall_error = 0
+        for i in range(self.dim_in):
+            error.append(error_multiplier * (nn[:, i] - exact_u_fun(arr.T, i)).reshape(nb_pts_time, -1) ** 2)
+            overall_error += (error[-1])
+        error.append(overall_error)
+        for i in range(self.dim_in):
+            logging.info(f"$\\hat{{e}}_{i}(t_k)$")
+            self.latex_print(error[i].max(dim=1)[0])
+        logging.info("$\\hat{e}(t_k)$")
+        self.latex_print(error[-1].max(dim=1)[0])
+        logging.info("\\hline")
+
+        # erru
+        logging.info("\nThe relative L2 error of u (erru) is calculated as follows.")
+        denominator, numerator = 0, 0
+        for i in range(self.dim_in):
+            denominator += exact_u_fun(arr.T, i).reshape(nb_pts_time, -1) ** 2
+            numerator += (nn[:, i] - exact_u_fun(arr.T, i)).reshape(nb_pts_time, -1) ** 2
+        logging.info("erru($t_k$)")
+        self.latex_print((numerator.mean(dim=-1)/denominator.mean(dim=-1)).sqrt())
+
+        del nn
+        torch.cuda.empty_cache()
+        grad = []
+        cur, batch_size, last = 0, 100000, arr.shape[0]
+        while cur < last:
+            xx = arr[cur:min(cur+batch_size, last)].detach().clone().requires_grad_(True)
+            tmp = []
+            for i in range(self.dim_in):
+                tmp.append(
+                    torch.autograd.grad(
+                        self(xx, coordinate=i).sum(),
+                        xx,
+                    )[0][:, 1:].detach()
+                )
+            grad.append(torch.stack(tmp, dim=-1))
+            cur += batch_size
+        grad = torch.cat(grad, dim=0)
+
+        # errgu
+        logging.info("\nThe relative L2 error of gradient of u (errgu) is calculated as follows.")
+        denominator, numerator = 0, 0
+        xx = arr.detach().clone().requires_grad_(True)
+        for i in range(self.dim_in):
+            exact = torch.autograd.grad(
+                exact_u_fun(xx.T, i).sum(),
+                xx,
+            )[0][:, 1:]
+            denominator += exact.reshape(nb_pts_time, -1, self.dim_in) ** 2
+            numerator += (exact - grad[:, :, i]).reshape(nb_pts_time, -1, self.dim_in) ** 2
+        logging.info("errgu($t_k$)")
+        self.latex_print((numerator.mean(dim=(1, 2))/denominator.mean(dim=(1, 2))).sqrt())
+
+        # errdivu
+        logging.info("\nThe absolute divergence of u (errdivu) is calculated as follows.")
+        numerator = 0
+        for i in range(self.dim_in):
+            numerator += (grad[:, i, i]).reshape(nb_pts_time, -1)
+        numerator = numerator**2
+        logging.info("errdivu($t_k$)")
+        self.latex_print(
+            ((self.x_hi - self.x_lo)**self.dim_in * numerator.mean(dim=-1)).sqrt()
+        )
+
+        del grad, xx
+        torch.cuda.empty_cache()
+        arr = arr.reshape(nb_pts_time, -1, self.dim_in + 1)[-1].detach()
+        nn = []
+        cur, batch_size, last = 0, 100000, arr.shape[0]
+        while cur < last:
+            nn.append(
+                self(
+                    arr[cur:min(cur+batch_size, last), :],
+                    coordinate=-1,
+                ).detach()
+            )
+            cur += batch_size
+        nn = torch.cat(nn, dim=0)
+
+        # errp
+        logging.info("\nThe relative L2 error of p (errp) is calculated as follows.")
+        denominator = (exact_p_fun(arr.T) - exact_p_fun(arr.T).mean()) ** 2
+        numerator = (
+                            nn - nn.mean() - exact_p_fun(arr.T) + exact_p_fun(arr.T).mean()
+                    ) ** 2
+        logging.info("errp($t_k$)")
+        logging.info(
+            "& --- " * (nb_pts_time - 1)
+            + f"& {(numerator.mean()/denominator.mean()).sqrt().item():.2E} \\\\"
+        )
+    def compare_with_exact(
+        self,
+        exact_fun,
+        return_error=False,
+        nb_points=100,
+        show_plot=True,
+        exclude_terminal=False,
+        ylim=None,
+    ):
+        grid = np.linspace(self.x_lo, self.x_hi, nb_points)
+        x_mid = (self.x_lo + self.x_hi) / 2
+        grid_d_dim = np.concatenate((
+            np.expand_dims(grid, axis=0),
+            x_mid * np.ones((self.dim_in - 1, nb_points))
+        ), axis=0)
+        grid_d_dim_with_t = np.concatenate((self.t_lo * np.ones((1, nb_points)), grid_d_dim), axis=0)
+
+        nn_input = grid_d_dim_with_t
+        error = []
+        for_range = self.dim_out
+        for i in range(for_range):
+            f = plt.figure()
+            true = exact_fun(
+                self.t_lo,
+                grid_d_dim,
+                self.t_hi,
+                i
+            )
+            terminal = exact_fun(self.t_hi, grid_d_dim, self.t_hi, i)
+            nn = (
+                self(torch.tensor(
+                    nn_input.T, device=self.device, dtype=torch.get_default_dtype()
+                ), coordinate=i)
+                .detach()
+                .cpu()
+                .numpy()
+            )
+            error.append(np.abs(true - nn).mean())
+            plt.plot(grid, nn, label="NN")
+            plt.plot(grid, true, label="True solution")
+            if not exclude_terminal:
+                plt.plot(grid, terminal, label="Terminal solution")
+            plt.xlabel("$x_1$")
+            plt.ylabel(f"$u_{i+1}$")
+            plt.legend()
+            if ylim is not None and i == 0:
+                # only change ylim for u0
+                plt.ylim(*ylim)
+            f.savefig(
+                f"{self.working_dir_full_path}/plot/dgm_u{i}_comparison_with_exact.png", bbox_inches="tight"
+            )
+            if show_plot:
+                plt.show()
+            plt.close()
+
+            data = np.stack((grid, true, terminal, nn)).T
+            np.savetxt(
+                f"{self.working_dir_full_path}/data/dgm_u{i}_comparison_with_exact.csv",
+                data,
+                delimiter=",",
+                header="x,true,terminal,branch",
+                comments=""
+            )
+        if return_error:
+            return np.array(error)
 
     def train_and_eval(self, debug_mode=False):
         """
@@ -244,7 +465,7 @@ class DGMNet(torch.nn.Module):
                         (
                             self.t_lo * np.ones((1, 100)),
                             np.expand_dims(grid, axis=0),
-                            x_mid * np.ones((self.dim - 1, 100)),
+                            x_mid * np.ones((self.dim_in - 1, 100)),
                         ),
                         axis=0,
                     ).astype(np.float32)
@@ -261,9 +482,13 @@ class DGMNet(torch.nn.Module):
                         plt.show()
                     self.train()
                 if self.verbose:
-                    print(f"Epoch {epoch} with loss {loss.detach()}")
+                    logging.info(f"Epoch {epoch} with loss {loss.detach()}")
+
+        torch.save(
+            self.state_dict(), f"{self.working_dir_full_path}/checkpoint.pt"
+        )
         if self.verbose:
-            print(
+            logging.info(
                 f"Training of neural network with {self.epochs} epochs take {time.time() - start} seconds."
             )
         self.eval()
