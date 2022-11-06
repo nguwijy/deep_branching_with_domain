@@ -87,6 +87,8 @@ class DGMNet(torch.nn.Module):
         }[dgm_activation]
         self.batch_normalization = batch_normalization
         self.nb_states = dgm_nb_states
+        self.ori_x_lo = x_lo
+        self.ori_x_hi = x_hi
         x_lo, x_hi = (
             x_lo - overtrain_rate * (x_hi - x_lo),
             x_hi + overtrain_rate * (x_hi - x_lo),
@@ -246,7 +248,7 @@ class DGMNet(torch.nn.Module):
         logging.info(mess)
 
     def error_calculation(self, exact_u_fun, exact_p_fun, nb_pts_time=11, nb_pts_spatial=2*126+1, error_multiplier=1):
-        x = np.linspace(self.x_lo, self.x_hi, nb_pts_spatial)
+        x = np.linspace(self.ori_x_lo, self.ori_x_hi, nb_pts_spatial)
         t = np.linspace(self.t_lo, self.t_hi, nb_pts_time)
         arr = np.array(np.meshgrid(*([x]*self.dim_in + [t]))).T.reshape(-1, self.dim_in + 1)
         arr[:, [-1, 0]] = arr[:, [0, -1]]
@@ -322,7 +324,7 @@ class DGMNet(torch.nn.Module):
         numerator = numerator**2
         logging.info("errdivu($t_k$)")
         self.latex_print(
-            ((self.x_hi - self.x_lo)**self.dim_in * numerator.mean(dim=-1)).sqrt()
+            ((self.ori_x_hi - self.ori_x_lo)**self.dim_in * numerator.mean(dim=-1)).sqrt()
         )
 
         del grad, xx
@@ -351,6 +353,7 @@ class DGMNet(torch.nn.Module):
             "& --- " * (nb_pts_time - 1)
             + f"& {(numerator.mean()/denominator.mean()).sqrt().item():.2E} \\\\"
         )
+
     def compare_with_exact(
         self,
         exact_fun,
@@ -360,8 +363,8 @@ class DGMNet(torch.nn.Module):
         exclude_terminal=False,
         ylim=None,
     ):
-        grid = np.linspace(self.x_lo, self.x_hi, nb_points)
-        x_mid = (self.x_lo + self.x_hi) / 2
+        grid = np.linspace(self.ori_x_lo, self.ori_x_hi, nb_points)
+        x_mid = (self.ori_x_lo + self.ori_x_hi) / 2
         grid_d_dim = np.concatenate((
             np.expand_dims(grid, axis=0),
             x_mid * np.ones((self.dim_in - 1, nb_points))
@@ -556,7 +559,6 @@ if __name__ == "__main__":
         verbose=True,
     )
     model.train_and_eval(debug_mode=True)
-
 
     # define exact solution and plot the graph
     def exact_fun(t, x, T):
