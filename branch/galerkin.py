@@ -1,3 +1,4 @@
+import math
 import time
 import torch
 import torch.nn.functional as F
@@ -15,6 +16,10 @@ class DGMNet(torch.nn.Module):
         self,
         dgm_f_fun,
         dgm_deriv_map,
+        dgm_zeta_map=None,
+        deriv_condition_deriv_map=None,
+        deriv_condition_zeta_map=None,
+        dim_out=None,
         phi_fun=(lambda x: x),
         x_lo=-10.0,
         x_hi=10.0,
@@ -39,6 +44,11 @@ class DGMNet(torch.nn.Module):
         self.n, self.dim = dgm_deriv_map.shape
         # add one more dimension of time to the left of deriv_map
         self.deriv_map = np.append(np.zeros((self.n, 1)), dgm_deriv_map, axis=-1)
+        self.zeta_map = dgm_zeta_map if dgm_zeta_map is not None else np.zeros(self.n, dtype=int)
+        self.deriv_condition_deriv_map = deriv_condition_deriv_map
+        self.deriv_condition_zeta_map = deriv_condition_zeta_map
+        self.dim_out = dim_out if dim_out is not None else self.zeta_map.max() + 1
+        self.coordinate = np.array(range(self.dim_out))
         # add dt to the top of deriv_map
         self.deriv_map = np.append(
             np.array([[1] + [0] * self.dim]), self.deriv_map, axis=0
@@ -46,13 +56,21 @@ class DGMNet(torch.nn.Module):
         # the final deriv_map has the shape of (n + 1) x (dim + 1)
 
         self.phi_fun = phi_fun
-        self.layer = torch.nn.ModuleList(
+        self.u_layer = torch.nn.ModuleList(
+            [torch.nn.Linear(self.dim + 1, neurons, device=device)]
+            + [torch.nn.Linear(neurons, neurons, device=device) for _ in range(layers)]
+            + [torch.nn.Linear(neurons, self.dim_out, device=device)]
+        )
+        self.u_bn_layer = torch.nn.ModuleList(
+            [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers + 2)]
+        )
+        self.p_layer = torch.nn.ModuleList(
             [torch.nn.Linear(self.dim + 1, neurons, device=device)]
             + [torch.nn.Linear(neurons, neurons, device=device) for _ in range(layers)]
             + [torch.nn.Linear(neurons, 1, device=device)]
         )
-        self.bn_layer = torch.nn.ModuleList(
-            [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers)]
+        self.p_bn_layer = torch.nn.ModuleList(
+            [torch.nn.BatchNorm1d(neurons, device=device) for _ in range(layers + 2)]
         )
         self.lr = dgm_lr
         self.weight_decay = weight_decay
@@ -78,23 +96,32 @@ class DGMNet(torch.nn.Module):
         self.verbose = verbose
         self.fix_all_dim_except_first = fix_all_dim_except_first
 
-    def forward(self, x):
+    def forward(self, x, coordinate):
         """
         self(x) evaluates the neural network approximation NN(x)
         """
-        for idx, (f, bn) in enumerate(zip(self.layer[:-1], self.bn_layer)):
-            tmp = f(x)
+        # -1 corresponds to p_layer
+        # else 0 to dim_out corresponds to u_layer
+        layer = self.u_layer if coordinate >= 0 else self.p_layer
+        bn_layer = self.u_bn_layer if coordinate >= 0 else self.p_bn_layer
+        coordinate = 0 if coordinate < 0 else coordinate
+
+        if self.batch_normalization:
+            x = bn_layer[0](x)
+        y = x
+        for idx, (f, bn) in enumerate(zip(layer[:-1], bn_layer)):
+            tmp = f(y)
             tmp = self.activation(tmp)
             if self.batch_normalization:
                 tmp = bn(tmp)
             if idx == 0:
-                x = tmp
+                y = tmp
             else:
                 # resnet
-                x = tmp + x
+                y = tmp + y
 
-        x = self.layer[-1](x).reshape(-1)
-        return x
+        y = layer[-1](y)
+        return y[:, coordinate]
 
     @staticmethod
     def nth_derivatives(order, y, x):
@@ -115,20 +142,22 @@ class DGMNet(torch.nn.Module):
                 y = grads[cur_dim]
         return y
 
-    def pde_loss(self, x):
+    def pde_loss(self, x, coordinate):
         """"
         calculate the PDE loss partial_t u + f
         """
         x = x.detach().clone().requires_grad_(True)
+        # recall that deriv_map has the shape of (n + 1) x (dim + 1)
+        # with deriv_map[0] representing du/dt
+        # zeta_map has the shape of n
+        dt = self.nth_derivatives(self.deriv_map[0], self(x.T, coordinate=coordinate), x)
+
         fun_and_derivs = []
-        for order in self.deriv_map:
-            fun_and_derivs.append(self.nth_derivatives(order, self(x.T), x))
+        for order, zeta in zip(self.deriv_map[1:], self.zeta_map):
+            fun_and_derivs.append(self.nth_derivatives(order, self(x.T, coordinate=zeta), x))
 
         fun_and_derivs = torch.stack(fun_and_derivs)
-        # recall that deriv_map has the shape of (n + 1) x (dim + 1)
-        dt = fun_and_derivs[0]
-        df_fun = fun_and_derivs[1:]
-        return self.loss(dt + self.f_fun(df_fun), torch.zeros_like(dt))
+        return self.loss(dt + self.f_fun(fun_and_derivs, coordinate=coordinate), torch.zeros_like(dt))
 
     def gen_sample(self):
         """
@@ -186,9 +215,21 @@ class DGMNet(torch.nn.Module):
             # clear gradients and evaluate training loss
             optimizer.zero_grad()
 
-            # terminal loss + pde loss
-            loss = self.loss(self(tx_term.T), self.phi_fun(tx_term[1:, :]))
-            loss = loss + self.pde_loss(tx)
+            loss = 0
+            for idx in self.coordinate:
+                # terminal loss + pde loss
+                loss = self.loss(self(tx_term.T, coordinate=idx), self.phi_fun(tx_term[1:, :], coordinate=idx))
+                loss = loss + self.pde_loss(tx, coordinate=idx)
+
+            # divergence free condition
+            if self.deriv_condition_zeta_map is not None:
+                grad = 0
+                xx = tx.detach().clone().requires_grad_(True)
+                for (idx, c) in zip(self.deriv_condition_zeta_map, self.deriv_condition_deriv_map):
+                    # additional t coordinate
+                    grad += self.nth_derivatives(
+                        np.insert(c, 0, 0), self(xx.T, coordinate=idx), xx
+                    )
 
             # update model weights
             loss.backward()
@@ -208,14 +249,16 @@ class DGMNet(torch.nn.Module):
                         axis=0,
                     ).astype(np.float32)
                     self.eval()
-                    nn = (
-                        self(torch.tensor(grid_nd.T, device=self.device))
-                        .detach()
-                        .cpu()
-                        .numpy()
-                    )
-                    plt.plot(grid, nn)
-                    plt.show()
+                    for idx in self.coordinate:
+                        nn = (
+                            self(torch.tensor(grid_nd.T, device=self.device), coordinate=idx)
+                            .detach()
+                            .cpu()
+                            .numpy()
+                        )
+                        plt.plot(grid, nn)
+                        plt.title(f"DGM approximation of coordinate {idx} at epoch {epoch}.")
+                        plt.show()
                     self.train()
                 if self.verbose:
                     print(f"Epoch {epoch} with loss {loss.detach()}")
@@ -229,44 +272,65 @@ class DGMNet(torch.nn.Module):
 if __name__ == "__main__":
     # configurations
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    T, x_lo, x_hi, dim = .05, -4.0, 4.0, 3
+    T, x_lo, x_hi, nu = .25, 0, 2 * math.pi, 2
     # deriv_map is n x d array defining lambda_1, ..., lambda_n
     deriv_map = np.array(
         [
-            [0, 0, 0],
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1],
-            [2, 0, 0],
-            [0, 2, 0],
-            [0, 0, 2],
+            [1, 0],  # for nabla p
+            [0, 1],
+            [0, 0],  # for u
+            [0, 0],
+            [1, 0],  # for nabla u1
+            [0, 1],
+            [1, 0],  # for nabla u2
+            [0, 1],
+            [2, 0],  # for Laplacian
+            [0, 2],
         ]
     )
+    zeta_map = np.array([-1, -1, 0, 1, 0, 0, 1, 1, 0, 1])
+    deriv_condition_deriv_map = np.array(
+        [
+            [1, 0],
+            [0, 1],
+        ]
+    )
+    deriv_condition_zeta_map = np.array([0, 1])
+    _, dim = deriv_map.shape
 
-    def f_fun(y):
+    def f_example(y, coordinate):
         """
-        idx 0         -> no deriv
-        idx 1 to d    -> first deriv
-        idx 1+d to 2d -> second deriv
+        idx 0 -> no deriv
         """
-        return .5 * y[(dim + 1):].sum(dim=0) + y[1:(dim + 1)].sum(dim=0) - 2 * dim * torch.exp(-2 * y[0]) + dim * torch.exp(-y[0])
+        f = -y[coordinate]
+        for j in range(dim):
+            f += -y[dim + j] * y[2 * dim + dim * coordinate + j]
+            # Laplacian
+            f += nu / 2 * (y[2 * dim + dim * dim + j])
+        return f
 
-    def g_fun(x):
-        return torch.log(1 + x.sum(dim=0) ** 2)
+    def phi_example(x, coordinate):
+        if coordinate == 0:
+            return -torch.cos(x[0]) * torch.sin(x[1])
+        else:
+            return torch.sin(x[0]) * torch.cos(x[1])
 
 
     # initialize model and training
     model = DGMNet(
+        dgm_f_fun=f_example,
+        phi_fun=phi_example,
         dgm_deriv_map=deriv_map,
-        dgm_f_fun=f_fun,
-        phi_fun=g_fun,
+        dgm_zeta_map=zeta_map,
+        deriv_condition_deriv_map=deriv_condition_deriv_map,
+        deriv_condition_zeta_map=deriv_condition_zeta_map,
         t_hi=T,
         x_lo=x_lo,
         x_hi=x_hi,
         device=device,
         verbose=True,
     )
-    model.train_and_eval()
+    model.train_and_eval(debug_mode=True)
 
 
     # define exact solution and plot the graph
