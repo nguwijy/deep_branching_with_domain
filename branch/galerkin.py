@@ -18,6 +18,7 @@ class DGMNet(torch.nn.Module):
         self,
         dgm_f_fun,
         dgm_deriv_map,
+        boundary_fun=None,
         problem_name="tmp",
         dgm_zeta_map=None,
         deriv_condition_deriv_map=None,
@@ -45,6 +46,7 @@ class DGMNet(torch.nn.Module):
     ):
         super(DGMNet, self).__init__()
         self.f_fun = dgm_f_fun
+        self.boundary_fun = boundary_fun
         self.n, self.dim_in = dgm_deriv_map.shape
         # add one more dimension of time to the left of deriv_map
         self.deriv_map = np.append(np.zeros((self.n, 1)), dgm_deriv_map, axis=-1)
@@ -206,14 +208,22 @@ class DGMNet(torch.nn.Module):
         """
         generate (uniform) sample based on the (t_lo, t_hi) x (x_lo, x_hi)
         """
-        # sample for intermediate value
-        unif = torch.rand(self.nb_states, device=self.device)
+        # sample for intermediate value, generate 2 x dim_in + 1 times
+        unif = torch.rand((2 * self.dim_in + 1) * self.nb_states, device=self.device)
         t = self.t_lo + (self.t_hi - self.t_lo) * unif
-        unif = torch.rand(self.nb_states * self.dim_in, device=self.device).reshape(
+        unif = torch.rand((2 * self.dim_in + 1) * self.nb_states * self.dim_in, device=self.device).reshape(
             self.dim_in, -1
         )
         x = self.x_lo + (self.x_hi - self.x_lo) * unif
         tx = torch.cat((t.unsqueeze(0), x), dim=0)
+
+        # 2 x dim_in are used for boundary condition
+        # then we assign them to x_lo & x_hi correspondingly
+        tx, tx_boundary = tx[:, :self.nb_states], tx[:, self.nb_states:]
+        for dd in range(self.dim_in):
+            slice_lo, slice_hi = self.nb_states * (2 * dd), self.nb_states * (2 * dd + 1)
+            tx_boundary[dd + 1, slice_lo: (slice_lo + self.nb_states)] = self.x_lo
+            tx_boundary[dd + 1, slice_hi: (slice_hi + self.nb_states)] = self.x_hi
 
         # sample for initial time, to be merged with intermediate value
         t = self.t_lo * torch.ones(self.nb_states, device=self.device)
@@ -237,7 +247,7 @@ class DGMNet(torch.nn.Module):
             tx[2:, :] = x_mid
             tx_term[2:, :] = x_mid
 
-        return tx, tx_term
+        return tx, tx_term, tx_boundary
 
     @staticmethod
     def latex_print(tensor):
@@ -434,7 +444,7 @@ class DGMNet(torch.nn.Module):
 
         # loop through epochs
         for epoch in range(self.epochs):
-            tx, tx_term = self.gen_sample()
+            tx, tx_term, tx_boundary = self.gen_sample()
 
             # clear gradients and evaluate training loss
             optimizer.zero_grad()
@@ -444,6 +454,9 @@ class DGMNet(torch.nn.Module):
                 # terminal loss + pde loss
                 loss = self.loss(self(tx_term.T, coordinate=idx), self.phi_fun(tx_term[1:, :], coordinate=idx))
                 loss = loss + self.pde_loss(tx, coordinate=idx)
+                # when boundary function is given, we calculate its loss
+                if self.boundary_fun is not None:
+                    loss = loss + self.loss(self.boundary_fun(tx_boundary, coordinate=idx), self(tx_boundary.T, coordinate=idx))
 
             # divergence free condition
             if self.deriv_condition_zeta_map is not None:
@@ -544,7 +557,15 @@ if __name__ == "__main__":
         else:
             return torch.sin(x[0]) * torch.cos(x[1])
 
+    def boundary_fun(tx, coordinate):
+        if coordinate == 0:
+            return -torch.cos(tx[1]) * torch.sin(tx[2]) * torch.exp(-nu * (T - tx[0]))
+        else:
+            return torch.sin(tx[1]) * torch.cos(tx[2]) * torch.exp(-nu * (T - tx[0]))
 
+
+    # boundary_fun=None & overtrain_rate=.1
+    # boundary_fun=given & overtrain_rate=.0
     # initialize model and training
     model = DGMNet(
         dgm_f_fun=f_example,
@@ -558,6 +579,9 @@ if __name__ == "__main__":
         x_hi=x_hi,
         device=device,
         verbose=True,
+        save_as_tmp=True,
+        boundary_fun=boundary_fun,
+        overtrain_rate=.0,
     )
     model.train_and_eval(debug_mode=True)
 
