@@ -528,9 +528,11 @@ if __name__ == "__main__":
             [0, 1],
             [2, 0],  # for Laplacian
             [0, 2],
+            [2, 0],
+            [0, 2],
         ]
     )
-    zeta_map = np.array([-1, -1, 0, 1, 0, 0, 1, 1, 0, 1])
+    zeta_map = np.array([-1, -1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1])
     deriv_condition_deriv_map = np.array(
         [
             [1, 0],
@@ -548,7 +550,7 @@ if __name__ == "__main__":
         for j in range(dim):
             f += -y[dim + j] * y[2 * dim + dim * coordinate + j]
             # Laplacian
-            f += nu / 2 * (y[2 * dim + dim * dim + j])
+            f += nu / 2 * (y[2 * dim + dim * dim + dim * coordinate + j])
         return f
 
     def phi_example(x, coordinate):
