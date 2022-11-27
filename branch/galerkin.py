@@ -454,6 +454,7 @@ class DGMNet(torch.nn.Module):
                     grad += self.nth_derivatives(
                         np.insert(c, 0, 0), self(xx.T, coordinate=idx), xx
                     )
+                loss = loss + self.loss(grad, torch.zeros_like(grad))
 
             # update model weights
             loss.backward()
