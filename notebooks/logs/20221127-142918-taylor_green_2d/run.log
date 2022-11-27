@@ -1,0 +1,93 @@
+2022-11-27 14:29:18,383 | root |  INFO: Logs are saved in /home/oem/deep_branching_with_domain/notebooks/logs/20221127-142918-taylor_green_2d
+2022-11-27 14:29:18,384 | root |  DEBUG: Current configuration: {'training': True, '_parameters': OrderedDict(), '_buffers': OrderedDict(), '_non_persistent_buffers_set': set(), '_backward_hooks': OrderedDict(), '_is_full_backward_hook': None, '_forward_hooks': OrderedDict(), '_forward_pre_hooks': OrderedDict(), '_state_dict_hooks': OrderedDict(), '_load_state_dict_pre_hooks': OrderedDict(), '_modules': OrderedDict([('u_layer', ModuleList(
+  (0): Linear(in_features=3, out_features=20, bias=True)
+  (1): Linear(in_features=20, out_features=20, bias=True)
+  (2): Linear(in_features=20, out_features=20, bias=True)
+  (3): Linear(in_features=20, out_features=20, bias=True)
+  (4): Linear(in_features=20, out_features=20, bias=True)
+  (5): Linear(in_features=20, out_features=20, bias=True)
+  (6): Linear(in_features=20, out_features=2, bias=True)
+)), ('u_bn_layer', ModuleList(
+  (0): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (1): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (2): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (3): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (4): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (5): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (6): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+)), ('p_layer', ModuleList(
+  (0): Linear(in_features=3, out_features=20, bias=True)
+  (1): Linear(in_features=20, out_features=20, bias=True)
+  (2): Linear(in_features=20, out_features=20, bias=True)
+  (3): Linear(in_features=20, out_features=20, bias=True)
+  (4): Linear(in_features=20, out_features=20, bias=True)
+  (5): Linear(in_features=20, out_features=20, bias=True)
+  (6): Linear(in_features=20, out_features=1, bias=True)
+)), ('p_bn_layer', ModuleList(
+  (0): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (1): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (2): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (3): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (4): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (5): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (6): BatchNorm1d(20, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+)), ('loss', MSELoss()), ('activation', Tanh())]), 'f_fun': <function f_example at 0x7f23c124f790>, 'boundary_fun': <function boundary_fun at 0x7f23c124fd30>, 'n': 12, 'dim_in': 2, 'deriv_map': array([[1., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.],
+       [0., 0., 0.],
+       [0., 0., 0.],
+       [0., 1., 0.],
+       [0., 0., 1.],
+       [0., 1., 0.],
+       [0., 0., 1.],
+       [0., 2., 0.],
+       [0., 0., 2.],
+       [0., 2., 0.],
+       [0., 0., 2.]]), 'zeta_map': array([-1, -1,  0,  1,  0,  0,  1,  1,  0,  0,  1,  1]), 'deriv_condition_deriv_map': array([[1, 0],
+       [0, 1]]), 'deriv_condition_zeta_map': array([0, 1]), 'dim_out': 2, 'coordinate': array([0, 1]), 'phi_fun': <function phi_example at 0x7f23c124f820>, 'lr': 0.001, 'weight_decay': 0, 'batch_normalization': False, 'nb_states': 10000, 'ori_x_lo': 0, 'ori_x_hi': 6.283185307179586, 'x_lo': 0.0, 'x_hi': 6.283185307179586, 't_lo': 0.0, 't_hi': 0.25, 'epochs': 10000, 'device': device(type='cuda'), 'verbose': True, 'fix_all_dim_except_first': False, 'working_dir': 'logs/20221127-142918-taylor_green_2d', 'working_dir_full_path': '/home/oem/deep_branching_with_domain/notebooks/logs/20221127-142918-taylor_green_2d'}
+2022-11-27 14:29:18,519 | root |  INFO: Epoch 0 with loss 0.4430675506591797
+2022-11-27 14:30:19,434 | root |  INFO: Epoch 500 with loss 0.04437808692455292
+2022-11-27 14:31:21,287 | root |  INFO: Epoch 1000 with loss 0.02208627387881279
+2022-11-27 14:32:23,339 | root |  INFO: Epoch 1500 with loss 0.013971281237900257
+2022-11-27 14:33:24,334 | root |  INFO: Epoch 2000 with loss 0.01128695160150528
+2022-11-27 14:34:25,308 | root |  INFO: Epoch 2500 with loss 0.009253391996026039
+2022-11-27 14:35:26,568 | root |  INFO: Epoch 3000 with loss 0.005532004404813051
+2022-11-27 14:36:27,516 | root |  INFO: Epoch 3500 with loss 0.004072746727615595
+2022-11-27 14:37:28,683 | root |  INFO: Epoch 4000 with loss 0.0036441884003579617
+2022-11-27 14:38:29,629 | root |  INFO: Epoch 4500 with loss 0.003620501607656479
+2022-11-27 14:39:30,924 | root |  INFO: Epoch 5000 with loss 0.0021610127296298742
+2022-11-27 14:40:33,109 | root |  INFO: Epoch 5500 with loss 0.0033326561097055674
+2022-11-27 14:41:33,741 | root |  INFO: Epoch 6000 with loss 0.0015168554382398725
+2022-11-27 14:42:34,398 | root |  INFO: Epoch 6500 with loss 0.0014507090672850609
+2022-11-27 14:43:35,325 | root |  INFO: Epoch 7000 with loss 0.0018507157219573855
+2022-11-27 14:44:36,350 | root |  INFO: Epoch 7500 with loss 0.0010994051117449999
+2022-11-27 14:45:37,500 | root |  INFO: Epoch 8000 with loss 0.0010362261673435569
+2022-11-27 14:46:38,801 | root |  INFO: Epoch 8500 with loss 0.0007545578991994262
+2022-11-27 14:47:39,640 | root |  INFO: Epoch 9000 with loss 0.0007529332069680095
+2022-11-27 14:48:40,800 | root |  INFO: Epoch 9500 with loss 0.0008737088646739721
+2022-11-27 14:49:41,800 | root |  INFO: Epoch 9999 with loss 0.0009717606590129435
+2022-11-27 14:49:41,814 | root |  INFO: Training of neural network with 10000 epochs take 1223.4299132823944 seconds.
+2022-11-27 14:49:41,882 | root |  INFO: The error as in Lejay is calculated as follows.
+2022-11-27 14:49:41,883 | root |  INFO: $\hat{e}_0(t_k)$
+2022-11-27 14:49:41,884 | root |  INFO: & 3.72E+00 & 3.54E+00 & 3.36E+00 & 3.18E+00 & 3.00E+00 & 2.82E+00 & 2.65E+00 & 2.47E+00 & 2.30E+00 & 2.14E+00 & --- \\
+2022-11-27 14:49:41,884 | root |  INFO: $\hat{e}_1(t_k)$
+2022-11-27 14:49:41,885 | root |  INFO: & 1.80E-01 & 1.55E-01 & 1.29E-01 & 1.04E-01 & 8.10E-02 & 5.93E-02 & 3.99E-02 & 2.36E-02 & 1.10E-02 & 1.40E-02 & --- \\
+2022-11-27 14:49:41,885 | root |  INFO: $\hat{e}(t_k)$
+2022-11-27 14:49:41,886 | root |  INFO: & 3.72E+00 & 3.54E+00 & 3.36E+00 & 3.18E+00 & 3.00E+00 & 2.82E+00 & 2.65E+00 & 2.47E+00 & 2.30E+00 & 2.14E+00 & --- \\
+2022-11-27 14:49:41,886 | root |  INFO: \hline
+2022-11-27 14:49:41,886 | root |  INFO: 
+The relative L2 error of u (erru) is calculated as follows.
+2022-11-27 14:49:41,888 | root |  INFO: erru($t_k$)
+2022-11-27 14:49:41,889 | root |  INFO: & 1.33E+00 & 1.23E+00 & 1.13E+00 & 1.04E+00 & 9.57E-01 & 8.81E-01 & 8.13E-01 & 7.50E-01 & 6.95E-01 & 6.46E-01 & --- \\
+2022-11-27 14:49:41,960 | root |  INFO: 
+The relative L2 error of gradient of u (errgu) is calculated as follows.
+2022-11-27 14:49:41,963 | root |  INFO: errgu($t_k$)
+2022-11-27 14:49:41,965 | root |  INFO: & 9.61E-01 & 9.02E-01 & 8.46E-01 & 7.93E-01 & 7.44E-01 & 6.98E-01 & 6.55E-01 & 6.16E-01 & 5.81E-01 & 5.49E-01 & --- \\
+2022-11-27 14:49:41,966 | root |  INFO: 
+The absolute divergence of u (errdivu) is calculated as follows.
+2022-11-27 14:49:41,967 | root |  INFO: errdivu($t_k$)
+2022-11-27 14:49:41,968 | root |  INFO: & 5.09E-02 & 4.74E-02 & 4.61E-02 & 4.71E-02 & 5.02E-02 & 5.51E-02 & 6.15E-02 & 6.92E-02 & 7.79E-02 & 8.74E-02 & --- \\
+2022-11-27 14:49:41,974 | root |  INFO: 
+The relative L2 error of p (errp) is calculated as follows.
+2022-11-27 14:49:41,976 | root |  INFO: errp($t_k$)
+2022-11-27 14:49:41,976 | root |  INFO: & --- & --- & --- & --- & --- & --- & --- & --- & --- & --- & 9.69E+00 \\
